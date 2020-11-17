@@ -79,10 +79,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
         vgohome = (Button) findViewById(R.id.Vgohome);
         vcool = (Button) findViewById(R.id.Vcool);
         back1 = (Button) findViewById(R.id.back1);
-        voctest = (Button) findViewById(R.id.Voctest);
+//        voctest = (Button) findViewById(R.id.Voctest);
         conver = (Button) findViewById(R.id.Conver);
         text17 = (TextView) findViewById(R.id.textView17);
-        tttt =  (TextView) findViewById(R.id.textView18);
+//        tttt =  (TextView) findViewById(R.id.textView18);
 
         b0.setOnClickListener(this);
         b1.setOnClickListener(this);
@@ -96,10 +96,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
         vread.setOnClickListener(this);
         vgohome.setOnClickListener(this);
         vsing.setOnClickListener(this);
-        voctest.setOnClickListener(this);
+//        voctest.setOnClickListener(this);//null
         conver.setOnClickListener(this);
         text17.setOnClickListener(this);
-        tttt.setOnClickListener(this);
+//        tttt.setOnClickListener(this);//null
 
 
         this.vhot.setVisibility(View.INVISIBLE);
@@ -111,7 +111,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         this.vcool.setVisibility(View.INVISIBLE);
         this.back1.setVisibility(View.INVISIBLE);
 
-
+/*
 
         if (D) {
             Log.e(TAG, "+++ON CREATE +++");
@@ -150,12 +150,14 @@ public class MainActivity extends Activity implements View.OnClickListener {
         MediaPlayer mper = MediaPlayer.create(this, R.raw.shot);
         mper.reset();
         mper.start();
+        */
     }
 
     @Override
     public void onClick(View view) {
         //Intent intent = new Intent();
-
+        Log.d("OnClick",view.getId()+"");
+        /*
         switch (view.getId()) {
             case R.id.DANCE:
                 tx0("a ");
@@ -293,6 +295,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 break;
 
         }
+
+         */
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -336,66 +340,66 @@ public class MainActivity extends Activity implements View.OnClickListener {
         }
     }
 
-    public void onStart() {
-        super.onStart();
-        if (D)
-            Log.e(TAG, "++ ON START ++");
-    }
-
-
-    public void onResume() {
-        super.onResume();
-        if (D) {
-            Log.e(TAG, "+ ON RESUME +");
-            Log.e(TAG, "+ ABOUT TO ATTEMPT CLIENT CONNECT +");
-
-        }
-
-        BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
-
-        try {
-
-            MbtSocket = device.createRfcommSocketToServiceRecord(MY_UUID);
-
-        } catch (IOException e) {
-
-            Log.e(TAG, "ON RESUME: Socket creation failed.", e);
-
-        }
-        mBluetoothAdapter.cancelDiscovery();
-        try {
-
-            MbtSocket.connect();
-
-            Log.e(TAG, "ON RESUME: BT connection established, data transfer link open.");
-        } catch (IOException e) {
-            try {
-                MbtSocket.close();
-            } catch (IOException e2) {
-
-                Log.e(TAG, "ON RESUME: Unable to close socket during connection failure", e2);
-            }
-        }
-        if (D)
-            Log.e(TAG, "+ ABOUT TO SAY SOMETHING TO SERVER +");
-    }
-    public void onPause() {
-        super.onPause();
-        if (D)
-            Log.e(TAG, "- ON PAUSE -");
-        if (outStream != null) {
-            try {
-                outStream.flush();
-            } catch (IOException e) {
-                Log.e(TAG, "ON PAUSE: Couldn't flush output stream.", e);
-            }
-        }
-        try {
-            MbtSocket.close();
-        } catch (IOException e2) {
-            Log.e(TAG, "ON PAUSE: Unable to close socket.", e2);
-        }
-    }
+//    public void onStart() {
+//        super.onStart();
+//        if (D)
+//            Log.e(TAG, "++ ON START ++");
+//    }
+//
+//
+//    public void onResume() {
+//        super.onResume();
+//        if (D) {
+//            Log.e(TAG, "+ ON RESUME +");
+//            Log.e(TAG, "+ ABOUT TO ATTEMPT CLIENT CONNECT +");
+//
+//        }
+//
+//        BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
+//
+//        try {
+//
+//            MbtSocket = device.createRfcommSocketToServiceRecord(MY_UUID);
+//
+//        } catch (IOException e) {
+//
+//            Log.e(TAG, "ON RESUME: Socket creation failed.", e);
+//
+//        }
+//        mBluetoothAdapter.cancelDiscovery();
+//        try {
+//
+//            MbtSocket.connect();
+//
+//            Log.e(TAG, "ON RESUME: BT connection established, data transfer link open.");
+//        } catch (IOException e) {
+//            try {
+//                MbtSocket.close();
+//            } catch (IOException e2) {
+//
+//                Log.e(TAG, "ON RESUME: Unable to close socket during connection failure", e2);
+//            }
+//        }
+//        if (D)
+//            Log.e(TAG, "+ ABOUT TO SAY SOMETHING TO SERVER +");
+//    }
+//    public void onPause() {
+//        super.onPause();
+//        if (D)
+//            Log.e(TAG, "- ON PAUSE -");
+//        if (outStream != null) {
+//            try {
+//                outStream.flush();
+//            } catch (IOException e) {
+//                Log.e(TAG, "ON PAUSE: Couldn't flush output stream.", e);
+//            }
+//        }
+//        try {
+//            MbtSocket.close();
+//        } catch (IOException e2) {
+//            Log.e(TAG, "ON PAUSE: Unable to close socket.", e2);
+//        }
+//    }
 
 
     public void tx0(String message) {
