@@ -1,8 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="2df3e72d-9d11-46c4-8a27-77f84e55835e" name="Default Changelist" comment="" />
-    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <list default="true" id="2df3e72d-9d11-46c4-8a27-77f84e55835e" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/Bob_android/.idea/compiler.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Bob_android/.idea/jarRepositories.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Bob_android/app/src/main/java/com/example/hiwin/teacher_version_bob/communication/Constants.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Bob_android/app/src/main/java/com/example/hiwin/teacher_version_bob/communication/SerialListener.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Bob_android/app/src/main/java/com/example/hiwin/teacher_version_bob/communication/SerialService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Bob_android/app/src/main/java/com/example/hiwin/teacher_version_bob/communication/SerialSocket.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Bob_android/app/src/main/res/drawable-hdpi/ic_clear_white_24dp.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Bob_android/app/src/main/res/drawable-hdpi/ic_notification.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Bob_android/app/src/main/res/drawable-mdpi/ic_clear_white_24dp.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Bob_android/app/src/main/res/drawable-mdpi/ic_notification.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Bob_android/app/src/main/res/drawable-xhdpi/ic_clear_white_24dp.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Bob_android/app/src/main/res/drawable-xhdpi/ic_notification.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Bob_android/app/src/main/res/drawable-xxhdpi/ic_clear_white_24dp.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Bob_android/app/src/main/res/drawable-xxhdpi/ic_notification.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Bob_android/app/src/main/res/drawable-xxxhdpi/ic_clear_white_24dp.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Bob_android/app/src/main/res/drawable-xxxhdpi/ic_notification.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Bob_android/app/src/main/res/drawable/ic_delete_white_24dp.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Bob_android/app/src/main/res/drawable/ic_send_white_24dp.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/Bob.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Bob.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bob_android/.idea/caches/build_file_checksums.ser" beforeDir="false" afterPath="$PROJECT_DIR$/Bob_android/.idea/caches/build_file_checksums.ser" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bob_android/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Bob_android/.idea/gradle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bob_android/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Bob_android/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bob_android/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Bob_android/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bob_android/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Bob_android/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bob_android/app/src/main/java/com/example/hiwin/teacher_version_bob/BluetoothConnectionActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/Bob_android/app/src/main/java/com/example/hiwin/teacher_version_bob/BluetoothConnectionActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bob_android/app/src/main/java/com/example/hiwin/teacher_version_bob/Main2Activity.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bob_android/app/src/main/java/com/example/hiwin/teacher_version_bob/Main3Activity.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bob_android/app/src/main/java/com/example/hiwin/teacher_version_bob/Main4Activity.java" beforeDir="false" afterPath="$PROJECT_DIR$/Bob_android/app/src/main/java/com/example/hiwin/teacher_version_bob/Main4Activity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bob_android/app/src/main/java/com/example/hiwin/teacher_version_bob/MainActivity.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bob_android/app/src/main/res/drawable-v21/ic_menu_camera.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bob_android/app/src/main/res/drawable-v21/ic_menu_gallery.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bob_android/app/src/main/res/drawable-v21/ic_menu_manage.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bob_android/app/src/main/res/drawable-v21/ic_menu_send.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bob_android/app/src/main/res/drawable-v21/ic_menu_share.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bob_android/app/src/main/res/drawable-v21/ic_menu_slideshow.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bob_android/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bob_android/app/src/main/res/drawable/ic_launcher_background.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bob_android/app/src/main/res/drawable/nfu.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bob_android/app/src/main/res/drawable/side_nav_bar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bob_android/app/src/main/res/drawable/skybackground.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bob_android/app/src/main/res/drawable/smile.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bob_android/app/src/main/res/drawable/smiley.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bob_android/app/src/main/res/drawable/vcold.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bob_android/app/src/main/res/drawable/vcool.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bob_android/app/src/main/res/drawable/vgohome.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bob_android/app/src/main/res/drawable/vhot.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bob_android/app/src/main/res/drawable/vread.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bob_android/app/src/main/res/drawable/vsing.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bob_android/app/src/main/res/drawable/vwarm.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bob_android/app/src/main/res/layout-v26/activity_main.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bob_android/app/src/main/res/layout/activity_main2.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bob_android/app/src/main/res/layout/activity_main3.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bob_android/app/src/main/res/layout/activity_main4.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Bob_android/app/src/main/res/layout/activity_main4.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bob_android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Bob_android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bob_android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Bob_android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Bob_android/app/src/main/res/values/colors.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Bob_android/app/src/main/res/values/colors.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -11,37 +67,16 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="155" />
-    <option name="y" value="-21" />
-    <option name="width" value="1400" />
-    <option name="height" value="1000" />
-  </component>
-  <component name="ProjectView">
-    <navigator currentView="ProjectPane" proportions="" version="1">
-      <foldersAlwaysOnTop value="true" />
-    </navigator>
-    <panes>
-      <pane id="ProjectPane" />
-      <pane id="PackagesPane" />
-      <pane id="Scope" />
-    </panes>
+  <component name="ProjectId" id="1kUTGYk7IAdYgqeC8eL0AypjJUB" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
-    <property name="android.sdk.path" value="D:/Android/Sdk" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="android.sdk.path" value="$PROJECT_DIR$/../../../Android/Sdk" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/Bob_android" />
-  </component>
-  <component name="RunDashboard">
-    <option name="ruleStates">
-      <list>
-        <RuleState>
-          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
-        </RuleState>
-        <RuleState>
-          <option name="name" value="StatusDashboardGroupingRule" />
-        </RuleState>
-      </list>
-    </option>
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -56,24 +91,10 @@
     </task>
     <servers />
   </component>
-  <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
-    <layout>
-      <window_info id="Captures" order="0" weight="0.25" />
-      <window_info active="true" content_ui="combo" id="Project" order="1" visible="true" weight="0.32980973" />
-      <window_info id="Structure" order="2" side_tool="true" />
-      <window_info id="Image Layers" order="3" />
-      <window_info id="Designer" order="4" />
-      <window_info id="Resources Explorer" order="5" />
-      <window_info id="Capture Tool" order="6" />
-      <window_info id="Favorites" order="7" side_tool="true" />
-      <window_info anchor="bottom" id="Version Control" order="0" />
-      <window_info anchor="bottom" id="TODO" order="1" />
-      <window_info anchor="bottom" id="Terminal" order="2" />
-      <window_info anchor="bottom" id="Event Log" order="3" side_tool="true" />
-      <window_info anchor="right" id="Capture Analysis" order="0" />
-      <window_info anchor="right" id="Theme Preview" order="1" />
-      <window_info anchor="right" id="Palette&#9;" order="2" />
-    </layout>
+  <component name="WindowStateProjectService">
+    <state x="687" y="216" key="FileChooserDialogImpl" timestamp="1605754183525">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="687" y="216" key="FileChooserDialogImpl/1920.174.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1605754183525" />
   </component>
 </project>

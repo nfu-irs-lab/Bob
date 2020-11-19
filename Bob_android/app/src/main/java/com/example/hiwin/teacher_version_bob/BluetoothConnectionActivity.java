@@ -5,17 +5,12 @@ import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.Adapter;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Set;
 
 public class BluetoothConnectionActivity extends AppCompatActivity {
     /*
@@ -34,7 +29,9 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth_connection);
+
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
         deviceList = (ListView) findViewById(R.id.devicesList);
 
         Intent turnOn = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
@@ -45,6 +42,8 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
         DeviceAdapter da = new DeviceAdapter(this, bondedDevices);
         deviceList.setAdapter(da);
         deviceList.setOnItemClickListener(onClickListView);
+
+
     }
 
     private AdapterView.OnItemClickListener onClickListView = new AdapterView.OnItemClickListener() {
@@ -53,8 +52,8 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             BluetoothDevice selected_device = (BluetoothDevice) parent.getItemAtPosition(position);
             Toast.makeText(BluetoothConnectionActivity.this, selected_device.getName(), Toast.LENGTH_SHORT).show();
-            Intent it=new Intent(BluetoothConnectionActivity.this,Main4Activity.class);
-            it.putExtra("address",selected_device.getAddress());
+            Intent it = new Intent(BluetoothConnectionActivity.this, BluetoothTerminalActivity.class);
+            it.putExtra("address", selected_device.getAddress());
             startActivity(it);
         }
     };
