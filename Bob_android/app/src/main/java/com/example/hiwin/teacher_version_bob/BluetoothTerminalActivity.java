@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
+import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Spannable;
@@ -21,6 +22,8 @@ import com.example.hiwin.teacher_version_bob.communication.SerialListener;
 import com.example.hiwin.teacher_version_bob.communication.SerialService;
 import com.example.hiwin.teacher_version_bob.communication.SerialSocket;
 
+import java.util.Locale;
+
 public class BluetoothTerminalActivity extends AppCompatActivity implements ServiceConnection, SerialListener {
 
 
@@ -33,6 +36,7 @@ public class BluetoothTerminalActivity extends AppCompatActivity implements Serv
             https://developer.android.com/guide/components/activities/activity-lifecycle
             https://developer.android.com/guide/components/fragments
             https://developer.android.com/guide/components/services
+            https://www.tutorialspoint.com/android/android_text_to_speech.htm
      */
 
     private enum Connected {False, Pending, True}
@@ -50,6 +54,7 @@ public class BluetoothTerminalActivity extends AppCompatActivity implements Serv
 
     private boolean initialStart=true;
     private Connected connected = Connected.False;
+    private TextToSpeech textToSpeech;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +73,15 @@ public class BluetoothTerminalActivity extends AppCompatActivity implements Serv
 //        OnCreateView
         receiveText = (TextView) findViewById(R.id.receive_text);
         sendText = (TextView) findViewById(R.id.send_text);
+
+        textToSpeech=new TextToSpeech(context, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if(status != TextToSpeech.ERROR) {
+                    textToSpeech.setLanguage(Locale.US);
+                }
+            }
+        });
 
 
     }
@@ -189,6 +203,7 @@ public class BluetoothTerminalActivity extends AppCompatActivity implements Serv
         try {
             byte[] data = msg.getBytes();
             status("send:\t"+msg);
+            textToSpeech.speak(msg, TextToSpeech.QUEUE_FLUSH, null);
             service.write(data);
         } catch (Exception e) {
             onSerialIoError(e);
@@ -198,7 +213,7 @@ public class BluetoothTerminalActivity extends AppCompatActivity implements Serv
     private void receive(byte[] data) {
         String msg = new String(data);
         status("receive:\t"+msg);
-        receiveText.append(msg);
+        textToSpeech.speak(msg, TextToSpeech.QUEUE_FLUSH, null);
 
     }
 
