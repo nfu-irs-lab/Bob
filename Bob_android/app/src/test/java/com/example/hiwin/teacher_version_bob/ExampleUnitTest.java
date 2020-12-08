@@ -1,11 +1,9 @@
 package com.example.hiwin.teacher_version_bob;
 
-import com.example.hiwin.teacher_version_bob.protocal.EnablePatternRecognitionPackage;
-import com.example.hiwin.teacher_version_bob.protocal.Package;
+import com.example.hiwin.teacher_version_bob.protocol.ClientHelloPackage;
+import com.example.hiwin.teacher_version_bob.protocol.ServerHelloPackage;
 
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -13,18 +11,32 @@ import static org.junit.Assert.*;
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
 public class ExampleUnitTest {
+
     @Test
-    public void addition_isCorrect() throws Exception {
-        assertEquals(4, 2 + 2);
+    public void ClientHelloPackageTest() {
+
+        System.out.println("ClientHelloPackageTest");
+        ClientHelloPackage s1=new ClientHelloPackage();
+        dumpBytes(s1.toBytes());
+        ClientHelloPackage clientHelloPackage=new ClientHelloPackage(s1.toBytes());
+        dumpBytes(clientHelloPackage.toBytes());
     }
 
     @Test
-    public void PackageTest() {
-//        byte[] import_bytes=new byte[]{(byte)0xff,(byte)0xef,(byte)0x01,(byte)0x00,(byte)0xfe};
-//        Package p=new Package(import_bytes);
-        EnablePatternRecognitionPackage eprp=new EnablePatternRecognitionPackage();
-        eprp.setEnabled(true);
-        byte o[]=eprp.toBytes();
-        if(true)o.toString();
+    public void ServerHelloPackageTest() {
+        System.out.println("ServerHelloPackageTest");
+        ServerHelloPackage s1=new ServerHelloPackage(ServerHelloPackage.StatusCode.ALLOW);
+        dumpBytes(s1.toBytes());
+        ServerHelloPackage serverHelloPacakage=new ServerHelloPackage(s1.toBytes());
+        dumpBytes(serverHelloPacakage.toBytes());
     }
+
+    void dumpBytes(byte[] raw){
+        System.out.print("{");
+        for(byte b:raw){
+            System.out.print(b+",");
+        }
+        System.out.println("}");
+    }
+
 }

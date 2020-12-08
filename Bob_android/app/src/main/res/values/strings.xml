@@ -1,15 +1,4 @@
 <resources>
-    <string name="app_name">Teacher_Version_Bob</string>
-    <string name="title_activity_main3">Main3Activity</string>
+    <string name="app_name">Bob</string>
 
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-
-    <string name="action_settings">Settings</string>
-    <string name="vocabulary">Vocabulary</string>
-    <string name="home">HOME</string>
-    <string name="dialogue">dialogue</string>
-    <string name="todo">TODO</string>
-    <string name="back">back</string>
-    <string name="exam">EXAM</string>
 </resources>

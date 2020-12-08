@@ -23,13 +23,15 @@ import com.example.hiwin.teacher_version_bob.communication.SerialListener;
 import com.example.hiwin.teacher_version_bob.communication.SerialService;
 import com.example.hiwin.teacher_version_bob.communication.SerialSocket;
 import com.example.hiwin.teacher_version_bob.protocol.ClientHelloPackage;
+import com.example.hiwin.teacher_version_bob.protocol.ClientProtocol;
 import com.example.hiwin.teacher_version_bob.protocol.Package;
+import com.example.hiwin.teacher_version_bob.protocol.ProtocolListener;
 import com.example.hiwin.teacher_version_bob.protocol.ServerHelloPackage;
 
 import java.io.IOException;
 import java.util.Locale;
 
-public class BluetoothTerminalActivity extends AppCompatActivity implements ServiceConnection {
+public class MainActivity extends AppCompatActivity implements ServiceConnection {
 
 
 
@@ -48,14 +50,10 @@ public class BluetoothTerminalActivity extends AppCompatActivity implements Serv
 
     private enum Connected {False, Pending, True}
 
-    private static final byte[] ENABLE_PATTERN_RECOGNITION = {(byte) 0xff, (byte) 0xef, (byte) 0x01, (byte) 0x00, (~1)};
 
-
-    private TextView receiveText;
-    private TextView sendText;
-    private Toolbar toolbar;
     private MenuItem connection;
 
+    private Toolbar toolbar;
     private Context context;
 
 
@@ -64,14 +62,15 @@ public class BluetoothTerminalActivity extends AppCompatActivity implements Serv
 
     private boolean initialStart = true;
     private Connected connected = Connected.False;
-    private TextToSpeech textToSpeech;
+    private ClientProtocol clientProtocol;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_bluetooth_terminal);
-        toolbar = (Toolbar) findViewById(R.id.term_toolbar);
+        setContentView(R.layout.activity_main);
+        toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
+
         context = this;
 
 //        OnAttach
@@ -81,26 +80,13 @@ public class BluetoothTerminalActivity extends AppCompatActivity implements Serv
         Intent it = getIntent();
         deviceAddress = it.getStringExtra("address");
 
-//        OnCreateView
-        receiveText = (TextView) findViewById(R.id.receive_text);
-        sendText = (TextView) findViewById(R.id.send_text);
-
-        textToSpeech = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-                if (status != TextToSpeech.ERROR) {
-                    textToSpeech.setLanguage(Locale.US);
-                }
-            }
-        });
-
 
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // 設置要用哪個menu檔做為選單
-        getMenuInflater().inflate(R.menu.menu_term, menu);
+        getMenuInflater().inflate(R.menu.menu_main, menu);
         connection = menu.getItem(0);
         return true;
     }
@@ -108,7 +94,7 @@ public class BluetoothTerminalActivity extends AppCompatActivity implements Serv
     @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.menu_term_connection) {
+        if (item.getItemId() == R.id.menu_main_connection) {
             if (connected == Connected.False)
                 connect();
             else if (connected == Connected.True)
@@ -126,20 +112,32 @@ public class BluetoothTerminalActivity extends AppCompatActivity implements Serv
             startService(new Intent(context, SerialService.class));
     }
 
-    public void OnSendClick(View v) {
-        send(sendText.getText().toString());
-    }
 
     @Override
     public void onServiceConnected(ComponentName name, IBinder binder) {
         service = ((SerialService.SerialBinder) binder).getService();
         service.attach(serialListener);
+
+        clientProtocol=new ClientProtocol();
+        clientProtocol.attach(new ProtocolListener() {
+            @Override
+            public void OnProtocolConnected() {
+                Toast.makeText(MainActivity.this,"Connected",Toast.LENGTH_SHORT).show();
+                setMenuConnectionStatus(connected);
+            }
+
+            @Override
+            public void OnProtocolDisconnected() {
+
+            }
+        });
+
+
         if (initialStart) {
             initialStart = false;
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-
                     setMenuConnectionStatus(connected);
                 }
             });
@@ -150,7 +148,6 @@ public class BluetoothTerminalActivity extends AppCompatActivity implements Serv
     public void onServiceDisconnected(ComponentName name) {
         service = null;
     }
-
 
 
     @Override
@@ -170,8 +167,6 @@ public class BluetoothTerminalActivity extends AppCompatActivity implements Serv
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (textToSpeech != null)
-            textToSpeech.shutdown();
         if (connected != Connected.False)
             disconnect();
         stopService(new Intent(context, SerialService.class));
@@ -209,53 +204,9 @@ public class BluetoothTerminalActivity extends AppCompatActivity implements Serv
         service.disconnect();
     }
 
-    private void send(String msg) {
-        if (connected != Connected.True) {
-            Toast.makeText(BluetoothTerminalActivity.this, "not connected", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        byte[] data = msg.getBytes();
-        status("send:\t" + msg);
-        textToSpeech.speak(msg, TextToSpeech.QUEUE_FLUSH, null);
-        send(data);
-    }
-
-    private void send(byte[] raw) {
-        try {
-            service.write(raw);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void receive(byte[] data) {
-//        Object obj=Package.parsePackage(data);
-//        if(obj instanceof ServerHelloPackage){
-//            ServerHelloPackage serverHelloPackage=(ServerHelloPackage)obj;
-//            ServerHelloPackage.StatusCode status=serverHelloPackage.getStatusCode();
-//            switch (status){
-//                case ALLOW:
-//
-//                    break;
-//                case NOT_SUPPORT:
-//
-//                    break;
-//                case DENY:
-//
-//                    break;
-//            }
-//        }
-
-
-        String msg = new String(data);
-        status("receive:\t" + msg);
-        textToSpeech.speak(msg, TextToSpeech.QUEUE_FLUSH, null);
-
-    }
 
     void status(String str) {
         Log.d("BluetoothLog", str);
-        receiveText.append(str + "\n");
     }
 
     void setMenuConnectionStatus(Connected connected) {
@@ -268,14 +219,13 @@ public class BluetoothTerminalActivity extends AppCompatActivity implements Serv
         }
     }
 
-    SerialListener serialListener=new SerialListener() {
+    SerialListener serialListener = new SerialListener() {
         @Override
         public void onSerialConnect() {
             status("connected");
             connected = Connected.True;
-            setMenuConnectionStatus(connected);
-//        ClientHelloPackage clientHelloPackage = new ClientHelloPackage();
-//        send(clientHelloPackage.toBytes());
+            clientProtocol.connect(service);
+
         }
 
         @Override
@@ -289,7 +239,7 @@ public class BluetoothTerminalActivity extends AppCompatActivity implements Serv
 
         @Override
         public void onSerialRead(byte[] data) {
-            receive(data);
+            clientProtocol.receive(data,service);
         }
 
         @Override
