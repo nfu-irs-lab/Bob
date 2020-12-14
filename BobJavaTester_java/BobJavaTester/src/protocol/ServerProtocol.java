@@ -10,24 +10,33 @@ import protocol.ServerHelloPackage.StatusCode;
 
 public class ServerProtocol{
 	private ProtocolListener listener;
+	private final InputStream is;
+	private final OutputStream os;
 	
-	public ServerProtocol() {
-		
+	public ServerProtocol(InputStream is,OutputStream os) {
+		this.os=os;
+		this.is=is;
 	}
+	
 	
 	public void attach(ProtocolListener listener) {
 		this.listener=listener;
 	}
-	
-	public void receive(SerialPort comPort) {
-		System.out.println("Available: " + comPort.bytesAvailable() + " bytes.");
-		byte[] newData = new byte[comPort.bytesAvailable()];
-		InputStream in = comPort.getInputStream();
-		OutputStream out = comPort.getOutputStream();
+	public void sendMsg(String msg) throws IOException {
+		MessagePackage data=new MessagePackage(msg);
+		os.write(data.toBytes());
+	}
+	public void receive() {
+		byte[] newData = null;
 		try {
-			in.read(newData);
+			newData = new byte[is.available()];
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		
+		try {
+			is.read(newData);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		dumpBytes(newData);
@@ -35,7 +44,7 @@ public class ServerProtocol{
 		Package.Type type = Package.Type.getPackageType(newData);
 		switch (type) {
 		case ClientHello:
-			OnReceiveClientHello(newData,out);
+			OnReceiveClientHello(newData,os);
 			break;
 		case ClientBye:
 			listener.OnProtocolDisconnected();

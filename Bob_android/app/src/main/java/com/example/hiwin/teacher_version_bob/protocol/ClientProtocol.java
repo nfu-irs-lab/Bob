@@ -10,7 +10,6 @@ import java.io.OutputStream;
 
 public class ClientProtocol {
     private ProtocolListener listener;
-
     public ClientProtocol() {
 
     }
@@ -26,11 +25,18 @@ public class ClientProtocol {
             case ServerHello:
                 OnReceiveServerHello(newData);
                 break;
-
+            case Message:
+                OnReceiveMessage(newData);
+                break;
             default:
 
                 break;
         }
+    }
+    private void OnReceiveMessage(byte[] data){
+        MessagePackage messagePackage=new MessagePackage(data);
+        listener.OnReceiveMessage(messagePackage.getMessage());
+        Log.d("ProtocolLog","receive message:"+messagePackage.getMessage());
     }
     private void OnReceiveServerHello(byte[] data) {
         ServerHelloPackage sh=new ServerHelloPackage(data);
@@ -38,8 +44,8 @@ public class ClientProtocol {
         Log.d("ProtocolLog",statusCode.toString());
         if(statusCode== ServerHelloPackage.StatusCode.ALLOW){
             listener.OnProtocolConnected();
-        }else if(statusCode== ServerHelloPackage.StatusCode.NOT_SUPPORT){
-
+        }else{
+            listener.OnConnectionRejected(statusCode);
         }
 
     }

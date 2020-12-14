@@ -130,6 +130,21 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             public void OnProtocolDisconnected() {
 
             }
+
+            @Override
+            public void OnConnectionRejected(ServerHelloPackage.StatusCode statusCode) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        finish();
+                    }
+                });
+            }
+
+            @Override
+            public void OnReceiveMessage(String message) {
+                Toast.makeText(MainActivity.this,message,Toast.LENGTH_SHORT).show();
+            }
         });
 
 

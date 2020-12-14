@@ -5,4 +5,6 @@ public interface ProtocolListener {
 	
     public void OnProtocolConnected();
     public void OnProtocolDisconnected();
+    public void OnConnectionRejected(ServerHelloPackage.StatusCode statusCode);
+    public void OnReceiveMessage(String message);
 }
