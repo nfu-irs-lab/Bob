@@ -11,24 +11,10 @@ import org.junit.Test;
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
 public class ExampleUnitTest {
-
     @Test
-    public void ClientHelloPackageTest() {
-
-        System.out.println("ClientHelloPackageTest");
-        ClientHelloPackage s1=new ClientHelloPackage();
-        dumpBytes(s1.toBytes());
-        ClientHelloPackage clientHelloPackage=new ClientHelloPackage(s1.toBytes());
-        dumpBytes(clientHelloPackage.toBytes());
-    }
-
-    @Test
-    public void ServerHelloPackageTest() {
-        System.out.println("ServerHelloPackageTest");
-        ServerHelloPackage s1=new ServerHelloPackage(ServerHelloPackage.StatusCode.ALLOW);
-        dumpBytes(s1.toBytes());
-        ServerHelloPackage serverHelloPacakage=new ServerHelloPackage(s1.toBytes());
-        dumpBytes(serverHelloPacakage.toBytes());
+    public void numberConversionTest(){
+        byte raw=127;
+        int length = 0b11111111&raw;
     }
 
     void dumpBytes(byte[] raw){

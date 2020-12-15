@@ -1,12 +1,12 @@
-package protocol;
+package com.example.hiwin.teacher.BobJavaTester.protocol;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import com.fazecast.jSerialComm.SerialPort;
+import com.example.hiwin.teacher.BobJavaTester.protocol.ServerHelloPackage.StatusCode;
 
-import protocol.ServerHelloPackage.StatusCode;
+
 
 public class ServerProtocol{
 	private ProtocolListener listener;

@@ -15,20 +15,23 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.TextView;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.hiwin.teacher_version_bob.communication.SerialListener;
 import com.example.hiwin.teacher_version_bob.communication.SerialService;
 import com.example.hiwin.teacher_version_bob.communication.SerialSocket;
-import com.example.hiwin.teacher_version_bob.protocol.ClientHelloPackage;
 import com.example.hiwin.teacher_version_bob.protocol.ClientProtocol;
-import com.example.hiwin.teacher_version_bob.protocol.Package;
 import com.example.hiwin.teacher_version_bob.protocol.ProtocolListener;
 import com.example.hiwin.teacher_version_bob.protocol.ServerHelloPackage;
 
-import java.io.IOException;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements ServiceConnection {
@@ -63,15 +66,32 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     private boolean initialStart = true;
     private Connected connected = Connected.False;
     private ClientProtocol clientProtocol;
+    private ListView listView;
+    private DetectedObjectAdapter adapter;
+    private  ArrayList<HashMap<String,Object>> detectedObjects=new ArrayList<>();
 
+    private TextToSpeech textToSpeech;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
-
         context = this;
+
+        adapter=new DetectedObjectAdapter(context,detectedObjects);
+
+        listView=(ListView)findViewById(R.id.main_object_list);
+        listView.setAdapter(adapter);
+
+        textToSpeech = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status != TextToSpeech.ERROR) {
+                    textToSpeech.setLanguage(Locale.US);
+                }
+            }
+        });
 
 //        OnAttach
         boolean sus = bindService(new Intent(context, SerialService.class), this, Context.BIND_AUTO_CREATE);
@@ -142,8 +162,32 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             }
 
             @Override
-            public void OnReceiveMessage(String message) {
-                Toast.makeText(MainActivity.this,message,Toast.LENGTH_SHORT).show();
+            public void OnReceiveMessage(final String message) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(adapter!=null){
+                            try {
+                                JSONArray array=new JSONArray(message);
+                                detectedObjects.clear();
+
+                                for(int i=0;i<array.length();i++){
+                                    JSONObject object=array.getJSONObject(i);
+                                    HashMap<String,Object> t=new HashMap<>();
+                                    t.put("name",object.getString("name"));
+                                    t.put("number",object.getString("number"));
+                                    detectedObjects.add(t);
+                                }
+                                adapter=new DetectedObjectAdapter(context,detectedObjects);
+
+                                listView.setAdapter(adapter);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                });
+//                Toast.makeText(MainActivity.this,message,Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -182,6 +226,10 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
+        if (textToSpeech != null)
+            textToSpeech.shutdown();
+
         if (connected != Connected.False)
             disconnect();
         stopService(new Intent(context, SerialService.class));

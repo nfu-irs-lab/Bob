@@ -5,7 +5,7 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/dev_row_name"
+        android:id="@+id/detect_result_row_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
@@ -15,7 +15,7 @@
         android:textSize="36sp" />
 
     <TextView
-        android:id="@+id/dev_row_address"
+        android:id="@+id/detect_result_row_number"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
@@ -24,13 +24,4 @@
         android:text="TextView"
         android:textSize="24sp" />
 
-    <TextView
-        android:id="@+id/dev_row_state"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
-        android:text="TextView"
-        android:textSize="24sp" />
 </LinearLayout>

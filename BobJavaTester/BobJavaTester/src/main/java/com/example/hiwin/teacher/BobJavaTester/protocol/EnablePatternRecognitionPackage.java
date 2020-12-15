@@ -1,4 +1,4 @@
-package protocol;
+package com.example.hiwin.teacher.BobJavaTester.protocol;
 
 public class EnablePatternRecognitionPackage extends Package{
     public EnablePatternRecognitionPackage(boolean functionEnabled) {

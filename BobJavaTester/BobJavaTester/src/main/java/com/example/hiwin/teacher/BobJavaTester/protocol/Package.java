@@ -1,4 +1,4 @@
-package protocol;
+package com.example.hiwin.teacher.BobJavaTester.protocol;
 
 public abstract class Package {
 	public static enum Type {

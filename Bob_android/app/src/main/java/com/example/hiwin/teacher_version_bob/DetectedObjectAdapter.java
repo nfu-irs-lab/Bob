@@ -1,6 +1,5 @@
 package com.example.hiwin.teacher_version_bob;
 
-import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,32 +8,32 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /*
     reference:
         https://qiita.com/vc7/items/c863908b5273edd4fe53
         https://xnfood.com.tw/android-listview-baseadapter/
  */
-public class DeviceAdapter extends BaseAdapter {
+public class DetectedObjectAdapter extends BaseAdapter {
     private final Context context;
-    private final ArrayList<BluetoothDevice> devices;
+    private final ArrayList<HashMap<String,Object>> objects;
     private static LayoutInflater inflater = null;
 
-    public DeviceAdapter(Context context, ArrayList<BluetoothDevice> devices) {
+    public DetectedObjectAdapter(Context context, ArrayList<HashMap<String,Object>> objects) {
         this.context = context;
-        this.devices = devices;
-
+        this.objects = objects;
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override
     public int getCount() {
-        return devices.size();
+        return objects.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return devices.get(position);
+        return objects.get(position);
     }
 
     @Override
@@ -47,22 +46,19 @@ public class DeviceAdapter extends BaseAdapter {
         final ViewHolder viewHolder;
         viewHolder = new ViewHolder();
 
-        convertView = inflater.inflate(R.layout.row_of_device, parent, false);
+        convertView = inflater.inflate(R.layout.row_of_detect_result, parent, false);
         // 把拿到的 textView 設定進 view holder
-        viewHolder.dev_name = (TextView) convertView.findViewById(R.id.dev_row_name);
-        viewHolder.dev_address = (TextView) convertView.findViewById(R.id.dev_row_address);
-        viewHolder.dev_state = (TextView) convertView.findViewById(R.id.dev_row_state);
+        viewHolder.object_name = (TextView) convertView.findViewById(R.id.detect_result_row_name);
+        viewHolder.object_number = (TextView) convertView.findViewById(R.id.detect_result_row_number);
 
-        viewHolder.dev_name.setText(devices.get(position).getName());
-        viewHolder.dev_address.setText(devices.get(position).getAddress());
-        viewHolder.dev_state.setText(parseBondState(devices.get(position).getBondState()));
+        viewHolder.object_name.setText((String)objects.get(position).get("name"));
+        viewHolder.object_number.setText((String)objects.get(position).get("number"));
         return convertView;
     }
 
     static class ViewHolder {
-        TextView dev_name;
-        TextView dev_address;
-        TextView dev_state;
+        TextView object_name;
+        TextView object_number;
     }
 
     private String parseBondState(int value) {

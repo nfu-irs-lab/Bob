@@ -28,13 +28,13 @@ public abstract class Package {
     }
 
     protected final byte action;
-    private final byte length;
+    private final int length;
     private final byte[] data;
 
     public Package(byte action, byte[] data) {
         this.action = action;
         this.data = data;
-        this.length = (byte) data.length;
+        this.length = data.length;
     }
 
     public Package(byte[] importBytes) {
@@ -43,7 +43,8 @@ public abstract class Package {
         }
 
         action = importBytes[2];
-        length = importBytes[3];
+        length = 0b11111111&importBytes[3];
+        
         byte cksum = importBytes[importBytes.length - 1];
 
         byte cksum_real = (byte) (action + length);

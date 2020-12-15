@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 public class ClientHelloPackage extends Package {
 
     private static final String VERIFY_UUID = "30b09b66-33d4-11eb-adc1-0242ac120002";
+//    private static final String VERIFY_UUID = "30b09b66-33d4-11eb-adc1-0242ac120003";
     private String UUID;
     
     public ClientHelloPackage() {

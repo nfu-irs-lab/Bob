@@ -1,4 +1,4 @@
-package protocol;
+package com.example.hiwin.teacher.BobJavaTester.protocol;
 
 import java.nio.charset.StandardCharsets;
 
