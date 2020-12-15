@@ -26,6 +26,11 @@ public class ServerProtocol{
 		MessagePackage data=new MessagePackage(msg);
 		os.write(data.toBytes());
 	}
+
+	public void sendBytes(byte[] data) throws IOException {
+		os.write(data);
+	}
+	
 	public void receive() {
 		byte[] newData = null;
 		try {
@@ -55,7 +60,6 @@ public class ServerProtocol{
 			break;
 		}
 	}
-	
 	void dumpBytes(byte[] data) {
 		System.out.print("[");
 		for (byte b : data) {

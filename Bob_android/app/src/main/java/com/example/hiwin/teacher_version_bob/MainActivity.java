@@ -12,6 +12,7 @@ import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,6 +30,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -163,12 +165,46 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
             @Override
             public void OnReceiveMessage(final String message) {
-                runOnUiThread(new Runnable() {
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        if(adapter!=null){
+//                            try {
+//                                JSONArray array=new JSONArray(message);
+//                                detectedObjects.clear();
+//
+//                                for(int i=0;i<array.length();i++){
+//                                    JSONObject object=array.getJSONObject(i);
+//                                    HashMap<String,Object> t=new HashMap<>();
+//                                    t.put("name",object.getString("name"));
+//                                    t.put("number",object.getString("number"));
+//                                    detectedObjects.add(t);
+//                                }
+//                                adapter=new DetectedObjectAdapter(context,detectedObjects);
+//
+//                                listView.setAdapter(adapter);
+//                            } catch (JSONException e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                    }
+//                });
+//                Toast.makeText(MainActivity.this,message,Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void OnReceiveData(byte[] data) {
+
+                String base64str=new String(data, StandardCharsets.UTF_8);
+                byte[] rawBytes= Base64.decode(base64str,Base64.DEFAULT);
+                final String rawString=new String(rawBytes, StandardCharsets.UTF_8);
+                Log.d("ProtocolLog",rawString);
+                                runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         if(adapter!=null){
                             try {
-                                JSONArray array=new JSONArray(message);
+                                JSONArray array=new JSONArray(rawString);
                                 detectedObjects.clear();
 
                                 for(int i=0;i<array.length();i++){
@@ -187,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                         }
                     }
                 });
-//                Toast.makeText(MainActivity.this,message,Toast.LENGTH_SHORT).show();
+
             }
         });
 

@@ -2,7 +2,7 @@ package com.example.hiwin.teacher_version_bob.protocol;
 
 public abstract class Package {
     public static enum Type {
-        ClientHello, ServerHello, ClientBye, Message;
+        ClientHello, ServerHello, ClientBye, Message,SplitData;
 
         public static Type getPackageType(byte[] importBytes) {
             if (importBytes[0] != (byte) 0xff || importBytes[1] != (byte) 0xef) {
@@ -19,6 +19,8 @@ public abstract class Package {
                     return ClientBye;
                 case (byte) 0x01:
                     return Message;
+                case (byte) 0x03:
+                    return SplitData;
                 default:
                     return null;
 
@@ -47,10 +49,10 @@ public abstract class Package {
         
         byte cksum = importBytes[importBytes.length - 1];
 
-        byte cksum_real = (byte) (action + length);
+        byte cksum_real = (byte) (action +length);
 
         data = new byte[length];
-        for (byte i = 0; i < length; i++) {
+        for (int i = 0; i < length; i++) {
             data[i] = importBytes[4 + i];
             cksum_real += data[i];
         }
@@ -82,24 +84,5 @@ public abstract class Package {
     protected byte[] getData() {
         return data;
     }
-
-//    public static Object parsePackage(byte[] importBytes) {
-//        if (importBytes[0] != (byte) 0xff || importBytes[1] != (byte) 0xef) {
-//            throw new IllegalArgumentException("Header is not coincide.");
-//        }
-//
-//        byte action = importBytes[2];
-//        switch (action) {
-//            case (byte) 0xF0:
-//                return new ServerHelloPackage(importBytes);
-//            case (byte) 0xE0:
-//                return new ClientHelloPackage(importBytes);
-//
-//            default:
-//                return null;
-//
-//        }
-//
-//    }
 
 }

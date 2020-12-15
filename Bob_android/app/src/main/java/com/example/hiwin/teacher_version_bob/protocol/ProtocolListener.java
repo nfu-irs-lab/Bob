@@ -7,4 +7,5 @@ public interface ProtocolListener {
     public void OnProtocolDisconnected();
     public void OnConnectionRejected(ServerHelloPackage.StatusCode statusCode);
     public void OnReceiveMessage(String message);
+    public void OnReceiveData(byte[] data);
 }

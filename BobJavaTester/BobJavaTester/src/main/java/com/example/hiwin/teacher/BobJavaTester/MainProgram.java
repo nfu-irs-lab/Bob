@@ -1,9 +1,16 @@
 package com.example.hiwin.teacher.BobJavaTester;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Scanner;
+import java.util.Base64.Encoder;
 
+import com.example.hiwin.teacher.BobJavaTester.protocol.DataPackage;
 import com.example.hiwin.teacher.BobJavaTester.protocol.ProtocolListener;
 import com.example.hiwin.teacher.BobJavaTester.protocol.ServerProtocol;
+import com.example.hiwin.teacher.BobJavaTester.protocol.SplitDataPackage;
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortDataListener;
 import com.fazecast.jSerialComm.SerialPortEvent;
@@ -19,9 +26,23 @@ public class MainProgram implements SerialPortDataListener {
 		comPort.addDataListener(this);
 		protocol = new ServerProtocol(comPort.getInputStream(), comPort.getOutputStream());
 		protocol.attach(listener);
+
+		Scanner scr=new Scanner(System.in);
+		Thread.sleep(5000);
 		while (comPort.isOpen()) {
-			protocol.sendMsg("[{\"name\":\"apple\",\"number\":3},{\"name\":\"pen\",\"number\":4 }]");
-			Thread.sleep(10000);
+//			byte[] data= {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
+			
+			String msg=scr.nextLine();
+			byte[] data=msg.getBytes(StandardCharsets.UTF_8);
+			ArrayList<SplitDataPackage> datas=DataPackage.splitPackage(data);
+			for(int i=0;i<datas.size();i++) {
+				System.out.println(i+":");
+				dumpBytes(datas.get(i).toBytes());
+				protocol.sendBytes(datas.get(i).toBytes());
+				Thread.sleep(5000);
+			}
+			
+//			protocol.sendMsg("[{\"name\":\"apple\",\"number\":3},{\"name\":\"pen\",\"number\":4 }]");
 		}
 		comPort.closePort();
 	}
@@ -56,4 +77,23 @@ public class MainProgram implements SerialPortDataListener {
 			System.out.println("Connected");
 		}
 	};
+	
+	private byte[] encodeMessage(String msg) {
+		Encoder encoder = Base64.getEncoder();
+		String str = null;
+//		try {
+		str = encoder.encodeToString(msg.getBytes(StandardCharsets.UTF_8));
+//			System.out.println(str);
+//		} catch (UnsupportedEncodingException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+
+//		try {
+		return str.getBytes(StandardCharsets.UTF_8);
+//		} catch (UnsupportedEncodingException e) {
+//			e.printStackTrace();
+//			return null;
+//		}
+	}
 }
