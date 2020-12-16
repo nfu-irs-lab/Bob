@@ -1,12 +1,16 @@
 package com.example.hiwin.teacher_version_bob.protocol;
 
+
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class DataPackage extends ArrayList<SplitDataPackage>{
-
+//    static final int SPLIT_SIZE=253;
+    static final int SPLIT_SIZE=2;
+    
     public byte[] getData(){
-        ArrayList<Byte> newData=new ArrayList<>();
+        ArrayList<Byte> newData=new ArrayList<Byte>();
 
         for(SplitDataPackage splitDataPackage:this){
             byte[] splitBytes=splitDataPackage.getData();
@@ -39,12 +43,11 @@ public class DataPackage extends ArrayList<SplitDataPackage>{
 
 
     public static ArrayList<SplitDataPackage> splitPackage(byte[] data){
-        final ArrayList<SplitDataPackage> dataPackages = new ArrayList<>();
-        final int SPLIT_SIZE=253;
-//        final int SPLIT_SIZE=2;
+        final ArrayList<SplitDataPackage> dataPackages = new ArrayList<SplitDataPackage>();
         int availableBytes=data.length;
         int index=0,counter=0;
-        int total=data.length/SPLIT_SIZE+data.length%SPLIT_SIZE;
+        int total = availableBytes / SPLIT_SIZE + Math.min(1, availableBytes % SPLIT_SIZE);
+		
 
         while (availableBytes>0){
             int length=Math.min(availableBytes, SPLIT_SIZE);

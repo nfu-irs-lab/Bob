@@ -1,49 +1,64 @@
 package com.example.hiwin.teacher.BobJavaTester.protocol;
 
+import com.example.hiwin.teacher.BobJavaTester.protocol.Package.Type;
+
 public class ServerHelloPackage extends Package {
 
     public static enum StatusCode{
-        ALLOW((byte)0xFF),NOT_SUPPORT((byte)0x01),DENY((byte)0x00);
+        ALLOW(0xFF),NOT_SUPPORT(0x01),DENY(0x00);
 
-        public final byte code;
-        StatusCode(byte code){
+        private final int code;
+        StatusCode(int code){
             this.code=code;
         }
 
-        public byte getCode() {
+        public int getCode() {
             return code;
         }
 
         public static StatusCode getStatus(byte code){
-            switch (code){
-                case (byte)0xff:
-                    return ALLOW;
-                case (byte)0x01:
-                    return NOT_SUPPORT;
-                case (byte)0x00:
-                    return DENY;
-                default:
-                    throw new IllegalArgumentException(code+" is not a status code.");
-            }
+        	
+        	int statusByte = toUnsignedInt(code);
+        	StatusCode[] statusCodes = values();
+			for (StatusCode statusCode : statusCodes) {
+				if (statusByte == statusCode.code) {
+					return statusCode;
+				}
+			}
+			throw new IllegalArgumentException(code+" is not a status code.");
+
+//          switch (code){
+//              case (byte)0xff:
+//                  return ALLOW;
+//              case (byte)0x01:
+//                  return NOT_SUPPORT;
+//              case (byte)0x00:
+//                  return DENY;
+//              default:
+//                  
+//          }
         }
+        
+        
         
     }
 
     private final StatusCode statusCode;
     public ServerHelloPackage(byte[] importBytes) {
         super(importBytes);
-        if(action!=(byte)0xF0)
+        if(action!=Package.Type.ServerHello.getAction())
             throw new IllegalArgumentException("Not a ServerHelloPackage");
         statusCode=StatusCode.getStatus(getData()[0]);
 
     }
+    
     public ServerHelloPackage(StatusCode statusCode){
-        super((byte)0XF0,setData(statusCode));
+        super(Package.Type.ServerHello.getAction(),setData(statusCode));
         this.statusCode=statusCode;
     }
 
     private static byte[] setData(StatusCode code){
-        return new byte[]{code.getCode()};
+        return new byte[]{(byte)code.getCode()};
     }
 
     public StatusCode getStatusCode() {

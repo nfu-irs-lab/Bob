@@ -29,9 +29,6 @@ public class ClientProtocol {
             case ServerHello:
                 OnReceiveServerHello(newData);
                 break;
-            case Message:
-                OnReceiveMessage(newData);
-                break;
             case SplitData:
                 onSplitDataReceive(newData);
             default:
@@ -64,11 +61,6 @@ public class ClientProtocol {
         }
     }
 
-    private void OnReceiveMessage(byte[] data){
-        MessagePackage messagePackage=new MessagePackage(data);
-        listener.OnReceiveMessage(messagePackage.getMessage());
-        Log.d("ProtocolLog","receive message:"+messagePackage.getMessage());
-    }
     private void OnReceiveServerHello(byte[] data) {
         ServerHelloPackage sh=new ServerHelloPackage(data);
         ServerHelloPackage.StatusCode statusCode=sh.getStatusCode();

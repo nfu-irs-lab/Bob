@@ -10,13 +10,16 @@ public class SplitDataPackage extends Package {
     private final int total;
 
     public SplitDataPackage(byte[] data, int index, int total) {
-        super((byte) 0x03, setData(data, index, total));
+        super(Package.Type.SplitData.getAction(), setData(data, index, total));
         this.index = index;
         this.total = total;
     }
 
     public SplitDataPackage(byte[] importBytes) {
         super(importBytes);
+        if (action!=Package.Type.SplitData.getAction())
+            throw new IllegalArgumentException("Not a SplitDataPackage");
+        
         this.index = super.getData()[0];
         this.total =  super.getData()[1];
     }

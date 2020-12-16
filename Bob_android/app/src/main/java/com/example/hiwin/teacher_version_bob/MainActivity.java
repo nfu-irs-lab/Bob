@@ -163,34 +163,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                 });
             }
 
-            @Override
-            public void OnReceiveMessage(final String message) {
-//                runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        if(adapter!=null){
-//                            try {
-//                                JSONArray array=new JSONArray(message);
-//                                detectedObjects.clear();
-//
-//                                for(int i=0;i<array.length();i++){
-//                                    JSONObject object=array.getJSONObject(i);
-//                                    HashMap<String,Object> t=new HashMap<>();
-//                                    t.put("name",object.getString("name"));
-//                                    t.put("number",object.getString("number"));
-//                                    detectedObjects.add(t);
-//                                }
-//                                adapter=new DetectedObjectAdapter(context,detectedObjects);
-//
-//                                listView.setAdapter(adapter);
-//                            } catch (JSONException e) {
-//                                e.printStackTrace();
-//                            }
-//                        }
-//                    }
-//                });
-//                Toast.makeText(MainActivity.this,message,Toast.LENGTH_SHORT).show();
-            }
+
 
             @Override
             public void OnReceiveData(byte[] data) {

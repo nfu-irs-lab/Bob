@@ -39,7 +39,7 @@ public class MainProgram implements SerialPortDataListener {
 				System.out.println(i+":");
 				dumpBytes(datas.get(i).toBytes());
 				protocol.sendBytes(datas.get(i).toBytes());
-				Thread.sleep(5000);
+				Thread.sleep(50);
 			}
 			
 //			protocol.sendMsg("[{\"name\":\"apple\",\"number\":3},{\"name\":\"pen\",\"number\":4 }]");
