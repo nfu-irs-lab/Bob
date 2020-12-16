@@ -100,7 +100,7 @@ class DataPackage():
         availableBytes = len(data)
         index = 0
         counter = 0
-        total = int(len(data) / SPLIT_SIZE) + len(data) % SPLIT_SIZE
+        total = int(availableBytes/SPLIT_SIZE) + min(1,availableBytes%SPLIT_SIZE)
 
         while availableBytes > 0:
             length = min(availableBytes, SPLIT_SIZE)
@@ -169,4 +169,25 @@ class PackageType(Enum):
             if action==type.value:
                 return type
 
+        return None
+
+class StatusCode(Enum):
+    ALLOW = 0xff
+    NOT_SUPPORT = 0x01
+    DENY = 0x00
+
+
+    @staticmethod
+    def values():
+        return list(StatusCode)
+
+    @staticmethod
+    def getStatus(rawbytes):
+        if rawbytes[0]!=0xff or rawbytes[1]!=0xef:
+            print("Header is not coincide.")
+        code=rawbytes[2]
+        status_list=StatusCode.values()
+        for status in status_list:
+            if code==status.value:
+                return status
         return None
