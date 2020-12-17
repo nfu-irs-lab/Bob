@@ -76,6 +76,10 @@ public class MainProgram implements SerialPortDataListener {
 		public void OnProtocolConnected() {
 			System.out.println("Connected");
 		}
+		
+	    public void OnReceiveDataPackage(byte[] data) {
+	    	
+	    }
 	};
 	
 	private byte[] encodeMessage(String msg) {

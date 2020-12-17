@@ -14,7 +14,7 @@ public class SplitDataPackage extends Package {
         this.index = index;
         this.total = total;
     }
-
+    @Deprecated
     public SplitDataPackage(byte[] importBytes) {
         super(importBytes);
         if (action!=Package.Type.SplitData.getAction())
@@ -24,6 +24,16 @@ public class SplitDataPackage extends Package {
         this.total =  super.getData()[1];
     }
 
+    public SplitDataPackage(PackageHeader header, byte[] lackBytes) {
+		super(header, lackBytes);
+        if (action!=Package.Type.SplitData.getAction())
+            throw new IllegalArgumentException("Not a SplitDataPackage");
+        
+        this.index = super.getData()[0];
+        this.total =  super.getData()[1];
+    }
+    
+    
     public int getIndex() {
         return index;
     }

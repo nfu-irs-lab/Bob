@@ -27,15 +27,15 @@ public class ExampleUnitTest {
         byte[] raw={1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20};
         ArrayList<SplitDataPackage> datas=DataPackage.splitPackage(raw);
         dataPackage.addAll(datas);
-        dumpBytes(dataPackage.getData());
+        dumpBytesInHex(dataPackage.getData());
         System.out.println();
     }
     @Test
     public void splitBytesTest(){
         byte[] raw={1,2,3,4,5,6,7,8,9,10,11,12};
-        dumpBytes(raw);
-        dumpBytes(splitBytes(raw,0,5));
-        dumpBytes(splitBytes(raw,5,3));
+        dumpBytesInHex(raw);
+        dumpBytesInHex(splitBytes(raw,0,5));
+        dumpBytesInHex(splitBytes(raw,5,3));
 
     }
     private byte[] splitBytes(byte[] raw,int start,int length){
@@ -47,12 +47,22 @@ public class ExampleUnitTest {
     }
 
 
-    void dumpBytes(byte[] raw){
+    void dumpBytesInHex(byte[] raw){
         System.out.print("{");
         for(byte b:raw){
             System.out.print("0x"+Integer.toHexString(b)+",");
         }
         System.out.println("}");
+    }
+    String BytesInHexString(byte[] raw){
+        StringBuffer sb=new StringBuffer();
+
+        sb.append("{");
+        for(byte b:raw){
+            sb.append("0x").append(Integer.toHexString(b)).append(",");
+        }
+        sb.append("}");
+        return sb.toString();
     }
 
 }

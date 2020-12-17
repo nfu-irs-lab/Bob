@@ -23,7 +23,7 @@ public class ClientProtocol {
     }
 
     public void receive(byte[] newData,SerialService service) {
-
+        Log.d("ProtocolLog",BytesInHexString(newData));
         Package.Type type = Package.Type.getPackageType(newData);
         switch (type) {
             case ServerHello:
@@ -78,10 +78,20 @@ public class ClientProtocol {
         byte[] data=clientHelloPackage.toBytes();
         try {
             service.write(data);
+            Log.d("ProtocolLog",BytesInHexString(data));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+    String BytesInHexString(byte[] raw){
+        StringBuffer sb=new StringBuffer();
 
+        sb.append("{");
+        for(byte b:raw){
+            sb.append("0x").append(Integer.toHexString(b)).append(",");
+        }
+        sb.append("}");
+        return sb.toString();
+    }
 
 }
