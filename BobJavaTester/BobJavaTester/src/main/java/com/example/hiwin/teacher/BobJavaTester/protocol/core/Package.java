@@ -1,8 +1,8 @@
-package com.example.hiwin.teacher.BobJavaTester.protocol;
+package com.example.hiwin.teacher.BobJavaTester.protocol.core;
 
 public abstract class Package extends PackageHeader {
 	public static enum Type {
-		ClientHello(0xe0), ServerHello(0xf0), ClientBye(0xe1), SplitData(0x03);
+		ClientHello(0xe0), ServerHello(0xf0), ClientBye(0xe1), SplitData(0x03),VerifyResponse(0x04);
 		private final int action;
 		
 		private Type(int action) {
@@ -63,26 +63,26 @@ public abstract class Package extends PackageHeader {
 		}
 	}
 
-	@Deprecated
-	public Package(byte[] importBytes) {
-		super(getPackageHeader(importBytes));
-		int cksum = toUnsignedInt(importBytes[importBytes.length - 1]);
-		int cksum_real = action + length;
-
-		data = new byte[length];
-
-		for (int i = 0; i < length; i++) {
-			data[i] = importBytes[4 + i];
-			cksum_real += data[i];
-		}
-
-		cksum_real = 0xff & cksum_real;
-
-		if (cksum_real != cksum) {
-			throw new IllegalArgumentException("Cksum is not coincide.");
-		}
-
-	}
+//	@Deprecated
+//	public Package(byte[] importBytes) {
+//		super(getPackageHeader(importBytes));
+//		int cksum = toUnsignedInt(importBytes[importBytes.length - 1]);
+//		int cksum_real = action + length;
+//
+//		data = new byte[length];
+//
+//		for (int i = 0; i < length; i++) {
+//			data[i] = importBytes[4 + i];
+//			cksum_real += data[i];
+//		}
+//
+//		cksum_real = 0xff & cksum_real;
+//
+//		if (cksum_real != cksum) {
+//			throw new IllegalArgumentException("Cksum is not coincide.");
+//		}
+//
+//	}
 
 	public byte[] toBytes() {
 		byte[] package_data = createHeaderByteArray();

@@ -1,4 +1,4 @@
-package com.example.hiwin.teacher.BobJavaTester.protocol;
+package com.example.hiwin.teacher.BobJavaTester.protocol.core.data;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;

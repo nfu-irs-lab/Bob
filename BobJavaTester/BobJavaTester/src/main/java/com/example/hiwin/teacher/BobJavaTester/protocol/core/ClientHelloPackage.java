@@ -1,4 +1,4 @@
-package com.example.hiwin.teacher.BobJavaTester.protocol;
+package com.example.hiwin.teacher.BobJavaTester.protocol.core;
 
 import java.nio.charset.StandardCharsets;
 
@@ -11,13 +11,14 @@ public class ClientHelloPackage extends Package {
         super(Package.Type.ClientHello.getAction(), setData());
         UUID=VERIFY_UUID;
     }
-    @Deprecated
-    public ClientHelloPackage(byte[] importBytes) {
-        super(importBytes);
-        if (action!=Package.Type.ClientHello.getAction())
-            throw new IllegalArgumentException("Not a ClientHelloPackage");
-        UUID = new String(getData(), StandardCharsets.UTF_8);
-    }
+    
+//    @Deprecated
+//    public ClientHelloPackage(byte[] importBytes) {
+//        super(importBytes);
+//        if (action!=Package.Type.ClientHello.getAction())
+//            throw new IllegalArgumentException("Not a ClientHelloPackage");
+//        UUID = new String(getData(), StandardCharsets.UTF_8);
+//    }
     
     public ClientHelloPackage(PackageHeader header,byte[] lackBytes) {
         super(header,lackBytes);

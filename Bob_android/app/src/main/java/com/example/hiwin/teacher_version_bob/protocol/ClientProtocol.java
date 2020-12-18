@@ -23,7 +23,9 @@ public class ClientProtocol {
     }
 
     public void receive(byte[] newData,SerialService service) {
+        Log.d("ProtocolLog","[Receive]");
         Log.d("ProtocolLog",BytesInHexString(newData));
+        Log.d("ProtocolLog","<Receive>");
         Package.Type type = Package.Type.getPackageType(newData);
         switch (type) {
             case ServerHello:
@@ -77,8 +79,12 @@ public class ClientProtocol {
         ClientHelloPackage clientHelloPackage = new ClientHelloPackage();
         byte[] data=clientHelloPackage.toBytes();
         try {
-            service.write(data);
+
+            Log.d("ProtocolLog","[Write Data]\n");
             Log.d("ProtocolLog",BytesInHexString(data));
+            Log.d("ProtocolLog","<Write Data>");
+
+            service.write(data);
         } catch (IOException e) {
             e.printStackTrace();
         }

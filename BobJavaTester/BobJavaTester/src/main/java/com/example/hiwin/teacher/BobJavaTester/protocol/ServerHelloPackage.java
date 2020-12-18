@@ -1,6 +1,7 @@
 package com.example.hiwin.teacher.BobJavaTester.protocol;
 
-import com.example.hiwin.teacher.BobJavaTester.protocol.Package.Type;
+import com.example.hiwin.teacher.BobJavaTester.protocol.core.Package;
+import com.example.hiwin.teacher.BobJavaTester.protocol.core.Package.Type;
 
 public class ServerHelloPackage extends Package {
 
@@ -34,20 +35,20 @@ public class ServerHelloPackage extends Package {
 
 	private final StatusCode statusCode;
 
-	@Deprecated
-	public ServerHelloPackage(byte[] importBytes) {
-		super(importBytes);
-		if (action != Package.Type.ServerHello.getAction())
-			throw new IllegalArgumentException("Not a ServerHelloPackage");
-		statusCode = StatusCode.getStatus(getData()[0]);
-	}
-
-	public ServerHelloPackage(PackageHeader header, byte[] lackBytes) {
-		super(header, lackBytes);
-		if (action != Package.Type.ServerHello.getAction())
-			throw new IllegalArgumentException("Not a ServerHelloPackage");
-		statusCode = StatusCode.getStatus(getData()[0]);
-	}
+//	@Deprecated
+//	public ServerHelloPackage(byte[] importBytes) {
+//		super(importBytes);
+//		if (action != Package.Type.ServerHello.getAction())
+//			throw new IllegalArgumentException("Not a ServerHelloPackage");
+//		statusCode = StatusCode.getStatus(getData()[0]);
+//	}
+//
+//	public ServerHelloPackage(PackageHeader header, byte[] lackBytes) {
+//		super(header, lackBytes);
+//		if (action != Package.Type.ServerHello.getAction())
+//			throw new IllegalArgumentException("Not a ServerHelloPackage");
+//		statusCode = StatusCode.getStatus(getData()[0]);
+//	}
 
 	public ServerHelloPackage(StatusCode statusCode) {
 		super(Package.Type.ServerHello.getAction(), setData(statusCode));

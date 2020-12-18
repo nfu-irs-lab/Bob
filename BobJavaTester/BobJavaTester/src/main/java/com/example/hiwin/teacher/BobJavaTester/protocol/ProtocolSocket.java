@@ -1,15 +1,22 @@
 package com.example.hiwin.teacher.BobJavaTester.protocol;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.concurrent.Executors;
 
-public class ProtocolSocket implements Runnable, SerialListener {
-	private DataPackage dataPackages;
+import com.example.hiwin.teacher.BobJavaTester.protocol.core.ClientHelloPackage;
+import com.example.hiwin.teacher.BobJavaTester.protocol.core.Package;
+import com.example.hiwin.teacher.BobJavaTester.protocol.core.PackageHeader;
+import com.example.hiwin.teacher.BobJavaTester.protocol.core.ProtocolListener;
+import com.example.hiwin.teacher.BobJavaTester.protocol.core.data.DataPackage;
+import com.example.hiwin.teacher.BobJavaTester.protocol.core.data.SplitDataPackage;
 
+public class ProtocolSocket implements Runnable, SerialListener {
+	static final int WRITE_DATA_RATE=10;
+	private DataPackage dataPackages;
 	public static enum ConnecttionStatus {
 		Connected, Disconnected
 	}
@@ -17,7 +24,7 @@ public class ProtocolSocket implements Runnable, SerialListener {
 	private ConnecttionStatus status;
 	private ProtocolListener pro_listener;
 	private SerialListener ser_listener;
-	private final InputStream is;
+	private InputStream is;
 	private final OutputStream os;
 
 	public ProtocolSocket(InputStream is, OutputStream os) {
@@ -28,24 +35,42 @@ public class ProtocolSocket implements Runnable, SerialListener {
 	public void connect(ProtocolListener listener) {
 		this.pro_listener = listener;
 		Executors.newSingleThreadExecutor().submit(this);
+		System.out.println("start");
 	}
 
 	public void setSerialListener(SerialListener listener) {
 		this.ser_listener = listener;
 	}
 
+	public void put(byte[] data) {
+		System.out.println("put");
+
+		synchronized (this) {
+			this.is = new ByteArrayInputStream(data);
+
+			System.out.println(is);
+		}
+	}
+
 	public void run() {
 		try {
-
-			// noinspection InfiniteLoopStatement
 			while (true) {
-				status = ConnecttionStatus.Connected;
-				byte[] headerBytes = new byte[4];
-				is.read(headerBytes);
-				PackageHeader header = new PackageHeader(headerBytes);
-				byte[] lackBytes = new byte[header.getlackBytesLength()];
-				is.read(lackBytes);
-				onSerialRead(headerBytes, lackBytes);
+				synchronized (this) {
+					if (this.is == null)
+						continue;
+
+					byte[] headerBytes = new byte[4];
+//					synchronized (is) {
+					is.read(headerBytes);
+					PackageHeader header = new PackageHeader(headerBytes);
+					byte[] lackBytes = new byte[header.getlackBytesLength()];
+					is.read(lackBytes);
+					onSerialRead(headerBytes, lackBytes);
+					if (is.available() <= 0)
+						is = null;
+//					}
+					System.out.println(is);
+				}
 
 			}
 		} catch (Exception e) {
@@ -56,7 +81,6 @@ public class ProtocolSocket implements Runnable, SerialListener {
 				is.close();
 				os.close();
 			} catch (Exception ignored) {
-
 			}
 
 		}
@@ -78,11 +102,15 @@ public class ProtocolSocket implements Runnable, SerialListener {
 	}
 
 	private void onClientHelloReceive(ClientHelloPackage clientHelloPackage) {
+		if (isConnected())
+			return;
 		ServerHelloPackage serverHelloPackage = null;
 		if (clientHelloPackage.verify()) {
 			serverHelloPackage = new ServerHelloPackage(ServerHelloPackage.StatusCode.ALLOW);
+			status = ConnecttionStatus.Connected;
 		} else {
 			serverHelloPackage = new ServerHelloPackage(ServerHelloPackage.StatusCode.DENY);
+			status = ConnecttionStatus.Disconnected;
 		}
 
 		try {
@@ -144,18 +172,22 @@ public class ProtocolSocket implements Runnable, SerialListener {
 	}
 
 	public void write(byte[] data) throws InterruptedException, IOException {
+		if (!isConnected())
+			return;
 		ArrayList<SplitDataPackage> datas = DataPackage.splitPackage(data);
 		for (int i = 0; i < datas.size(); i++) {
 			write(datas.get(i));
-			Thread.sleep(1);
+			Thread.sleep(WRITE_DATA_RATE);
 		}
 	}
 
 	private void write(Package _package) throws IOException {
+//		synchronized (os) {
 		print("[Write Data]\n");
 		print(BytesInHexString(_package.toBytes()));
 		print("\n");
 		os.write(_package.toBytes());
+//		}
 	}
 
 	String BytesInHexString(byte[] raw) {
@@ -173,4 +205,11 @@ public class ProtocolSocket implements Runnable, SerialListener {
 		System.out.print(str);
 	}
 
+	public ConnecttionStatus getStatus() {
+		return status;
+	}
+
+	public boolean isConnected() {
+		return status == ConnecttionStatus.Connected;
+	}
 }

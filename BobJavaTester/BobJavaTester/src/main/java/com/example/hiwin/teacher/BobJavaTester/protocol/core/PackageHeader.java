@@ -1,4 +1,4 @@
-package com.example.hiwin.teacher.BobJavaTester.protocol;
+package com.example.hiwin.teacher.BobJavaTester.protocol.core;
 
 public class PackageHeader {
 	/**
@@ -24,7 +24,7 @@ public class PackageHeader {
 		this.lackBytesLength=length+1;
 	}
 
-	PackageHeader(byte[] header) {
+	public PackageHeader(byte[] header) {
 		if(header.length>4||header.length<=0)
 			throw new IllegalArgumentException("Header size is incorrect:"+header.length);
 		

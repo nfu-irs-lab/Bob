@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import com.example.hiwin.teacher.BobJavaTester.protocol.ServerHelloPackage.StatusCode;
+import com.example.hiwin.teacher.BobJavaTester.protocol.core.Package;
+import com.example.hiwin.teacher.BobJavaTester.protocol.core.ProtocolListener;
 
 public class ServerProtocol {
 	private ProtocolListener listener;
@@ -42,7 +44,7 @@ public class ServerProtocol {
 		Package.Type type = Package.Type.getPackageType(newData);
 		switch (type) {
 		case ClientHello:
-			OnReceiveClientHello(newData, os);
+//			OnReceiveClientHello(newData, os);
 			break;
 		case ClientBye:
 			listener.OnProtocolDisconnected();
@@ -62,30 +64,30 @@ public class ServerProtocol {
 		System.out.print("]\n");
 	}
 
-	private void OnReceiveClientHello(byte[] data, OutputStream out) {
-		ServerHelloPackage sh;
-		ClientHelloPackage ch =null;
-		try {
-			ch = new ClientHelloPackage(data);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		if (ch.verify()) {
-			System.out.println("Client Hello");
-			sh = new ServerHelloPackage(StatusCode.ALLOW);
-			listener.OnProtocolConnected();
-		} else {
-			sh = new ServerHelloPackage(StatusCode.NOT_SUPPORT);
-//			listener.OnProtocolDisconnected(StatusCode.NOT_SUPPORT);
-		}
-
-		try {
-			out.write(sh.toBytes());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+//	private void OnReceiveClientHello(byte[] data, OutputStream out) {
+//		ServerHelloPackage sh;
+//		ClientHelloPackage ch =null;
+//		try {
+//			ch = new ClientHelloPackage(data);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		
+//		if (ch.verify()) {
+//			System.out.println("Client Hello");
+//			sh = new ServerHelloPackage(StatusCode.ALLOW);
+//			listener.OnProtocolConnected();
+//		} else {
+//			sh = new ServerHelloPackage(StatusCode.NOT_SUPPORT);
+////			listener.OnProtocolDisconnected(StatusCode.NOT_SUPPORT);
+//		}
+//
+//		try {
+//			out.write(sh.toBytes());
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
 
 }

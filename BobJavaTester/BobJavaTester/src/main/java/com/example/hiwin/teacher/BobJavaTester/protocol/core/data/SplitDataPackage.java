@@ -1,9 +1,13 @@
-package com.example.hiwin.teacher.BobJavaTester.protocol;
+package com.example.hiwin.teacher.BobJavaTester.protocol.core.data;
 
 
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
+
+import com.example.hiwin.teacher.BobJavaTester.protocol.core.Package;
+import com.example.hiwin.teacher.BobJavaTester.protocol.core.PackageHeader;
+import com.example.hiwin.teacher.BobJavaTester.protocol.core.Package.Type;
 
 public class SplitDataPackage extends Package {
     private final int index;
@@ -14,15 +18,15 @@ public class SplitDataPackage extends Package {
         this.index = index;
         this.total = total;
     }
-    @Deprecated
-    public SplitDataPackage(byte[] importBytes) {
-        super(importBytes);
-        if (action!=Package.Type.SplitData.getAction())
-            throw new IllegalArgumentException("Not a SplitDataPackage");
-        
-        this.index = super.getData()[0];
-        this.total =  super.getData()[1];
-    }
+//    @Deprecated
+//    public SplitDataPackage(byte[] importBytes) {
+//        super(importBytes);
+//        if (action!=Package.Type.SplitData.getAction())
+//            throw new IllegalArgumentException("Not a SplitDataPackage");
+//        
+//        this.index = super.getData()[0];
+//        this.total =  super.getData()[1];
+//    }
 
     public SplitDataPackage(PackageHeader header, byte[] lackBytes) {
 		super(header, lackBytes);
@@ -43,7 +47,7 @@ public class SplitDataPackage extends Package {
     }
 
     @Override
-    protected byte[] getData() {
+    public byte[] getData() {
         byte[] data= super.getData();
         byte[] newbytes = new byte[data.length - 2];
         for (int i = 2; i < data.length; i++) {

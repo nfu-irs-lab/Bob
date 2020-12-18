@@ -7,10 +7,10 @@ import java.util.Base64;
 import java.util.Scanner;
 import java.util.Base64.Encoder;
 
-import com.example.hiwin.teacher.BobJavaTester.protocol.DataPackage;
-import com.example.hiwin.teacher.BobJavaTester.protocol.ProtocolListener;
 import com.example.hiwin.teacher.BobJavaTester.protocol.ServerProtocol;
-import com.example.hiwin.teacher.BobJavaTester.protocol.SplitDataPackage;
+import com.example.hiwin.teacher.BobJavaTester.protocol.core.ProtocolListener;
+import com.example.hiwin.teacher.BobJavaTester.protocol.core.data.DataPackage;
+import com.example.hiwin.teacher.BobJavaTester.protocol.core.data.SplitDataPackage;
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortDataListener;
 import com.fazecast.jSerialComm.SerialPortEvent;
