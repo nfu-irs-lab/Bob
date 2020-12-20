@@ -22,9 +22,6 @@ import android.widget.Toast;
 import com.example.hiwin.teacher_version_bob.communication.SerialListener;
 import com.example.hiwin.teacher_version_bob.communication.SerialService;
 import com.example.hiwin.teacher_version_bob.communication.SerialSocket;
-import com.example.hiwin.teacher_version_bob.protocol.ClientHelloPackage;
-import com.example.hiwin.teacher_version_bob.protocol.Package;
-import com.example.hiwin.teacher_version_bob.protocol.ServerHelloPackage;
 
 import java.io.IOException;
 import java.util.Locale;

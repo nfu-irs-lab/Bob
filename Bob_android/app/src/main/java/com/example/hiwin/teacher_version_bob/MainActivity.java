@@ -22,17 +22,18 @@ import android.widget.Toast;
 import com.example.hiwin.teacher_version_bob.communication.SerialListener;
 import com.example.hiwin.teacher_version_bob.communication.SerialService;
 import com.example.hiwin.teacher_version_bob.communication.SerialSocket;
-import com.example.hiwin.teacher_version_bob.protocol.ClientProtocol;
-import com.example.hiwin.teacher_version_bob.protocol.ProtocolListener;
-import com.example.hiwin.teacher_version_bob.protocol.ServerHelloPackage;
+import com.example.hiwin.teacher_version_bob.protocol.ProtocolSocket;
+import com.example.hiwin.teacher_version_bob.protocol.core.ClientHelloPackage;
+import com.example.hiwin.teacher_version_bob.protocol.core.ProtocolListener;
+import com.example.hiwin.teacher_version_bob.protocol.core.ServerHelloPackage;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
 
@@ -67,12 +68,14 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
     private boolean initialStart = true;
     private Connected connected = Connected.False;
-    private ClientProtocol clientProtocol;
+    //    private ClientProtocol clientProtocol;
+    ProtocolSocket protocolSocket;
     private ListView listView;
     private DetectedObjectAdapter adapter;
-    private  ArrayList<HashMap<String,Object>> detectedObjects=new ArrayList<>();
+    private ArrayList<HashMap<String, Object>> detectedObjects = new ArrayList<>();
 
     private TextToSpeech textToSpeech;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,10 +84,73 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         setSupportActionBar(toolbar);
         context = this;
 
-        adapter=new DetectedObjectAdapter(context,detectedObjects);
+        adapter = new DetectedObjectAdapter(context, detectedObjects);
 
-        listView=(ListView)findViewById(R.id.main_object_list);
+        listView = (ListView) findViewById(R.id.main_object_list);
         listView.setAdapter(adapter);
+
+        protocolSocket = new ProtocolSocket();
+        protocolSocket.connect(new ProtocolListener() {
+            @Override
+            public void OnProtocolConnected() {
+
+            }
+
+            @Override
+            public void OnProtocolDisconnected() {
+
+            }
+
+            @Override
+            public void OnReceiveDataPackage(byte[] data) {
+                Log.d("MainActivityLog",BytesInHexString(data));
+
+                String base64str=new String(data, StandardCharsets.UTF_8);
+                byte[] rawBytes= Base64.decode(base64str,Base64.DEFAULT);
+                final String rawString=new String(rawBytes, StandardCharsets.UTF_8);
+
+                Log.d("MainActivityLog",rawString);
+                Log.d("ProtocolLog",rawString);
+                                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(adapter!=null){
+                            try {
+                                JSONArray array=new JSONArray(rawString);
+                                detectedObjects.clear();
+
+                                for(int i=0;i<array.length();i++){
+                                    JSONObject object=array.getJSONObject(i);
+                                    HashMap<String,Object> t=new HashMap<>();
+                                    t.put("name",object.getString("name"));
+                                    t.put("number",object.getString("number"));
+                                    detectedObjects.add(t);
+                                }
+                                adapter=new DetectedObjectAdapter(context,detectedObjects);
+
+                                listView.setAdapter(adapter);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                });
+
+            }
+
+            @Override
+            public void OnWrite(byte[] data) {
+                try {
+
+                    status("[Write]");
+                    status(BytesInHexString(data));
+                    status("<Write>");
+                    service.write(data);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
         textToSpeech = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
             @Override
@@ -101,7 +167,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 //        OnCreate
         Intent it = getIntent();
         deviceAddress = it.getStringExtra("address");
-
 
     }
 
@@ -140,65 +205,65 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         service = ((SerialService.SerialBinder) binder).getService();
         service.attach(serialListener);
 
-        clientProtocol=new ClientProtocol();
-        clientProtocol.attach(new ProtocolListener() {
-            @Override
-            public void OnProtocolConnected() {
-                Toast.makeText(MainActivity.this,"Connected",Toast.LENGTH_SHORT).show();
-                setMenuConnectionStatus(connected);
-            }
-
-            @Override
-            public void OnProtocolDisconnected() {
-
-            }
-
-            @Override
-            public void OnConnectionRejected(ServerHelloPackage.StatusCode statusCode) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        finish();
-                    }
-                });
-            }
-
-
-
-            @Override
-            public void OnReceiveData(byte[] data) {
-
-                String base64str=new String(data, StandardCharsets.UTF_8);
-                byte[] rawBytes= Base64.decode(base64str,Base64.DEFAULT);
-                final String rawString=new String(rawBytes, StandardCharsets.UTF_8);
-                Log.d("ProtocolLog",rawString);
-                                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(adapter!=null){
-                            try {
-                                JSONArray array=new JSONArray(rawString);
-                                detectedObjects.clear();
-
-                                for(int i=0;i<array.length();i++){
-                                    JSONObject object=array.getJSONObject(i);
-                                    HashMap<String,Object> t=new HashMap<>();
-                                    t.put("name",object.getString("name"));
-                                    t.put("number",object.getString("number"));
-                                    detectedObjects.add(t);
-                                }
-                                adapter=new DetectedObjectAdapter(context,detectedObjects);
-
-                                listView.setAdapter(adapter);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                });
-
-            }
-        });
+//        clientProtocol=new ClientProtocol();
+//        clientProtocol.attach(new ProtocolListener() {
+//            @Override
+//            public void OnProtocolConnected() {
+//                Toast.makeText(MainActivity.this,"Connected",Toast.LENGTH_SHORT).show();
+//                setMenuConnectionStatus(connected);
+//            }
+//
+//            @Override
+//            public void OnProtocolDisconnected() {
+//
+//            }
+//
+//            @Override
+//            public void OnConnectionRejected(ServerHelloPackage.StatusCode statusCode) {
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        finish();
+//                    }
+//                });
+//            }
+//
+//
+//
+//            @Override
+//            public void OnReceiveData(byte[] data) {
+//
+//                String base64str=new String(data, StandardCharsets.UTF_8);
+//                byte[] rawBytes= Base64.decode(base64str,Base64.DEFAULT);
+//                final String rawString=new String(rawBytes, StandardCharsets.UTF_8);
+//                Log.d("ProtocolLog",rawString);
+//                                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        if(adapter!=null){
+//                            try {
+//                                JSONArray array=new JSONArray(rawString);
+//                                detectedObjects.clear();
+//
+//                                for(int i=0;i<array.length();i++){
+//                                    JSONObject object=array.getJSONObject(i);
+//                                    HashMap<String,Object> t=new HashMap<>();
+//                                    t.put("name",object.getString("name"));
+//                                    t.put("number",object.getString("number"));
+//                                    detectedObjects.add(t);
+//                                }
+//                                adapter=new DetectedObjectAdapter(context,detectedObjects);
+//
+//                                listView.setAdapter(adapter);
+//                            } catch (JSONException e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                    }
+//                });
+//
+//            }
+//        });
 
 
         if (initialStart) {
@@ -296,7 +361,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         public void onSerialConnect() {
             status("connected");
             connected = Connected.True;
-            clientProtocol.connect(service);
+            protocolSocket.write(new ClientHelloPackage());
 
         }
 
@@ -311,7 +376,10 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
         @Override
         public void onSerialRead(byte[] data) {
-            clientProtocol.receive(data,service);
+            status("[Read]");
+            status(BytesInHexString(data));
+            protocolSocket.put(data);
+            status("<Read>");
         }
 
         @Override
@@ -320,6 +388,16 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             disconnect();
 //        finish();
         }
-
     };
+
+    String BytesInHexString(byte[] raw) {
+        StringBuffer sb = new StringBuffer();
+
+        sb.append("{");
+        for (byte b : raw) {
+            sb.append("0x").append(Integer.toHexString(b & 0xFF)).append(",");
+        }
+        sb.append("}");
+        return sb.toString();
+    }
 }

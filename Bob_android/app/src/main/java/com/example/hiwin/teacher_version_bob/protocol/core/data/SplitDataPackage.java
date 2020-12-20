@@ -1,29 +1,43 @@
-package com.example.hiwin.teacher_version_bob.protocol;
+package com.example.hiwin.teacher_version_bob.protocol.core.data;
 
 
+
+import com.example.hiwin.teacher_version_bob.protocol.core.Package;
+import com.example.hiwin.teacher_version_bob.protocol.core.PackageHeader;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
+
 
 public class SplitDataPackage extends Package {
     private final int index;
     private final int total;
 
     public SplitDataPackage(byte[] data, int index, int total) {
-        super(Package.Type.SplitData.getAction(), setData(data, index, total));
+        super(Type.SplitData.getAction(), setData(data, index, total));
         this.index = index;
         this.total = total;
     }
+//    @Deprecated
+//    public SplitDataPackage(byte[] importBytes) {
+//        super(importBytes);
+//        if (action!=Package.Type.SplitData.getAction())
+//            throw new IllegalArgumentException("Not a SplitDataPackage");
+//        
+//        this.index = super.getData()[0];
+//        this.total =  super.getData()[1];
+//    }
 
-    public SplitDataPackage(byte[] importBytes) {
-        super(importBytes);
-        if (action!=Package.Type.SplitData.getAction())
+    public SplitDataPackage(PackageHeader header, byte[] lackBytes) {
+		super(header, lackBytes);
+        if (action!= Type.SplitData.getAction())
             throw new IllegalArgumentException("Not a SplitDataPackage");
         
         this.index = super.getData()[0];
         this.total =  super.getData()[1];
     }
-
+    
+    
     public int getIndex() {
         return index;
     }
@@ -33,7 +47,7 @@ public class SplitDataPackage extends Package {
     }
 
     @Override
-    protected byte[] getData() {
+    public byte[] getData() {
         byte[] data= super.getData();
         byte[] newbytes = new byte[data.length - 2];
         for (int i = 2; i < data.length; i++) {

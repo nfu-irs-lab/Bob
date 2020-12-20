@@ -1,4 +1,4 @@
-package com.example.hiwin.teacher_version_bob.protocol;
+package com.example.hiwin.teacher_version_bob.protocol.core;
 
 import java.nio.charset.StandardCharsets;
 
@@ -11,9 +11,17 @@ public class ClientHelloPackage extends Package {
         super(Package.Type.ClientHello.getAction(), setData());
         UUID=VERIFY_UUID;
     }
-
-    public ClientHelloPackage(byte[] importBytes) {
-        super(importBytes);
+    
+//    @Deprecated
+//    public ClientHelloPackage(byte[] importBytes) {
+//        super(importBytes);
+//        if (action!=Package.Type.ClientHello.getAction())
+//            throw new IllegalArgumentException("Not a ClientHelloPackage");
+//        UUID = new String(getData(), StandardCharsets.UTF_8);
+//    }
+    
+    public ClientHelloPackage(PackageHeader header,byte[] lackBytes) {
+        super(header,lackBytes);
         if (action!= Package.Type.ClientHello.getAction())
             throw new IllegalArgumentException("Not a ClientHelloPackage");
         UUID = new String(getData(), StandardCharsets.UTF_8);
@@ -27,6 +35,9 @@ public class ClientHelloPackage extends Package {
     private static byte[] setData() {
         return VERIFY_UUID.getBytes(StandardCharsets.UTF_8);
     }
+    public String getUUID() {
+		return UUID;
+	}
 
 
 }

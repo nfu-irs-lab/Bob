@@ -1,4 +1,4 @@
-package com.example.hiwin.teacher.BobJavaTester.protocol.core;
+package com.example.hiwin.teacher_version_bob.protocol.core;
 
 public interface ProtocolListener {
     public void OnProtocolConnected();

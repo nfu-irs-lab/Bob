@@ -1,8 +1,6 @@
 package com.example.hiwin.teacher_version_bob;
 
-import com.example.hiwin.teacher_version_bob.protocol.ClientHelloPackage;
 import com.example.hiwin.teacher_version_bob.protocol.DataPackage;
-import com.example.hiwin.teacher_version_bob.protocol.ServerHelloPackage;
 import com.example.hiwin.teacher_version_bob.protocol.SplitDataPackage;
 
 import org.junit.Test;

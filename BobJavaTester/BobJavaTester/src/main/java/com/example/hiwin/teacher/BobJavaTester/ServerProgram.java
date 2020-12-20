@@ -2,6 +2,7 @@ package com.example.hiwin.teacher.BobJavaTester;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -10,15 +11,16 @@ import com.example.hiwin.teacher.BobJavaTester.protocol.ProtocolSocket;
 import com.example.hiwin.teacher.BobJavaTester.protocol.core.ProtocolListener;
 import com.fazecast.jSerialComm.SerialPort;
 
-public class MainProgram2 {
+public class ServerProgram {
 	ProtocolSocket socket;
-
-	public MainProgram2() throws IOException, InterruptedException {
+	OutputStream os;
+	public ServerProgram() throws IOException, InterruptedException {
 
 		final SerialPort comPort = SerialPort.getCommPort("COM3");
 		comPort.openPort();
 		comPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 0, 0);
-		socket = new ProtocolSocket(null,comPort.getOutputStream());
+		socket = new ProtocolSocket();
+		os=comPort.getOutputStream();
 		socket.connect(listener);
 		
 		new Thread(new Runnable() {
@@ -44,22 +46,19 @@ public class MainProgram2 {
 
 		Scanner scr = new Scanner(System.in);
 		while (comPort.isOpen()) {
-//			String msg = scr.nextLine();
 			if(socket.isConnected()) {
 				System.out.println("Main Thread");
-				String msg="WwogIHsKICAibmFtZSI6ImFwcGxlIiwKICAibnVtYmVyIjozCiAgfSwKICB7CiAgICAibmFtZSI6InBlbiIsCiAgICAibnVtYmVyIjo0CiAgfSx7CiAgICAibmFtZSI6ImZ1Y2siLAogICAgIm51bWJlciI6NQogICAgCiAgfQpd";
-				
+//				WwogIHsKICAibmFtZSI6ImFwcGxlIiwKICAibnVtYmVyIjozCiAgfSwKICB7CiAgICAibmFtZSI6InBlbiIsCiAgICAibnVtYmVyIjo0CiAgfSx7CiAgICAibmFtZSI6ImZ1Y2siLAogICAgIm51bWJlciI6NQogICAgCiAgfQpd
+				String msg = scr.nextLine();
 				byte[] data = msg.getBytes(StandardCharsets.UTF_8);
-
 				socket.write(data);
-				Thread.sleep(5000);
 			}
 		}
 		comPort.closePort();
 	}
 
 	public static void main(String[] args) throws Exception {
-		new MainProgram2();
+		new ServerProgram();
 	}
 
 	private ProtocolListener listener = new ProtocolListener() {
@@ -73,10 +72,20 @@ public class MainProgram2 {
 		}
 
 		public void OnReceiveDataPackage(byte[] data) {
-
+			
 		}
-
+		
+		public void OnWrite(byte[] data) {
+			try {
+				os.write(data);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
 	};
+	
 	String BytesInHexString(byte[] raw) {
 		StringBuffer sb = new StringBuffer();
 

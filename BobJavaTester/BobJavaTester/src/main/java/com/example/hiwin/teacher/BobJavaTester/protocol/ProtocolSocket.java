@@ -5,18 +5,22 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.concurrent.Executors;
 
 import com.example.hiwin.teacher.BobJavaTester.protocol.core.ClientHelloPackage;
 import com.example.hiwin.teacher.BobJavaTester.protocol.core.Package;
 import com.example.hiwin.teacher.BobJavaTester.protocol.core.PackageHeader;
 import com.example.hiwin.teacher.BobJavaTester.protocol.core.ProtocolListener;
+import com.example.hiwin.teacher.BobJavaTester.protocol.core.ServerHelloPackage;
+import com.example.hiwin.teacher.BobJavaTester.protocol.core.VerifyResponsePackage;
+import com.example.hiwin.teacher.BobJavaTester.protocol.core.VerifyResponsePackage.Verify;
 import com.example.hiwin.teacher.BobJavaTester.protocol.core.data.DataPackage;
 import com.example.hiwin.teacher.BobJavaTester.protocol.core.data.SplitDataPackage;
 
 public class ProtocolSocket implements Runnable, SerialListener {
-	static final int WRITE_DATA_RATE=10;
-	private DataPackage dataPackages;
+	static final int WRITE_DATA_RATE = 100;
+
 	public static enum ConnecttionStatus {
 		Connected, Disconnected
 	}
@@ -25,17 +29,14 @@ public class ProtocolSocket implements Runnable, SerialListener {
 	private ProtocolListener pro_listener;
 	private SerialListener ser_listener;
 	private InputStream is;
-	private final OutputStream os;
+	private DataPackage dataPackages;
 
-	public ProtocolSocket(InputStream is, OutputStream os) {
-		this.os = os;
-		this.is = is;
-	}
+	LinkedList<SplitDataPackage> tasks = null;
 
 	public void connect(ProtocolListener listener) {
 		this.pro_listener = listener;
 		Executors.newSingleThreadExecutor().submit(this);
-		System.out.println("start");
+		print("start\n");
 	}
 
 	public void setSerialListener(SerialListener listener) {
@@ -43,24 +44,36 @@ public class ProtocolSocket implements Runnable, SerialListener {
 	}
 
 	public void put(byte[] data) {
-		System.out.println("put");
+		print("Put data to inputstream.\n");
 
 		synchronized (this) {
 			this.is = new ByteArrayInputStream(data);
-
-			System.out.println(is);
 		}
 	}
 
 	public void run() {
 		try {
+			long send_timer = -1;
+			int index = -1;
 			while (true) {
+				if (tasks != null && tasks.size() != 0) {
+
+					if (System.currentTimeMillis() >= send_timer) {
+						SplitDataPackage _package = tasks.getFirst();
+						if (index != _package.getIndex()) {
+							index = _package.getIndex();
+							write(_package);
+							send_timer = System.currentTimeMillis() + WRITE_DATA_RATE;
+						}
+					}
+
+				}
+
 				synchronized (this) {
 					if (this.is == null)
 						continue;
 
 					byte[] headerBytes = new byte[4];
-//					synchronized (is) {
 					is.read(headerBytes);
 					PackageHeader header = new PackageHeader(headerBytes);
 					byte[] lackBytes = new byte[header.getlackBytesLength()];
@@ -68,8 +81,6 @@ public class ProtocolSocket implements Runnable, SerialListener {
 					onSerialRead(headerBytes, lackBytes);
 					if (is.available() <= 0)
 						is = null;
-//					}
-					System.out.println(is);
 				}
 
 			}
@@ -79,8 +90,9 @@ public class ProtocolSocket implements Runnable, SerialListener {
 			onSerialIoError(e);
 			try {
 				is.close();
-				os.close();
+//				os.close();
 			} catch (Exception ignored) {
+
 			}
 
 		}
@@ -88,15 +100,18 @@ public class ProtocolSocket implements Runnable, SerialListener {
 	}
 
 	private void onSplitDataReceive(SplitDataPackage splitDataPackage) {
-		if (dataPackages.size() == 0 && splitDataPackage.getIndex() != 0)
-			return;
+		if (splitDataPackage.getIndex() == 0) {
+			dataPackages = new DataPackage();
+		}
 
 		if (dataPackages != null) {
+			if (dataPackages.size() == 0 && splitDataPackage.getIndex() != 0)
+				return;
 			dataPackages.add(splitDataPackage);
 
 			if (dataPackages.isComplete()) {
 				pro_listener.OnReceiveDataPackage(dataPackages.getData());
-				dataPackages.clear();
+				dataPackages = null;
 			}
 		}
 	}
@@ -104,6 +119,7 @@ public class ProtocolSocket implements Runnable, SerialListener {
 	private void onClientHelloReceive(ClientHelloPackage clientHelloPackage) {
 		if (isConnected())
 			return;
+
 		ServerHelloPackage serverHelloPackage = null;
 		if (clientHelloPackage.verify()) {
 			serverHelloPackage = new ServerHelloPackage(ServerHelloPackage.StatusCode.ALLOW);
@@ -113,13 +129,9 @@ public class ProtocolSocket implements Runnable, SerialListener {
 			status = ConnecttionStatus.Disconnected;
 		}
 
-		try {
-			write(serverHelloPackage);
-			if (pro_listener != null)
-				pro_listener.OnProtocolConnected();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		write(serverHelloPackage);
+		if (pro_listener != null)
+			pro_listener.OnProtocolConnected();
 	}
 
 	public void onSerialRead(byte[] headerBytes, byte[] lackBytes) {
@@ -139,13 +151,52 @@ public class ProtocolSocket implements Runnable, SerialListener {
 		print("\n\n\n");
 
 		switch (type) {
+		case ServerHello:
+			ServerHelloPackage serverHelloPackage = new ServerHelloPackage(header, lackBytes);
+
+			status = serverHelloPackage.getStatusCode() == ServerHelloPackage.StatusCode.ALLOW
+					? ConnecttionStatus.Connected
+					: ConnecttionStatus.Disconnected;
+			break;
+
 		case ClientHello:
 			ClientHelloPackage clientHelloPackage = new ClientHelloPackage(header, lackBytes);
 			onClientHelloReceive(clientHelloPackage);
 			break;
 		case SplitData:
-			SplitDataPackage splitDataPackage = new SplitDataPackage(header, lackBytes);
-			onSplitDataReceive(splitDataPackage);
+			try {
+				SplitDataPackage splitDataPackage = new SplitDataPackage(header, lackBytes);
+
+				VerifyResponsePackage verifyResponsePackage = new VerifyResponsePackage(
+						VerifyResponsePackage.Verify.OK);
+				if (pro_listener != null) {
+					pro_listener.OnWrite(verifyResponsePackage.toBytes());
+				}
+				onSplitDataReceive(splitDataPackage);
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+				VerifyResponsePackage verifyResponsePackage = new VerifyResponsePackage(
+						VerifyResponsePackage.Verify.FAIL);
+				if (pro_listener != null) {
+					pro_listener.OnWrite(verifyResponsePackage.toBytes());
+				}
+			}
+
+			break;
+		case VerifyResponse:
+			VerifyResponsePackage verifyResponsePackage=new VerifyResponsePackage(Verify.FAIL);
+			try {
+				verifyResponsePackage = new VerifyResponsePackage(header, lackBytes);
+			}catch(IllegalArgumentException e) {
+				printE(e.getMessage());
+			}
+			
+			if (verifyResponsePackage.verify()) {
+				synchronized (this) {
+					if(!tasks.isEmpty())
+						tasks.removeFirst();
+				}
+			}
 			break;
 		default:
 
@@ -175,19 +226,18 @@ public class ProtocolSocket implements Runnable, SerialListener {
 		if (!isConnected())
 			return;
 		ArrayList<SplitDataPackage> datas = DataPackage.splitPackage(data);
-		for (int i = 0; i < datas.size(); i++) {
-			write(datas.get(i));
-			Thread.sleep(WRITE_DATA_RATE);
+		synchronized (this) {
+			this.tasks = new LinkedList<SplitDataPackage>(datas);
 		}
 	}
 
-	private void write(Package _package) throws IOException {
-//		synchronized (os) {
+	public synchronized void write(Package _package) {
 		print("[Write Data]\n");
 		print(BytesInHexString(_package.toBytes()));
 		print("\n");
-		os.write(_package.toBytes());
-//		}
+		if (pro_listener != null) {
+			pro_listener.OnWrite(_package.toBytes());
+		}
 	}
 
 	String BytesInHexString(byte[] raw) {
@@ -201,15 +251,19 @@ public class ProtocolSocket implements Runnable, SerialListener {
 		return sb.toString();
 	}
 
-	public static void print(String str) {
-		System.out.print(str);
-	}
-
 	public ConnecttionStatus getStatus() {
 		return status;
 	}
 
-	public boolean isConnected() {
+	public synchronized boolean isConnected() {
 		return status == ConnecttionStatus.Connected;
+	}
+
+	public static void print(String str) {
+		System.out.print(str);
+	}
+	
+	public static void printE(String str) {
+		System.err.print(str);
 	}
 }

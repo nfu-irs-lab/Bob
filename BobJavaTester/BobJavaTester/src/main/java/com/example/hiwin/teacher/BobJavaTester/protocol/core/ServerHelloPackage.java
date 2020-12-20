@@ -1,7 +1,4 @@
-package com.example.hiwin.teacher.BobJavaTester.protocol;
-
-import com.example.hiwin.teacher.BobJavaTester.protocol.core.Package;
-import com.example.hiwin.teacher.BobJavaTester.protocol.core.Package.Type;
+package com.example.hiwin.teacher.BobJavaTester.protocol.core;
 
 public class ServerHelloPackage extends Package {
 
@@ -43,12 +40,12 @@ public class ServerHelloPackage extends Package {
 //		statusCode = StatusCode.getStatus(getData()[0]);
 //	}
 //
-//	public ServerHelloPackage(PackageHeader header, byte[] lackBytes) {
-//		super(header, lackBytes);
-//		if (action != Package.Type.ServerHello.getAction())
-//			throw new IllegalArgumentException("Not a ServerHelloPackage");
-//		statusCode = StatusCode.getStatus(getData()[0]);
-//	}
+	public ServerHelloPackage(PackageHeader header, byte[] lackBytes) {
+		super(header, lackBytes);
+		if (action != Package.Type.ServerHello.getAction())
+			throw new IllegalArgumentException("Not a ServerHelloPackage");
+		statusCode = StatusCode.getStatus(getData()[0]);
+	}
 
 	public ServerHelloPackage(StatusCode statusCode) {
 		super(Package.Type.ServerHello.getAction(), setData(statusCode));

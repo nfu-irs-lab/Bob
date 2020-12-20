@@ -1,11 +1,11 @@
-package com.example.hiwin.teacher.BobJavaTester.protocol.core.data;
+package com.example.hiwin.teacher_version_bob.protocol.core.data;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class DataPackage extends ArrayList<SplitDataPackage> {
-    static final int SPLIT_SIZE=50;
-//	static final int SPLIT_SIZE = 2;
+//    static final int SPLIT_SIZE=253;
+	static final int SPLIT_SIZE = 50;
 	
 	public byte[] getData() {
 		ArrayList<Byte> newData = new ArrayList<Byte>();
