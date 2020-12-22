@@ -41,6 +41,14 @@ class MyTestCase(unittest.TestCase):
             packages2.insert(package.index,package)
         print(packages2.getData())
 
+    def test_pacjtest(self):
+        package=pro.Package(action=0xe0,data=[1,2,3,4,0xee,0xff])
+        dumpByteInHex(package.toBytes())
+        dumpByteInHex(package.toBytes()[0:4])
+        dumpByteInHex(package.toBytes()[4:])
+        header=pro.PackageHeader(header=package.toBytes()[0:4])
+        package2=pro.Package(header=header,lackBytes=package.toBytes()[4:])
+        dumpByteInHex(package2.toBytes())
 
 if __name__ == '__main__':
     unittest.main()

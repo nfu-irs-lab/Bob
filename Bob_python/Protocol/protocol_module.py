@@ -4,21 +4,47 @@ VERIFY_UUID = "30b09b66-33d4-11eb-adc1-0242ac120002"
 SPLIT_SIZE = 253
 
 
-# class Protocol(metaclass=abc.ABCMeta):
-
-class Package:
-    def __init__(self, rawbytes=None, action=None, data=None):
-        if action and data:
-            self._data = data
+class PackageHeader:
+    def __init__(self, action=None, length=None, header=None):
+        if action and length:
+            if action < 0 or action > 255:
+                print("action error")
             self.action = action
-            self.length = len(data)
-        elif rawbytes:
-            if rawbytes[0] != 0xff or rawbytes[1] != 0xef:
-                print("Header is not coincide")
-            self.action = int(rawbytes[2])
-            self.length = int(rawbytes[3])
-            cksum = int(rawbytes[-1])
-            self._data = rawbytes[4:-1]
+            self.length = length
+            self.lackBytesLength = length + 1
+        elif header:
+            if len(header) > 4 or len(header) <= 0:
+                print("header error")
+            self.action = header[2]
+            self.length = header[3]
+            self.lackBytesLength = self.length + 1
+
+    def createHeaderByteArray(self):
+        package_data = bytearray(4 + self.lackBytesLength)
+        package_data[0] = 0xff
+        package_data[1] = 0xef
+        package_data[2] = self.action
+        package_data[3] = self.length
+        return package_data
+
+    @staticmethod
+    def getPackageHeader(rawbytes):
+        header = rawbytes[0:4]
+        return header
+
+
+# class Protocol(metaclass=abc.ABCMeta):
+class Package(PackageHeader):
+    def __init__(self, header=None, lackBytes=None, action=None, data=None):
+        if action and data:
+            super(Package, self).__init__(action=action, length=len(data))
+            self._data = data
+        elif header and lackBytes:
+            super(Package, self).__init__(action=header.action, length=header.length)
+            self._data = bytearray(self.length)
+            cksum = int(lackBytes[-1])
+            self._data = lackBytes[0:-1]
+
             cksum_real = 0b11111111 & (self.action + self.length + sum(self._data))
 
             if cksum_real != cksum:
@@ -27,26 +53,56 @@ class Package:
             print("nothing...........")
 
     def toBytes(self):
-        package_data = bytearray(5 + self.length)
-        package_data[0] = 0xff
-        package_data[1] = 0xef
-        package_data[2] = self.action
-        package_data[3] = self.length
-        package_data[4:len(package_data) - 1] = self._data[0:]
-        # byte
+        package_data = self.createHeaderByteArray()
+        package_data[4:-1] = self._data
         cksum = self.action + self.length + sum(self._data)
         package_data[len(package_data) - 1] = 0b11111111 & cksum
         return package_data
 
 
-class ClientHelloPackage(Package):
-    def __init__(self, rawbytes=None):
+class PackageType(Enum):
+    ClientHello = 0xe0
+    ServerHello = 0xf0
+    ClientBye = 0xe1
+    SplitData = 0x03
+    VerifyResponse = 0x04
+
+    @staticmethod
+    def values():
+        return list(PackageType)
+
+    @staticmethod
+    def getPackageType(rawbytes=None, header=None):
+        package_header = None
         if rawbytes:
-            super().__init__(rawbytes=rawbytes)
-            self.UUID = self._data.decode("UTF-8")
+            package_header = PackageHeader(rawbytes)
+
+        elif header:
+            package_header = header
+
+        type_list = PackageType.values()
+        for type in type_list:
+            if package_header.action == type.value:
+                return package_header
+
+# ############################################################
+class ClientHelloPackage(Package):
+    # def __init__(self, rawbytes=None):
+    #     if rawbytes:
+    #         super().__init__(rawbytes=rawbytes)
+    #         self.UUID = self._data.decode("UTF-8")
+    #         if self.action != 0xe0:
+    #             print("Not a ClientHelloPackage")
+    #
+    #     else:
+    #         self.UUID = VERIFY_UUID
+    #         super().__init__(action=0xe0, data=self.UUID.encode("UTF-8"))
+    def __init__(self, header=None, lackBytes=None):
+        if header and lackBytes:
+            super().__init__(header=header, lackBytes=lackBytes)
             if self.action != 0xe0:
                 print("Not a ClientHelloPackage")
-
+            self.UUID = self._data.decode("UTF-8")
         else:
             self.UUID = VERIFY_UUID
             super().__init__(action=0xe0, data=self.UUID.encode("UTF-8"))
@@ -100,7 +156,7 @@ class DataPackage():
         availableBytes = len(data)
         index = 0
         counter = 0
-        total = int(availableBytes/SPLIT_SIZE) + min(1,availableBytes%SPLIT_SIZE)
+        total = int(availableBytes / SPLIT_SIZE) + min(1, availableBytes % SPLIT_SIZE)
 
         while availableBytes > 0:
             length = min(availableBytes, SPLIT_SIZE)
@@ -158,24 +214,23 @@ class PackageType(Enum):
     def values():
         return list(PackageType)
 
-
     @staticmethod
     def getPackageType(rawbytes):
-        if rawbytes[0]!=0xff or rawbytes[1]!=0xef:
+        if rawbytes[0] != 0xff or rawbytes[1] != 0xef:
             print("Header is not coincide.")
-        action=rawbytes[2]
-        types=PackageType.values()
+        action = rawbytes[2]
+        types = PackageType.values()
         for type in types:
-            if action==type.value:
+            if action == type.value:
                 return type
 
         return None
+
 
 class StatusCode(Enum):
     ALLOW = 0xff
     NOT_SUPPORT = 0x01
     DENY = 0x00
-
 
     @staticmethod
     def values():
@@ -183,11 +238,11 @@ class StatusCode(Enum):
 
     @staticmethod
     def getStatus(rawbytes):
-        if rawbytes[0]!=0xff or rawbytes[1]!=0xef:
+        if rawbytes[0] != 0xff or rawbytes[1] != 0xef:
             print("Header is not coincide.")
-        code=rawbytes[2]
-        status_list=StatusCode.values()
+        code = rawbytes[2]
+        status_list = StatusCode.values()
         for status in status_list:
-            if code==status.value:
+            if code == status.value:
                 return status
         return None
