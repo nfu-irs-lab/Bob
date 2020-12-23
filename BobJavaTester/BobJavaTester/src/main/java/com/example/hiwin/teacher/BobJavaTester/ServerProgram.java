@@ -1,5 +1,6 @@
 package com.example.hiwin.teacher.BobJavaTester;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -8,6 +9,7 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 import com.example.hiwin.teacher.BobJavaTester.protocol.ProtocolSocket;
+import com.example.hiwin.teacher.BobJavaTester.protocol.core.PackageHeader;
 import com.example.hiwin.teacher.BobJavaTester.protocol.core.ProtocolListener;
 import com.fazecast.jSerialComm.SerialPort;
 
@@ -28,14 +30,25 @@ public class ServerProgram {
 				try {
 					byte[] buffer = new byte[1024];
 					int len;
-					// noinspection InfiniteLoopStatement
 					while (true) {
 						System.out.println("Reading");
 						len = comPort.getInputStream().read(buffer);
 						System.out.println("Received");
 						byte[] data = Arrays.copyOf(buffer, len);
-						print(BytesInHexString(data)+"\n");
-						socket.put(data);
+						
+						ByteArrayInputStream bais=new ByteArrayInputStream(data);
+						while(bais.available()>0) {
+							byte[] headerBytes=new byte[4];
+							bais.read(headerBytes);
+							PackageHeader header=new PackageHeader(headerBytes);
+							byte[] lackBytes=new byte[header.getlackBytesLength()];
+							bais.read(lackBytes);
+							
+							print("raw:\n"+BytesInHexString(data)+"\n");
+							print("header:\n"+BytesInHexString(headerBytes)+"\n");
+							print("lackBytes:\n"+BytesInHexString(lackBytes)+"\n");
+							socket.received(headerBytes, lackBytes);
+						}
 					}
 				} catch (Exception e) {
 					e.printStackTrace();

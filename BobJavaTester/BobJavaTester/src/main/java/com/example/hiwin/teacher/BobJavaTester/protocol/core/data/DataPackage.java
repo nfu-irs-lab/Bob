@@ -4,15 +4,18 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class DataPackage {
-	static final int SPLIT_SIZE = 50;
-//	static final int SPLIT_SIZE = 2;
+//	static final int SPLIT_SIZE = 50;
+	static final int SPLIT_SIZE = 2;
 	private final ArrayList<SplitDataPackage> packages;
 	private final int total;
 	private int received_counter=0;
 
 	public DataPackage(int total) {
 		this.total = total;
-		packages = new ArrayList<SplitDataPackage>(total);
+		packages = new ArrayList<SplitDataPackage>();
+		for(int i=0;i<total;i++){
+			packages.add(null);
+		}
 	}
 
 	public void receive(SplitDataPackage _package) {

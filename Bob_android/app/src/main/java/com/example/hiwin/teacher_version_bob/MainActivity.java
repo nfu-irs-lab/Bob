@@ -24,6 +24,7 @@ import com.example.hiwin.teacher_version_bob.communication.SerialService;
 import com.example.hiwin.teacher_version_bob.communication.SerialSocket;
 import com.example.hiwin.teacher_version_bob.protocol.ProtocolSocket;
 import com.example.hiwin.teacher_version_bob.protocol.core.ClientHelloPackage;
+import com.example.hiwin.teacher_version_bob.protocol.core.PackageHeader;
 import com.example.hiwin.teacher_version_bob.protocol.core.ProtocolListener;
 import com.example.hiwin.teacher_version_bob.protocol.core.ServerHelloPackage;
 
@@ -31,9 +32,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
 
@@ -103,30 +106,30 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
             @Override
             public void OnReceiveDataPackage(byte[] data) {
-                Log.d("MainActivityLog",BytesInHexString(data));
+                Log.d("MainActivityLog", BytesInHexString(data));
 
-                String base64str=new String(data, StandardCharsets.UTF_8);
-                byte[] rawBytes= Base64.decode(base64str,Base64.DEFAULT);
-                final String rawString=new String(rawBytes, StandardCharsets.UTF_8);
+                String base64str = new String(data, StandardCharsets.UTF_8);
+                byte[] rawBytes = Base64.decode(base64str, Base64.DEFAULT);
+                final String rawString = new String(rawBytes, StandardCharsets.UTF_8);
 
-                Log.d("MainActivityLog",rawString);
-                Log.d("ProtocolLog",rawString);
-                                runOnUiThread(new Runnable() {
+                Log.d("MainActivityLog", rawString);
+                Log.d("ProtocolLog", rawString);
+                runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if(adapter!=null){
+                        if (adapter != null) {
                             try {
-                                JSONArray array=new JSONArray(rawString);
+                                JSONArray array = new JSONArray(rawString);
                                 detectedObjects.clear();
 
-                                for(int i=0;i<array.length();i++){
-                                    JSONObject object=array.getJSONObject(i);
-                                    HashMap<String,Object> t=new HashMap<>();
-                                    t.put("name",object.getString("name"));
-                                    t.put("number",object.getString("number"));
+                                for (int i = 0; i < array.length(); i++) {
+                                    JSONObject object = array.getJSONObject(i);
+                                    HashMap<String, Object> t = new HashMap<>();
+                                    t.put("name", object.getString("name"));
+                                    t.put("number", object.getString("number"));
                                     detectedObjects.add(t);
                                 }
-                                adapter=new DetectedObjectAdapter(context,detectedObjects);
+                                adapter = new DetectedObjectAdapter(context, detectedObjects);
 
                                 listView.setAdapter(adapter);
                             } catch (JSONException e) {
@@ -378,8 +381,27 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         public void onSerialRead(byte[] data) {
             status("[Read]");
             status(BytesInHexString(data));
-            protocolSocket.put(data);
             status("<Read>");
+
+            ByteArrayInputStream bais = new ByteArrayInputStream(data);
+            while (bais.available() > 0) {
+                try {
+
+                    byte[] headerBytes = new byte[4];
+                    bais.read(headerBytes);
+                    PackageHeader header = new PackageHeader(headerBytes);
+                    byte[] lackBytes = new byte[header.getlackBytesLength()];
+                    bais.read(lackBytes);
+
+                    status("raw:\n" + BytesInHexString(data) + "\n");
+                    status("header:\n" + BytesInHexString(headerBytes) + "\n");
+                    status("lackBytes:\n" + BytesInHexString(lackBytes) + "\n");
+                    protocolSocket.received(headerBytes, lackBytes);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
         }
 
         @Override
