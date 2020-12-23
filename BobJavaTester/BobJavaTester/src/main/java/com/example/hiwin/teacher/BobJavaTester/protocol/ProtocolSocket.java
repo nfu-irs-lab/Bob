@@ -3,8 +3,8 @@ package com.example.hiwin.teacher.BobJavaTester.protocol;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.concurrent.Executors;
 
@@ -19,7 +19,7 @@ import com.example.hiwin.teacher.BobJavaTester.protocol.core.data.DataPackage;
 import com.example.hiwin.teacher.BobJavaTester.protocol.core.data.SplitDataPackage;
 
 public class ProtocolSocket implements Runnable, SerialListener {
-	static final int WRITE_DATA_RATE = 100;
+	static final int WRITE_DATA_RATE = 5000;
 
 	public static enum ConnecttionStatus {
 		Connected, Disconnected
@@ -31,7 +31,11 @@ public class ProtocolSocket implements Runnable, SerialListener {
 	private InputStream is;
 	private DataPackage dataPackages;
 
-	LinkedList<SplitDataPackage> tasks = null;
+//	LinkedList<SplitDataPackage> tasks = null;
+
+	ArrayList<HashMap<String, Object>> tasks = null;
+
+	private int index = 0;
 
 	public void connect(ProtocolListener listener) {
 		this.pro_listener = listener;
@@ -54,17 +58,23 @@ public class ProtocolSocket implements Runnable, SerialListener {
 	public void run() {
 		try {
 			long send_timer = -1;
-			int index = -1;
 			while (true) {
 				if (tasks != null && tasks.size() != 0) {
 
 					if (System.currentTimeMillis() >= send_timer) {
-						SplitDataPackage _package = tasks.getFirst();
-						if (index != _package.getIndex()) {
-							index = _package.getIndex();
+						HashMap<String, Object> map = tasks.get(index);
+						SplitDataPackage _package = (SplitDataPackage) map.get("package");
+						Verify verify = (Verify) map.get("verify");
+						if (verify == Verify.FAIL) {
 							write(_package);
 							send_timer = System.currentTimeMillis() + WRITE_DATA_RATE;
 						}
+
+//						if (index != _package.getIndex()) {
+//							index = _package.getIndex();
+//							write(_package);
+//							send_timer = System.currentTimeMillis() + WRITE_DATA_RATE;
+//						}
 					}
 
 				}
@@ -101,19 +111,27 @@ public class ProtocolSocket implements Runnable, SerialListener {
 
 	private void onSplitDataReceive(SplitDataPackage splitDataPackage) {
 		if (splitDataPackage.getIndex() == 0) {
-			dataPackages = new DataPackage();
+			dataPackages = new DataPackage(splitDataPackage.getTotal());
 		}
-
 		if (dataPackages != null) {
-			if (dataPackages.size() == 0 && splitDataPackage.getIndex() != 0)
+			if (dataPackages.receivedPackages() == 0 && splitDataPackage.getIndex() != 0)
 				return;
-			dataPackages.add(splitDataPackage);
-
+			dataPackages.receive(splitDataPackage);
 			if (dataPackages.isComplete()) {
 				pro_listener.OnReceiveDataPackage(dataPackages.getData());
 				dataPackages = null;
 			}
 		}
+//		if (dataPackages != null) {
+//			if (dataPackages.size() == 0 && splitDataPackage.getIndex() != 0)
+//				return;
+//			dataPackages.add(splitDataPackage);
+//
+//			if (dataPackages.isComplete()) {
+//				pro_listener.OnReceiveDataPackage(dataPackages.getData());
+//				dataPackages = null;
+//			}
+//		}
 	}
 
 	private void onClientHelloReceive(ClientHelloPackage clientHelloPackage) {
@@ -184,17 +202,24 @@ public class ProtocolSocket implements Runnable, SerialListener {
 
 			break;
 		case VerifyResponse:
-			VerifyResponsePackage verifyResponsePackage=new VerifyResponsePackage(Verify.FAIL);
+			VerifyResponsePackage verifyResponsePackage = new VerifyResponsePackage(Verify.FAIL);
 			try {
 				verifyResponsePackage = new VerifyResponsePackage(header, lackBytes);
-			}catch(IllegalArgumentException e) {
+			} catch (IllegalArgumentException e) {
 				printE(e.getMessage());
 			}
-			
+
 			if (verifyResponsePackage.verify()) {
 				synchronized (this) {
-					if(!tasks.isEmpty())
-						tasks.removeFirst();
+					if (tasks != null && !tasks.isEmpty()) {
+						HashMap<String, Object> map = tasks.get(index);
+						map.put("verify", Verify.OK);
+						SplitDataPackage pack = (SplitDataPackage) map.get("package");
+						tasks.set(index, map);
+						if (index < pack.getTotal() - 1)
+							index++;
+					}
+
 				}
 			}
 			break;
@@ -227,7 +252,15 @@ public class ProtocolSocket implements Runnable, SerialListener {
 			return;
 		ArrayList<SplitDataPackage> datas = DataPackage.splitPackage(data);
 		synchronized (this) {
-			this.tasks = new LinkedList<SplitDataPackage>(datas);
+			this.tasks = new ArrayList<HashMap<String, Object>>();
+			for (int i = 0; i < datas.size(); i++) {
+				HashMap<String, Object> map = new HashMap<String, Object>();
+				map.put("verify", Verify.FAIL);
+				map.put("package", datas.get(i));
+				this.tasks.add(map);
+			}
+
+//			this.tasks = new LinkedList<SplitDataPackage>(datas);
 		}
 	}
 
@@ -262,7 +295,7 @@ public class ProtocolSocket implements Runnable, SerialListener {
 	public static void print(String str) {
 		System.out.print(str);
 	}
-	
+
 	public static void printE(String str) {
 		System.err.print(str);
 	}

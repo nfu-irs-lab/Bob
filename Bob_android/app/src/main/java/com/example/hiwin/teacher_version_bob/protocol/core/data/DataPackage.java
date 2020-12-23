@@ -3,14 +3,49 @@ package com.example.hiwin.teacher_version_bob.protocol.core.data;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-public class DataPackage extends ArrayList<SplitDataPackage> {
-//    static final int SPLIT_SIZE=253;
+public class DataPackage {
 	static final int SPLIT_SIZE = 50;
-	
-	public byte[] getData() {
-		ArrayList<Byte> newData = new ArrayList<Byte>();
+	//	static final int SPLIT_SIZE = 2;
+	private final ArrayList<SplitDataPackage> packages;
+	private final int total;
+	private int received_counter=0;
 
-		for (SplitDataPackage splitDataPackage : this) {
+	public DataPackage(int total) {
+		this.total = total;
+		packages = new ArrayList<SplitDataPackage>(total);
+	}
+
+	public void receive(SplitDataPackage _package) {
+		packages.set(_package.getIndex(), _package);
+		received_counter++;
+	}
+
+
+	public boolean isComplete() {
+		int counter1 = 0;
+		for (int i = 0; i < total; i++) {
+			counter1 += i;
+		}
+
+		int counter2 = 0;
+		for (SplitDataPackage splitDataPackage : packages) {
+			if (splitDataPackage == null)
+				continue;
+			counter2 += splitDataPackage.getIndex();
+		}
+
+		return counter1 == counter2;
+	}
+	public int receivedPackages() {
+		return received_counter;
+	}
+
+	public byte[] getData() {
+		if (!isComplete())
+			return null;
+
+		ArrayList<Byte> newData = new ArrayList<Byte>();
+		for (SplitDataPackage splitDataPackage : packages) {
 			byte[] splitBytes = splitDataPackage.getData();
 			for (byte b : splitBytes) {
 				newData.add(b);
@@ -21,22 +56,6 @@ public class DataPackage extends ArrayList<SplitDataPackage> {
 			newbytes[i] = newData.get(i);
 		}
 		return newbytes;
-	}
-
-	public boolean isComplete() {
-		int total = this.get(0).getTotal();
-		int counter1 = 0;
-		for (int i = 0; i < total; i++) {
-			counter1 += i;
-		}
-
-		int counter2 = 0;
-		for (SplitDataPackage splitDataPackage : this) {
-			counter2 += splitDataPackage.getIndex();
-		}
-
-		return counter1 == counter2;
-
 	}
 
 	public static ArrayList<SplitDataPackage> splitPackage(byte[] data) {
