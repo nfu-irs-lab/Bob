@@ -1,35 +1,7 @@
 package com.example.hiwin.teacher.BobJavaTester.protocol.core;
 
 public abstract class Package extends PackageHeader {
-	public static enum Type {
-		ClientHello(0xe0), ServerHello(0xf0), ClientBye(0xe1), SplitData(0x03),VerifyResponse(0x04);
-		private final int action;
-		
-		private Type(int action) {
-			this.action = action;
-		}
-
-		public int getAction() {
-			return action;
-		}
-
-		public static Type getPackageType(byte[] importBytes) {
-			byte[] header_bytes = getPackageHeader(importBytes);
-			PackageHeader header = new PackageHeader(header_bytes);
-			return getPackageType(header);
-		}
-
-		public static Type getPackageType(PackageHeader header) {
-			Type[] types = values();
-			for (Type type : types) {
-				if (header.getAction() == type.getAction()) {
-					return type;
-				}
-			}
-			return null;
-		}
-	}
-
+	
 	/**
 	 * All element: -128~127
 	 */
@@ -63,29 +35,8 @@ public abstract class Package extends PackageHeader {
 		}
 	}
 
-//	@Deprecated
-//	public Package(byte[] importBytes) {
-//		super(getPackageHeader(importBytes));
-//		int cksum = toUnsignedInt(importBytes[importBytes.length - 1]);
-//		int cksum_real = action + length;
-//
-//		data = new byte[length];
-//
-//		for (int i = 0; i < length; i++) {
-//			data[i] = importBytes[4 + i];
-//			cksum_real += data[i];
-//		}
-//
-//		cksum_real = 0xff & cksum_real;
-//
-//		if (cksum_real != cksum) {
-//			throw new IllegalArgumentException("Cksum is not coincide.");
-//		}
-//
-//	}
-
 	public byte[] toBytes() {
-		byte[] package_data = createHeaderByteArray();
+		byte[] package_data = createEmptyPackageByteArray();
 		int cksum = action + length;
 
 		for (int i = 0; i < length; i++) {
@@ -100,13 +51,23 @@ public abstract class Package extends PackageHeader {
 		return data;
 	}
 
+	private byte[] createEmptyPackageByteArray() {
+		byte[] package_data = new byte[4 + lackBytesLength];
+		package_data[0] = (byte) 0xff;
+		package_data[1] = (byte) 0xef;
+		package_data[2] = (byte) action;
+		package_data[3] = (byte) length;
+		return package_data;
+	}
+	
 	protected static int toUnsignedInt(byte raw) {
 		return 0xff & raw;
 	}
 
-	protected static byte[] getPackageHeader(byte[] raw) {
+	protected static byte[] getPackageHeaderByteArray(byte[] raw) {
 		byte[] header = new byte[4];
 		System.arraycopy(raw, 0, header, 0, 4);
 		return header;
 	}
+
 }

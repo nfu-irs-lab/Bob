@@ -18,6 +18,7 @@ class MyTestCase(unittest.TestCase):
     def test_clienthello_Varify_data(self):
         package1 = pro.ClientHelloPackage()
         dumpByteInHex(package1.toBytes())
+
         package2 = pro.ClientHelloPackage(rawbytes=package1.toBytes())
         dumpByteInHex(package2.toBytes())
 
@@ -49,6 +50,10 @@ class MyTestCase(unittest.TestCase):
         header=pro.PackageHeader(header=package.toBytes()[0:4])
         package2=pro.Package(header=header,lackBytes=package.toBytes()[4:])
         dumpByteInHex(package2.toBytes())
+    def test_type(self):
+        print(pro.PackageType.SplitData.value)
+    def test_header(self):
+        pro.PackageHeader(action=255,length=5)
 
 if __name__ == '__main__':
     unittest.main()

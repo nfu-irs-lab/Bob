@@ -40,14 +40,6 @@ public class PackageHeader {
 		return 0xff & raw;
 	}
 	
-	protected byte[] createHeaderByteArray() {
-		byte[] package_data = new byte[4 + lackBytesLength];
-		package_data[0] = (byte) 0xff;
-		package_data[1] = (byte) 0xef;
-		package_data[2] = (byte) action;
-		package_data[3] = (byte) length;
-		return package_data;
-	}
 	
 	public int getAction() {
 		return action;
@@ -58,6 +50,10 @@ public class PackageHeader {
 	}
 	public int getlackBytesLength() {
 		return lackBytesLength;
+	}
+	
+	public PackageHeader getHeader() {
+		return this;
 	}
 	
 }

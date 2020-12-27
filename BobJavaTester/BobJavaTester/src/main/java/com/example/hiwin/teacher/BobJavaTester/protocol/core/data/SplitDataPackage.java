@@ -7,21 +7,21 @@ import java.util.Arrays;
 
 import com.example.hiwin.teacher.BobJavaTester.protocol.core.Package;
 import com.example.hiwin.teacher.BobJavaTester.protocol.core.PackageHeader;
-import com.example.hiwin.teacher.BobJavaTester.protocol.core.Package.Type;
+import com.example.hiwin.teacher.BobJavaTester.protocol.core.PackageType;
 
 public class SplitDataPackage extends Package {
     private final int index;
     private final int total;
 
     public SplitDataPackage(byte[] data, int index, int total) {
-        super(Package.Type.SplitData.getAction(), setData(data, index, total));
+        super(PackageType.SplitData.getAction(), setData(data, index, total));
         this.index = index;
         this.total = total;
     }
 
     public SplitDataPackage(PackageHeader header, byte[] lackBytes) {
 		super(header, lackBytes);
-        if (action!=Package.Type.SplitData.getAction())
+        if (action!=PackageType.SplitData.getAction())
             throw new IllegalArgumentException("Not a SplitDataPackage");
         
         this.index = super.getData()[0];

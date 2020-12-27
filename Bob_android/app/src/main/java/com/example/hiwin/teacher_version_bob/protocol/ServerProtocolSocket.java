@@ -1,15 +1,15 @@
-package com.example.hiwin.teacher.BobJavaTester.protocol;
+package com.example.hiwin.teacher_version_bob.protocol;
 
-import com.example.hiwin.teacher.BobJavaTester.DebugUtil;
-import com.example.hiwin.teacher.BobJavaTester.protocol.core.ClientHelloPackage;
-import com.example.hiwin.teacher.BobJavaTester.protocol.core.PackageHeader;
-import com.example.hiwin.teacher.BobJavaTester.protocol.core.PackageType;
-import com.example.hiwin.teacher.BobJavaTester.protocol.core.ServerHelloPackage;
-import com.example.hiwin.teacher.BobJavaTester.protocol.core.data.DataPackage;
-import com.example.hiwin.teacher.BobJavaTester.protocol.core.data.SplitDataPackage;
+import com.example.hiwin.teacher_version_bob.DebugUtil;
+import com.example.hiwin.teacher_version_bob.protocol.core.ClientHelloPackage;
+import com.example.hiwin.teacher_version_bob.protocol.core.PackageHeader;
+import com.example.hiwin.teacher_version_bob.protocol.core.PackageType;
+import com.example.hiwin.teacher_version_bob.protocol.core.ServerHelloPackage;
+import com.example.hiwin.teacher_version_bob.protocol.core.data.DataPackage;
+import com.example.hiwin.teacher_version_bob.protocol.core.data.SplitDataPackage;
 
 public class ServerProtocolSocket extends ProtocolSocket {
-	
+
 	@Override
 	public void received(byte[] header_bytes, byte[] lack_bytes) {
 		PackageHeader header = new PackageHeader(header_bytes);

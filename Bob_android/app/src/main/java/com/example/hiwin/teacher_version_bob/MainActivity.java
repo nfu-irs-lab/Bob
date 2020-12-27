@@ -16,12 +16,15 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.hiwin.teacher_version_bob.communication.SerialListener;
 import com.example.hiwin.teacher_version_bob.communication.SerialService;
 import com.example.hiwin.teacher_version_bob.communication.SerialSocket;
+import com.example.hiwin.teacher_version_bob.protocol.ClientProtocolSocket;
 import com.example.hiwin.teacher_version_bob.protocol.ProtocolSocket;
 import com.example.hiwin.teacher_version_bob.protocol.core.ClientHelloPackage;
 import com.example.hiwin.teacher_version_bob.protocol.core.PackageHeader;
@@ -40,7 +43,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity implements ServiceConnection {
+public class MainActivity extends AppCompatActivity implements ServiceConnection, AdapterView.OnItemClickListener {
 
 
 
@@ -72,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     private boolean initialStart = true;
     private Connected connected = Connected.False;
     //    private ClientProtocol clientProtocol;
-    ProtocolSocket protocolSocket;
+    ClientProtocolSocket protocolSocket;
     private ListView listView;
     private DetectedObjectAdapter adapter;
     private ArrayList<HashMap<String, Object>> detectedObjects = new ArrayList<>();
@@ -91,22 +94,22 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
         listView = (ListView) findViewById(R.id.main_object_list);
         listView.setAdapter(adapter);
-
-        protocolSocket = new ProtocolSocket();
-        protocolSocket.connect(new ProtocolListener() {
+        listView.setOnItemClickListener(this);
+        protocolSocket = new ClientProtocolSocket();
+        protocolSocket.attach(new ProtocolListener() {
             @Override
             public void OnProtocolConnected() {
-
+                setMenuConnectionStatus(Connected.True);
             }
 
             @Override
             public void OnProtocolDisconnected() {
-
+                setMenuConnectionStatus(Connected.False);
             }
 
             @Override
             public void OnReceiveDataPackage(byte[] data) {
-                Log.d("MainActivityLog", BytesInHexString(data));
+                Log.d("MainActivityLog", DebugUtil.BytesInHexString(data));
 
                 String base64str = new String(data, StandardCharsets.UTF_8);
                 byte[] rawBytes = Base64.decode(base64str, Base64.DEFAULT);
@@ -146,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                 try {
 
                     status("[Write]");
-                    status(BytesInHexString(data));
+                    status(DebugUtil.BytesInHexString(data));
                     status("<Write>");
                     service.write(data);
                 } catch (IOException e) {
@@ -174,6 +177,13 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     }
 
     @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        HashMap<String,Object> a=(HashMap<String,Object>)parent.getItemAtPosition(position);
+        textToSpeech.speak(a.get("number")+" "+a.get("name")+" were detected.", TextToSpeech.QUEUE_FLUSH, null);
+        Log.d("MainActivityLog",a.toString());
+    }
+
+   @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // 設置要用哪個menu檔做為選單
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -207,68 +217,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     public void onServiceConnected(ComponentName name, IBinder binder) {
         service = ((SerialService.SerialBinder) binder).getService();
         service.attach(serialListener);
-
-//        clientProtocol=new ClientProtocol();
-//        clientProtocol.attach(new ProtocolListener() {
-//            @Override
-//            public void OnProtocolConnected() {
-//                Toast.makeText(MainActivity.this,"Connected",Toast.LENGTH_SHORT).show();
-//                setMenuConnectionStatus(connected);
-//            }
-//
-//            @Override
-//            public void OnProtocolDisconnected() {
-//
-//            }
-//
-//            @Override
-//            public void OnConnectionRejected(ServerHelloPackage.StatusCode statusCode) {
-//                runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        finish();
-//                    }
-//                });
-//            }
-//
-//
-//
-//            @Override
-//            public void OnReceiveData(byte[] data) {
-//
-//                String base64str=new String(data, StandardCharsets.UTF_8);
-//                byte[] rawBytes= Base64.decode(base64str,Base64.DEFAULT);
-//                final String rawString=new String(rawBytes, StandardCharsets.UTF_8);
-//                Log.d("ProtocolLog",rawString);
-//                                runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        if(adapter!=null){
-//                            try {
-//                                JSONArray array=new JSONArray(rawString);
-//                                detectedObjects.clear();
-//
-//                                for(int i=0;i<array.length();i++){
-//                                    JSONObject object=array.getJSONObject(i);
-//                                    HashMap<String,Object> t=new HashMap<>();
-//                                    t.put("name",object.getString("name"));
-//                                    t.put("number",object.getString("number"));
-//                                    detectedObjects.add(t);
-//                                }
-//                                adapter=new DetectedObjectAdapter(context,detectedObjects);
-//
-//                                listView.setAdapter(adapter);
-//                            } catch (JSONException e) {
-//                                e.printStackTrace();
-//                            }
-//                        }
-//                    }
-//                });
-//
-//            }
-//        });
-
-
         if (initialStart) {
             initialStart = false;
             runOnUiThread(new Runnable() {
@@ -339,6 +287,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
     private void disconnect() {
         status("disconnected");
+        protocolSocket.close();
         connected = Connected.False;
         setMenuConnectionStatus(connected);
         service.disconnect();
@@ -364,8 +313,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         public void onSerialConnect() {
             status("connected");
             connected = Connected.True;
-            protocolSocket.write(new ClientHelloPackage());
-
+            protocolSocket.connect();
         }
 
         @Override
@@ -380,7 +328,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         @Override
         public void onSerialRead(byte[] data) {
             status("[Read]");
-            status(BytesInHexString(data));
+            status(DebugUtil.BytesInHexString(data));
             status("<Read>");
 
             ByteArrayInputStream bais = new ByteArrayInputStream(data);
@@ -393,9 +341,9 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                     byte[] lackBytes = new byte[header.getlackBytesLength()];
                     bais.read(lackBytes);
 
-                    status("raw:\n" + BytesInHexString(data) + "\n");
-                    status("header:\n" + BytesInHexString(headerBytes) + "\n");
-                    status("lackBytes:\n" + BytesInHexString(lackBytes) + "\n");
+                    status("raw:\n" + DebugUtil.BytesInHexString(data) + "\n");
+                    status("header:\n" + DebugUtil.BytesInHexString(headerBytes) + "\n");
+                    status("lackBytes:\n" + DebugUtil.BytesInHexString(lackBytes) + "\n");
                     protocolSocket.received(headerBytes, lackBytes);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -412,14 +360,4 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         }
     };
 
-    String BytesInHexString(byte[] raw) {
-        StringBuffer sb = new StringBuffer();
-
-        sb.append("{");
-        for (byte b : raw) {
-            sb.append("0x").append(Integer.toHexString(b & 0xFF)).append(",");
-        }
-        sb.append("}");
-        return sb.toString();
-    }
 }

@@ -32,13 +32,13 @@ public class VerifyResponsePackage extends Package {
 	private final Verify verify;
 
 	public VerifyResponsePackage(Verify verify) {
-		super(Type.VerifyResponse.getAction(), setData(verify));
+		super(PackageType.VerifyResponse.getAction(), setData(verify));
 		this.verify = verify;
 	}
 
 	public VerifyResponsePackage(PackageHeader header, byte[] lackBytes) {
 		super(header, lackBytes);
-		if (action != Package.Type.VerifyResponse.getAction())
+		if (action != PackageType.VerifyResponse.getAction())
 			throw new IllegalArgumentException("Not a ClientHelloPackage");
 		this.verify = Verify.getVerify(getData()[0]);
 	}

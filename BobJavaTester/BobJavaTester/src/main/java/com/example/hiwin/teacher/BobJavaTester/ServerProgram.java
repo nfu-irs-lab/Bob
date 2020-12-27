@@ -9,44 +9,54 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 import com.example.hiwin.teacher.BobJavaTester.protocol.ProtocolSocket;
+import com.example.hiwin.teacher.BobJavaTester.protocol.ServerProtocolSocket;
 import com.example.hiwin.teacher.BobJavaTester.protocol.core.PackageHeader;
 import com.example.hiwin.teacher.BobJavaTester.protocol.core.ProtocolListener;
 import com.fazecast.jSerialComm.SerialPort;
 
 public class ServerProgram {
-	ProtocolSocket socket;
+	ServerProtocolSocket socket;
 	OutputStream os;
+
 	public ServerProgram() throws IOException, InterruptedException {
 
 		final SerialPort comPort = SerialPort.getCommPort("COM3");
 		comPort.openPort();
 		comPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 0, 0);
-		socket = new ProtocolSocket();
-		os=comPort.getOutputStream();
-		socket.connect(listener);
+		socket = new ServerProtocolSocket();
+		os = comPort.getOutputStream();
+		socket.attach(listener);
 		
 		new Thread(new Runnable() {
 			public void run() {
 				try {
 					byte[] buffer = new byte[1024];
 					int len;
+					
 					while (true) {
 						System.out.println("Reading");
 						len = comPort.getInputStream().read(buffer);
 						System.out.println("Received");
 						byte[] data = Arrays.copyOf(buffer, len);
-						
-						ByteArrayInputStream bais=new ByteArrayInputStream(data);
-						while(bais.available()>0) {
-							byte[] headerBytes=new byte[4];
+
+						ByteArrayInputStream bais = new ByteArrayInputStream(data);
+						while (bais.available() > 0) {
+							byte[] headerBytes = new byte[4];
 							bais.read(headerBytes);
-							PackageHeader header=new PackageHeader(headerBytes);
-							byte[] lackBytes=new byte[header.getlackBytesLength()];
+							PackageHeader header = null;
+							print("raw:\n" + BytesInHexString(data) + "\n");
+							try {
+								header = new PackageHeader(headerBytes);
+							} catch (IllegalArgumentException e) {
+								System.err.println(e.getMessage());
+								continue;
+							}
+
+							byte[] lackBytes = new byte[header.getlackBytesLength()];
 							bais.read(lackBytes);
-							
-							print("raw:\n"+BytesInHexString(data)+"\n");
-							print("header:\n"+BytesInHexString(headerBytes)+"\n");
-							print("lackBytes:\n"+BytesInHexString(lackBytes)+"\n");
+
+							print("header:\n" + BytesInHexString(headerBytes) + "\n");
+							print("lackBytes:\n" + BytesInHexString(lackBytes) + "\n");
 							socket.received(headerBytes, lackBytes);
 						}
 					}
@@ -59,12 +69,15 @@ public class ServerProgram {
 
 		Scanner scr = new Scanner(System.in);
 		while (comPort.isOpen()) {
-			if(socket.isConnected()) {
-				System.out.println("Main Thread");
-//				WwogIHsKICAibmFtZSI6ImFwcGxlIiwKICAibnVtYmVyIjozCiAgfSwKICB7CiAgICAibmFtZSI6InBlbiIsCiAgICAibnVtYmVyIjo0CiAgfSx7CiAgICAibmFtZSI6ImZ1Y2siLAogICAgIm51bWJlciI6NQogICAgCiAgfQpd
-				String msg = scr.nextLine();
-				byte[] data = msg.getBytes(StandardCharsets.UTF_8);
-				socket.write(data);
+
+			synchronized (this) {
+				if (socket.isConnected()) {
+					System.out.println("Main Thread");
+					scr.nextLine();
+					String msg = "WwogIHsKICAibmFtZSI6ImFwcGxlIiwKICAibnVtYmVyIjozCiAgfSwKICB7CiAgICAibmFtZSI6InBlbiIsCiAgICAibnVtYmVyIjo0CiAgfSx7CiAgICAibmFtZSI6ImZ1Y2siLAogICAgIm51bWJlciI6NQogICAgCiAgfQpd";
+					byte[] data = msg.getBytes(StandardCharsets.UTF_8);
+					socket.writeBytes(data);
+				}
 			}
 		}
 		comPort.closePort();
@@ -77,7 +90,7 @@ public class ServerProgram {
 	private ProtocolListener listener = new ProtocolListener() {
 
 		public void OnProtocolDisconnected() {
-			System.out.println("Cisonnected");
+			System.out.println("Disonnected");
 		}
 
 		public void OnProtocolConnected() {
@@ -87,7 +100,7 @@ public class ServerProgram {
 		public void OnReceiveDataPackage(byte[] data) {
 			
 		}
-		
+
 		public void OnWrite(byte[] data) {
 			try {
 				os.write(data);
@@ -95,10 +108,10 @@ public class ServerProgram {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+
 		}
 	};
-	
+
 	String BytesInHexString(byte[] raw) {
 		StringBuffer sb = new StringBuffer();
 

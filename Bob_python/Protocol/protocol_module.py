@@ -8,13 +8,17 @@ class PackageHeader:
     def __init__(self, action=None, length=None, header=None):
         if action and length:
             if action < 0 or action > 255:
-                print("action error")
+                # print("action error")
+                raise RuntimeError("action error")
             self.action = action
             self.length = length
             self.lackBytesLength = length + 1
         elif header:
             if len(header) > 4 or len(header) <= 0:
-                print("header error")
+                raise RuntimeError("header length error")
+            if header[0]!=0xff or header[1]!=0xef:
+                raise RuntimeError("header error")
+
             self.action = header[2]
             self.length = header[3]
             self.lackBytesLength = self.length + 1
@@ -100,12 +104,12 @@ class ClientHelloPackage(Package):
     def __init__(self, header=None, lackBytes=None):
         if header and lackBytes:
             super().__init__(header=header, lackBytes=lackBytes)
-            if self.action != 0xe0:
+            if self.action != PackageType.ClientHello:
                 print("Not a ClientHelloPackage")
             self.UUID = self._data.decode("UTF-8")
         else:
             self.UUID = VERIFY_UUID
-            super().__init__(action=0xe0, data=self.UUID.encode("UTF-8"))
+            super().__init__(action=PackageType.ClientHello, data=self.UUID.encode("UTF-8"))
 
     def verify(self):
         return self.UUID == VERIFY_UUID

@@ -8,7 +8,7 @@ public class ClientHelloPackage extends Package {
     private String UUID;
     
     public ClientHelloPackage() {
-        super(Package.Type.ClientHello.getAction(), setData());
+        super(PackageType.ClientHello.getAction(), setData());
         UUID=VERIFY_UUID;
     }
     
@@ -22,7 +22,7 @@ public class ClientHelloPackage extends Package {
     
     public ClientHelloPackage(PackageHeader header,byte[] lackBytes) {
         super(header,lackBytes);
-        if (action!= Package.Type.ClientHello.getAction())
+        if (action!=PackageType.ClientHello.getAction())
             throw new IllegalArgumentException("Not a ClientHelloPackage");
         UUID = new String(getData(), StandardCharsets.UTF_8);
     }

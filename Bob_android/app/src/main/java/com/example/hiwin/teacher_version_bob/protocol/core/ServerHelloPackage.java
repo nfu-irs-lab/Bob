@@ -32,23 +32,15 @@ public class ServerHelloPackage extends Package {
 
 	private final StatusCode statusCode;
 
-//	@Deprecated
-//	public ServerHelloPackage(byte[] importBytes) {
-//		super(importBytes);
-//		if (action != Package.Type.ServerHello.getAction())
-//			throw new IllegalArgumentException("Not a ServerHelloPackage");
-//		statusCode = StatusCode.getStatus(getData()[0]);
-//	}
-//
 	public ServerHelloPackage(PackageHeader header, byte[] lackBytes) {
 		super(header, lackBytes);
-		if (action != Package.Type.ServerHello.getAction())
+		if (action != PackageType.ServerHello.getAction())
 			throw new IllegalArgumentException("Not a ServerHelloPackage");
 		statusCode = StatusCode.getStatus(getData()[0]);
 	}
 
 	public ServerHelloPackage(StatusCode statusCode) {
-		super(Package.Type.ServerHello.getAction(), setData(statusCode));
+		super(PackageType.ServerHello.getAction(), setData(statusCode));
 		this.statusCode = statusCode;
 	}
 
