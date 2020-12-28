@@ -5,41 +5,45 @@ SPLIT_SIZE = 253
 
 
 class PackageHeader:
-    def __init__(self, action=None, length=None, header=None):
+    def __init__(self, action: int = None, length: int = None, header: bytearray = None):
         if action and length:
             if action < 0 or action > 255:
-                # print("action error")
                 raise RuntimeError("action error")
             self.action = action
             self.length = length
             self.lackBytesLength = length + 1
         elif header:
             if len(header) > 4 or len(header) <= 0:
-                raise RuntimeError("header length error")
-            if header[0]!=0xff or header[1]!=0xef:
-                raise RuntimeError("header error")
+                raise RuntimeError("Header size is incorrect:" + str(len(header)))
+
+            if header[0] != 0xff or header[1] != 0xef:
+                raise RuntimeError("Header is not coincide.")
 
             self.action = header[2]
             self.length = header[3]
             self.lackBytesLength = self.length + 1
 
-    def createHeaderByteArray(self):
-        package_data = bytearray(4 + self.lackBytesLength)
-        package_data[0] = 0xff
-        package_data[1] = 0xef
-        package_data[2] = self.action
-        package_data[3] = self.length
-        return package_data
+    # def createHeaderByteArray(self):
+    #     package_data = bytearray(4 + self.lackBytesLength)
+    #     package_data[0] = 0xff
+    #     package_data[1] = 0xef
+    #     package_data[2] = self.action
+    #     package_data[3] = self.length
+    #     return package_data
 
-    @staticmethod
-    def getPackageHeader(rawbytes):
-        header = rawbytes[0:4]
-        return header
+    # @staticmethod
+    # def getPackageHeader(rawbytes):
+    #     header = rawbytes[0:4]
+    #     return header
+
+    def getHeader(self):
+        return self
 
 
 # class Protocol(metaclass=abc.ABCMeta):
 class Package(PackageHeader):
-    def __init__(self, header=None, lackBytes=None, action=None, data=None):
+    def __init__(self, header: PackageHeader = None, lackBytes: bytearray or bytes = None, action: int = None,
+                 data: bytearray or bytes = None):
         if action and data:
             super(Package, self).__init__(action=action, length=len(data))
             self._data = data
@@ -50,18 +54,29 @@ class Package(PackageHeader):
             self._data = lackBytes[0:-1]
 
             cksum_real = 0b11111111 & (self.action + self.length + sum(self._data))
-
             if cksum_real != cksum:
-                print("Cksum is not coincide.")
+                raise RuntimeError("Cksum is not coincide.")
         else:
-            print("nothing...........")
+            raise RuntimeError("Nothing was done when initialize Package class")
 
     def toBytes(self):
-        package_data = self.createHeaderByteArray()
+        package_data = self.createEmptyPackageByteArray()
         package_data[4:-1] = self._data
         cksum = self.action + self.length + sum(self._data)
         package_data[len(package_data) - 1] = 0b11111111 & cksum
         return package_data
+
+    def createEmptyPackageByteArray(self):
+        package_data = bytearray(4 + self.lackBytesLength)
+        package_data[0] = 0xff
+        package_data[1] = 0xef
+        package_data[2] = self.action
+        package_data[3] = self.length
+        return package_data
+
+    @staticmethod
+    def getPackageHeaderByteArray(rawbytes: bytearray):
+        return rawbytes[0:4]
 
 
 class PackageType(Enum):
@@ -72,22 +87,25 @@ class PackageType(Enum):
     VerifyResponse = 0x04
 
     @staticmethod
-    def values():
+    def values() -> list:
         return list(PackageType)
 
     @staticmethod
-    def getPackageType(rawbytes=None, header=None):
-        package_header = None
-        if rawbytes:
-            package_header = PackageHeader(rawbytes)
+    def getPackageTypeFormBytes(rawbytes: bytearray):
+        header_bytes = Package.getPackageHeaderByteArray(rawbytes)
+        try:
+            header = PackageHeader(header_bytes)
+            return PackageType.getPackageType(header)
+        except:
+            return None
 
-        elif header:
-            package_header = header
+    @staticmethod
+    def getPackageType(header: PackageHeader):
+        types = PackageType.values()
+        for type in types:
+            if header.action == type.value:
+                return type
 
-        type_list = PackageType.values()
-        for type in type_list:
-            if package_header.action == type.value:
-                return package_header
 
 # ############################################################
 class ClientHelloPackage(Package):
@@ -101,48 +119,92 @@ class ClientHelloPackage(Package):
     #     else:
     #         self.UUID = VERIFY_UUID
     #         super().__init__(action=0xe0, data=self.UUID.encode("UTF-8"))
-    def __init__(self, header=None, lackBytes=None):
+
+    def __init__(self, header: PackageHeader = None, lackBytes=None):
         if header and lackBytes:
             super().__init__(header=header, lackBytes=lackBytes)
-            if self.action != PackageType.ClientHello:
-                print("Not a ClientHelloPackage")
+            if self.action != PackageType.ClientHello.value:
+                raise RuntimeError("Not a ClientHelloPackage")
             self.UUID = self._data.decode("UTF-8")
         else:
+            super().__init__(action=PackageType.ClientHello.value, data=self.__setData())
             self.UUID = VERIFY_UUID
-            super().__init__(action=PackageType.ClientHello, data=self.UUID.encode("UTF-8"))
 
     def verify(self):
         return self.UUID == VERIFY_UUID
 
+    @staticmethod
+    def __setData() -> bytes:
+        return VERIFY_UUID.encode("UTF-8")
+
 
 class ServerHelloPackage(Package):
-    def __init__(self, rawbytes=None, statusCode=None):
-        if rawbytes:
-            super().__init__(rawbytes=rawbytes)
-            if self.action != 0xf0:
-                print("Not a ServerHelloPackage")
-            self.statusCode = self._data[0]
-        else:
+    # def __init__(self, rawbytes=None, statusCode=None):
+    #     if rawbytes:
+    #         super().__init__(rawbytes=rawbytes)
+    #         if self.action != 0xf0:
+    #             print("Not a ServerHelloPackage")
+    #         self.statusCode = self._data[0]
+    #     else:
+    #         self.statusCode = statusCode
+    #         buf = bytearray(1)
+    #         buf[0] = self.statusCode
+    #         super().__init__(action=0xf0, data=buf)
+
+    def __init__(self, header: PackageHeader = None, lackBytes=None, statusCode=None):
+        if header and lackBytes:
+            super().__init__(header=header, lackBytes=lackBytes)
+            if self.action != PackageType.ServerHello.value:
+                raise RuntimeError("Not a ServerHelloPackage")
+            self.statusCode = StatusCode.getStatus(self._data[0])
+        elif statusCode:
             self.statusCode = statusCode
-            buf = bytearray(1)
-            buf[0] = self.statusCode
-            super().__init__(action=0xf0, data=buf)
+            super().__init__(action=PackageType.ServerHello.value, data=self.__setData(self.statusCode))
+
+    @staticmethod
+    def __setData(statusCode) -> bytearray:
+        datas = bytearray(1)
+        datas[0] = statusCode.value
+        return datas
 
 
 class SplitDataPackage(Package):
-    def __init__(self, data=None, index=None, total=None, rawbytes=None):
-        if rawbytes:
-            super(SplitDataPackage, self).__init__(rawbytes=rawbytes)
-            self.index = self._data[0]
-            self.total = self._data[1]
+    # def __init__(self, data=None, index=None, total=None, rawbytes=None):
+    #     if rawbytes:
+    #         super(SplitDataPackage, self).__init__(rawbytes=rawbytes)
+    #         self.index = self._data[0]
+    #         self.total = self._data[1]
+    #     else:
+    #         self.index = index
+    #         self.total = total
+    #         newbytes = bytearray(len(data) + 2)
+    #         newbytes[0] = index
+    #         newbytes[1] = total
+    #         newbytes[2:] = data[0:]
+    #         super(SplitDataPackage, self).__init__(action=0x03, data=newbytes)
+
+    def __init__(self, header: PackageHeader = None, lackBytes=None, data=None, index: int = None, total: int = None):
+        if header and lackBytes:
+            super().__init__(header=header, lackBytes=lackBytes)
+            if self.action != PackageType.SplitData.value:
+                raise RuntimeError("Not a SplitDataPackage")
+
+            # Warning!!
+            self.index = int(self._data[0])
+            self.total = int(self._data[1])
+
         else:
+            super().__init__(action=0x03, data=self.__setData(data=data, index=index, total=total))
             self.index = index
             self.total = total
-            newbytes = bytearray(len(data) + 2)
-            newbytes[0] = index
-            newbytes[1] = total
-            newbytes[2:] = data[0:]
-            super(SplitDataPackage, self).__init__(action=0x03, data=newbytes)
+
+    @staticmethod
+    def __setData(data, index, total) -> bytearray:
+        newbytes = bytearray(len(data) + 2)
+        newbytes[0] = index
+        newbytes[1] = total
+        newbytes[2:] = data[0:]
+        return newbytes
 
     def getData(self):
         data = self._data
@@ -152,39 +214,41 @@ class SplitDataPackage(Package):
 
 
 class DataPackage():
-    def __init__(self):
-        self._dataPackages = []
+    def __init__(self, total: int = None):
+        if total:
+            self.total = total
+            self.__packages = []
+            self.received_counter = 0
+            for i in range(0, total):
+                self.__packages.append(None)
 
-    def splitPackage(data):
-        dataPackages = []
-        availableBytes = len(data)
-        index = 0
-        counter = 0
-        total = int(availableBytes / SPLIT_SIZE) + min(1, availableBytes % SPLIT_SIZE)
+    def receive(self, splitDataPackage: SplitDataPackage):
 
-        while availableBytes > 0:
-            length = min(availableBytes, SPLIT_SIZE)
-            splited = DataPackage.splitBytes(data, index, length)
-            splitDataPackage = SplitDataPackage(data=splited, index=counter, total=total)
-            dataPackages.insert(splitDataPackage.index, splitDataPackage)
-            availableBytes = availableBytes - SPLIT_SIZE
-            index = index + SPLIT_SIZE
-            counter = counter + 1
+        self.__packages[splitDataPackage.index] = splitDataPackage
+        self.received_counter = self.received_counter + 1
 
-        return dataPackages
+    def isComplete(self):
+        counter1 = 0
+        for i in range(0, self.total):
+            counter1 = counter1 + 1
 
-    def splitBytes(raw, start, length):
-        endIndex = start + length - 1
-        if endIndex > len(raw) - 1:
-            print("Index out of bound")
+        counter2 = 0
+        for splitDataPackage in self.__packages:
+            if splitDataPackage == None:
+                continue
+            counter2 = counter2 + splitDataPackage.index
 
-        splited = bytearray(length)
-        splited[0:] = raw[start:endIndex + 1]
-        return splited
+        return counter1 == counter2
+
+    def receivedPackages(self):
+        return self.received_counter
 
     def getData(self):
+        if not self.isComplete():
+            return None
+
         newData = []
-        for splitDataPackage in self._dataPackages:
+        for splitDataPackage in self.__packages:
             splitBytes = splitDataPackage.getData()
             for b in splitBytes:
                 newData.append(b)
@@ -193,42 +257,33 @@ class DataPackage():
             newBytes[i] = newData[i]
         return newBytes
 
-    # array----------------------------------------------
-    def append(self, data):
-        self._dataPackages.append(data)
+    @staticmethod
+    def __splitBytes(raw: bytearray, start: int, length: int) -> bytes:
+        endIndex = start + length - 1
+        if endIndex > len(raw) - 1:
+            raise RuntimeError("Index out of bound")
 
-    def insert(self, index, data):
-        self._dataPackages.insert(index, data)
-
-    def clear(self):
-        self._dataPackages.clear()
-
-    def get(self, index):
-        return self._dataPackages[index]
-
-    # array----------------------------------------------
-
-
-class PackageType(Enum):
-    ServerHello = 0xf0
-    ClientHello = 0xe0
-    SplitData = 0x03
+        splited = bytearray(length)
+        splited[0:] = raw[start:endIndex + 1]
+        return splited
 
     @staticmethod
-    def values():
-        return list(PackageType)
+    def splitPackage(data: bytearray or bytes) -> list:
+        dataPackages = []
+        availableBytes = len(data)
+        index = 0
+        counter = 0
+        total = int(availableBytes / SPLIT_SIZE) + min(1, availableBytes % SPLIT_SIZE)
 
-    @staticmethod
-    def getPackageType(rawbytes):
-        if rawbytes[0] != 0xff or rawbytes[1] != 0xef:
-            print("Header is not coincide.")
-        action = rawbytes[2]
-        types = PackageType.values()
-        for type in types:
-            if action == type.value:
-                return type
-
-        return None
+        while availableBytes > 0:
+            length = min(availableBytes, SPLIT_SIZE)
+            splited = DataPackage.__splitBytes(data, index, length)
+            splitDataPackage = SplitDataPackage(data=splited, index=counter, total=total)
+            dataPackages.insert(splitDataPackage.index, splitDataPackage)
+            availableBytes = availableBytes - SPLIT_SIZE
+            index = index + SPLIT_SIZE
+            counter = counter + 1
+        return dataPackages
 
 
 class StatusCode(Enum):
@@ -241,12 +296,20 @@ class StatusCode(Enum):
         return list(StatusCode)
 
     @staticmethod
-    def getStatus(rawbytes):
-        if rawbytes[0] != 0xff or rawbytes[1] != 0xef:
-            print("Header is not coincide.")
-        code = rawbytes[2]
+    def getStatus(code: int):
         status_list = StatusCode.values()
         for status in status_list:
             if code == status.value:
                 return status
-        return None
+        raise RuntimeError(str(code) + " is not a status code.")
+
+    # @staticmethod
+    # def getStatus(rawbytes):
+    #     if rawbytes[0] != 0xff or rawbytes[1] != 0xef:
+    #         print("Header is not coincide.")
+    #     code = rawbytes[2]
+    #     status_list = StatusCode.values()
+    #     for status in status_list:
+    #         if code == status.value:
+    #             return status
+    #     return None
