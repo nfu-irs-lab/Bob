@@ -1,24 +1,11 @@
 package com.example.hiwin.teacher.BobJavaTester.protocol;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.concurrent.Executors;
 
 import com.example.hiwin.teacher.BobJavaTester.DebugUtil;
-import com.example.hiwin.teacher.BobJavaTester.protocol.ProtocolSocket.ConnecttionStatus;
 import com.example.hiwin.teacher.BobJavaTester.protocol.core.ClientHelloPackage;
-import com.example.hiwin.teacher.BobJavaTester.protocol.core.Package;
 import com.example.hiwin.teacher.BobJavaTester.protocol.core.PackageHeader;
 import com.example.hiwin.teacher.BobJavaTester.protocol.core.PackageType;
-import com.example.hiwin.teacher.BobJavaTester.protocol.core.ProtocolListener;
 import com.example.hiwin.teacher.BobJavaTester.protocol.core.ServerHelloPackage;
-import com.example.hiwin.teacher.BobJavaTester.protocol.core.VerifyResponsePackage;
-import com.example.hiwin.teacher.BobJavaTester.protocol.core.VerifyResponsePackage.Verify;
-import com.example.hiwin.teacher.BobJavaTester.protocol.core.data.DataPackage;
 import com.example.hiwin.teacher.BobJavaTester.protocol.core.data.SplitDataPackage;
 
 public class ClientProtocolSocket extends ProtocolSocket {
@@ -52,11 +39,11 @@ public class ClientProtocolSocket extends ProtocolSocket {
                 ServerHelloPackage serverHelloPackage = new ServerHelloPackage(header, lack_bytes);
 
                 status = serverHelloPackage.getStatusCode() == ServerHelloPackage.StatusCode.ALLOW
-                        ? ConnecttionStatus.Connected
-                        : ConnecttionStatus.Disconnected;
-                if (pro_listener != null && status == ConnecttionStatus.Connected) {
+                        ? ConnectionStatus.Connected
+                        : ConnectionStatus.Disconnected;
+                if (pro_listener != null && status == ConnectionStatus.Connected) {
                     pro_listener.OnProtocolConnected();
-                } else if (pro_listener != null && status == ConnecttionStatus.Disconnected) {
+                } else if (pro_listener != null && status == ConnectionStatus.Disconnected) {
                     pro_listener.OnProtocolDisconnected();
                 }
 

@@ -6,54 +6,45 @@ def dumpByteInHex(raw):
     print("[", raw.hex(" "), "]")
 
 
-def test_package_varify_data():
-    package1 = pro.Package(action=0x01, data=[1, 2, 3, 4, 5, 0xEF, 0xFF])
-    dumpByteInHex(package1.toBytes())
-    package2 = pro.Package(rawbytes=package1.toBytes())
-    dumpByteInHex(package2.toBytes())
-
-
 class MyTestCase(unittest.TestCase):
 
-    def test_clienthello_Varify_data(self):
+    def test_clienthello(self):
         package1 = pro.ClientHelloPackage()
-        dumpByteInHex(package1.toBytes())
+        rawbytes=package1.toBytes()
+        print("header:")
+        headerbytes=pro.Package.getPackageHeaderByteArray(rawbytes)
+        dumpByteInHex(headerbytes)
+        lackbytes=rawbytes[4:]
+        print("lackbytes:")
+        dumpByteInHex(lackbytes)
+        header=pro.PackageHeader(headerBytes=headerbytes)
+        package2=pro.ClientHelloPackage(header=header,lackBytes=lackbytes)
 
-        package2 = pro.ClientHelloPackage(rawbytes=package1.toBytes())
+
+        print("package1:")
+        dumpByteInHex(package1.toBytes())
+        print("package2:")
         dumpByteInHex(package2.toBytes())
+
 
     def test_serverhello_Varify_data(self):
-        package1 = pro.ServerHelloPackage(statusCode=0xF0)
-        dumpByteInHex(package1.toBytes())
-        package2 = pro.ServerHelloPackage(rawbytes=package1.toBytes())
-        dumpByteInHex(package2.toBytes())
-        assert package1.statusCode == package2.statusCode, "statusCode not same"
-
+        pass
     def test_SplitDataPackage_varify(self):
-        package1 = pro.SplitDataPackage(index=1, total=5, data=[1, 2, 3, 4, 5])
-        dumpByteInHex(package1.toBytes())
-        package2 = pro.SplitDataPackage(rawbytes=package1.toBytes())
-        dumpByteInHex(package2.toBytes())
-
+        pass
     def test_DataPackage(self):
-        packages = pro.DataPackage.splitPackage([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
-        packages2 = pro.DataPackage()
-        for package in packages:
-            packages2.insert(package.index,package)
-        print(packages2.getData())
-
-    def test_pacjtest(self):
-        package=pro.Package(action=0xe0,data=[1,2,3,4,0xee,0xff])
-        dumpByteInHex(package.toBytes())
-        dumpByteInHex(package.toBytes()[0:4])
-        dumpByteInHex(package.toBytes()[4:])
-        header=pro.PackageHeader(header=package.toBytes()[0:4])
-        package2=pro.Package(header=header,lackBytes=package.toBytes()[4:])
-        dumpByteInHex(package2.toBytes())
-    def test_type(self):
-        print(pro.PackageType.SplitData.value)
-    def test_header(self):
-        pro.PackageHeader(action=255,length=5)
+        pass
+    # def test_pacjtest(self):
+    #     package=pro.Package(action=0xe0,data=[1,2,3,4,0xee,0xff])
+    #     dumpByteInHex(package.toBytes())
+    #     dumpByteInHex(package.toBytes()[0:4])
+    #     dumpByteInHex(package.toBytes()[4:])
+    #     header=pro.PackageHeader(header=package.toBytes()[0:4])
+    #     package2=pro.Package(header=header,lackBytes=package.toBytes()[4:])
+    #     dumpByteInHex(package2.toBytes())
+    # def test_type(self):
+    #     print(pro.PackageType.SplitData.value)
+    # def test_header(self):
+    #     pro.PackageHeader(action=255,length=5)
 
 if __name__ == '__main__':
     unittest.main()

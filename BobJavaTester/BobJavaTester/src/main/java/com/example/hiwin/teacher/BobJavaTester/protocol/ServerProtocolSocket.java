@@ -70,10 +70,10 @@ public class ServerProtocolSocket extends ProtocolSocket {
 		ServerHelloPackage serverHelloPackage = null;
 		if (clientHelloPackage.verify()) {
 			serverHelloPackage = new ServerHelloPackage(ServerHelloPackage.StatusCode.ALLOW);
-			status = ConnecttionStatus.Connected;
+			status = ConnectionStatus.Connected;
 		} else {
 			serverHelloPackage = new ServerHelloPackage(ServerHelloPackage.StatusCode.DENY);
-			status = ConnecttionStatus.Disconnected;
+			status = ConnectionStatus.Disconnected;
 		}
 
 		writePackage(serverHelloPackage);

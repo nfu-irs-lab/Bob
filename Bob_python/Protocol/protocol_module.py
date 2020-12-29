@@ -1,26 +1,31 @@
 from enum import Enum
+import abc
 
 VERIFY_UUID = "30b09b66-33d4-11eb-adc1-0242ac120002"
 SPLIT_SIZE = 253
 
 
+def dumpByteInHex(raw):
+    print("[", raw.hex(" "), "]")
+
+
 class PackageHeader:
-    def __init__(self, action: int = None, length: int = None, header: bytearray = None):
+    def __init__(self, action: int = None, length: int = None, headerBytes: bytes = None):
         if action and length:
             if action < 0 or action > 255:
                 raise RuntimeError("action error")
             self.action = action
             self.length = length
             self.lackBytesLength = length + 1
-        elif header:
-            if len(header) > 4 or len(header) <= 0:
-                raise RuntimeError("Header size is incorrect:" + str(len(header)))
+        elif headerBytes:
+            if len(headerBytes) > 4 or len(headerBytes) <= 0:
+                raise RuntimeError("Header size is incorrect:" + str(len(headerBytes)))
 
-            if header[0] != 0xff or header[1] != 0xef:
+            if headerBytes[0] != 0xff or headerBytes[1] != 0xef:
                 raise RuntimeError("Header is not coincide.")
 
-            self.action = header[2]
-            self.length = header[3]
+            self.action = headerBytes[2]
+            self.length = headerBytes[3]
             self.lackBytesLength = self.length + 1
 
     # def createHeaderByteArray(self):
@@ -59,7 +64,7 @@ class Package(PackageHeader):
         else:
             raise RuntimeError("Nothing was done when initialize Package class")
 
-    def toBytes(self):
+    def toBytes(self) -> bytes:
         package_data = self.createEmptyPackageByteArray()
         package_data[4:-1] = self._data
         cksum = self.action + self.length + sum(self._data)
@@ -75,7 +80,7 @@ class Package(PackageHeader):
         return package_data
 
     @staticmethod
-    def getPackageHeaderByteArray(rawbytes: bytearray):
+    def getPackageHeaderByteArray(rawbytes: bytes):
         return rawbytes[0:4]
 
 
@@ -234,7 +239,7 @@ class DataPackage():
 
         counter2 = 0
         for splitDataPackage in self.__packages:
-            if splitDataPackage == None:
+            if not splitDataPackage:
                 continue
             counter2 = counter2 + splitDataPackage.index
 
@@ -313,3 +318,107 @@ class StatusCode(Enum):
     #         if code == status.value:
     #             return status
     #     return None
+
+
+class ProtocolListener(metaclass=abc.ABCMeta):
+    @abc.abstractmethod
+    def OnProtocolConnected(self):
+        pass
+
+    @abc.abstractmethod
+    def OnProtocolDisconnected(self):
+        pass
+
+    @abc.abstractmethod
+    def OnReceiveDataPackage(self, data: bytes):
+        pass
+
+    @abc.abstractmethod
+    def OnWrite(self, data: bytes):
+        pass
+
+
+WRITE_DATA_RATE = 5000
+
+
+class ConnectionStatus(Enum):
+    Connected = 1
+    Disconnected = 0
+
+
+class ProtocolSocket(metaclass=abc.ABCMeta):
+    @abc.abstractmethod
+    def received(self, header_bytes: bytes, lack_bytes: bytes):
+        pass
+
+    def __init__(self):
+        self.status = None
+        self.pro_listener = None
+        self.dataPackages = None
+
+    def attach(self, listener: ProtocolListener):
+        self.pro_listener = listener
+
+    def onSplitDataReceive(self, splitDataPackage: SplitDataPackage):
+        if splitDataPackage.index == 0:
+            self.dataPackages = DataPackage(total=splitDataPackage.total)
+
+        if self.dataPackages:
+            if self.dataPackages.receivedPackages() == 0 and splitDataPackage.index != 0:
+                return
+            if self.dataPackages.isComplete():
+                print("Complete")
+                if self.pro_listener:
+                    self.pro_listener.OnReceiveDataPackage(data=self.dataPackages.getData())
+                self.dataPackages = None
+
+    def writeBytes(self, data: bytes):
+        if not self.isConnected():
+            return
+        dataPackages = DataPackage.splitPackage(data=data)
+        for package in dataPackages:
+            self.__writePackage(package)
+
+    def __writePackage(self, package: Package):
+        print("[Write Data]")
+        dumpByteInHex(package.toBytes())
+
+        if self.pro_listener:
+            self.pro_listener.OnWrite(data=package.toBytes())
+
+    def close(self):
+        self.status = ConnectionStatus.Disconnected
+        if self.pro_listener:
+            self.pro_listener.OnProtocolDisconnected()
+
+    def isConnected(self):
+        return self.status == ConnectionStatus.Connected
+
+
+class ClientProtocolSocket(ProtocolSocket):
+
+    def received(self, header_bytes: bytes, lack_bytes: bytes):
+        header = PackageHeader(headerBytes=header_bytes)
+        type = PackageType.getPackageType(header)
+        print("Type:")
+        print(type)
+
+        if type == PackageType.ServerHello:
+            serverHelloPackage = ServerHelloPackage(header=header, lackBytes=lack_bytes)
+
+            if serverHelloPackage.statusCode == StatusCode.ALLOW:
+                self.status = ConnectionStatus.Connected
+            else:
+                self.status = ConnectionStatus.Disconnected
+        elif type == PackageType.SplitData:
+            try:
+                splitDataPackage = SplitDataPackage(header=header, lackBytes=lack_bytes)
+                self.onSplitDataReceive(splitDataPackage)
+            except:
+                print("Error")
+
+    def connect(self):
+        self.sendHello()
+
+    def sendHello(self):
+        self.__writePackage(ClientHelloPackage())

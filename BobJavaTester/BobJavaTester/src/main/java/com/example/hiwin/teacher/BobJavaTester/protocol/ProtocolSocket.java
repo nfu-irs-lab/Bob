@@ -13,11 +13,11 @@ public abstract class ProtocolSocket {
 	
 	static final int WRITE_DATA_RATE = 5000;
 
-	public static enum ConnecttionStatus {
+	public static enum ConnectionStatus {
 		Connected, Disconnected
 	}
 
-	protected ConnecttionStatus status;
+	protected ConnectionStatus status;
 	protected ProtocolListener pro_listener;
 	protected DataPackage dataPackages;
 
@@ -35,7 +35,8 @@ public abstract class ProtocolSocket {
 			dataPackages.receive(splitDataPackage);
 			if (dataPackages.isComplete()) {
 				DebugUtil.print("Complete");
-				pro_listener.OnReceiveDataPackage(dataPackages.getData());
+				if(pro_listener!=null)
+					pro_listener.OnReceiveDataPackage(dataPackages.getData());
 				dataPackages = null;
 			}
 		}
@@ -60,19 +61,19 @@ public abstract class ProtocolSocket {
 	}
 	
 	public void close() {
-		status=ConnecttionStatus.Disconnected;
+		status=ConnectionStatus.Disconnected;
 		if(pro_listener!=null) {
 			pro_listener.OnProtocolDisconnected();
 		}
 	}
 	
 
-	public ConnecttionStatus getStatus() {
+	public ConnectionStatus getStatus() {
 		return status;
 	}
 
 	public synchronized boolean isConnected() {
-		return status == ConnecttionStatus.Connected;
+		return status == ConnectionStatus.Connected;
 	}
 	
 }
