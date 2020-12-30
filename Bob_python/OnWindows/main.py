@@ -1,45 +1,71 @@
 import serial
+import threading
 import Protocol.protocol_module as pro
+import io
 from time import time
 
-connected=False
 
-def OnClientHelloReceive(data_bytes,ser):
-    clientHello = pro.ClientHelloPackage(rawbytes=data_bytes)
-    if clientHello.verify():
-
-        global connected
-        serverHello = pro.ServerHelloPackage(statusCode=pro.StatusCode.ALLOW.value)
-        connected=True
-    else:
-        serverHello = pro.ServerHelloPackage(statusCode=pro.StatusCode.NOT_SUPPORT.value)
-        connected=False
-
-    ser.write(serverHello.toBytes())
-
-def OnReceivePackage(data_bytes,ser):
-    type=pro.PackageType.getPackageType(rawbytes=data_bytes)
-    print(type)
-    if type==pro.PackageType.ClientHello:
-        OnClientHelloReceive(data_bytes,ser)
+def dumpByteInHex(raw):
+    print("[", raw.hex(" "), "]")
 
 
+g_ser = None
 
-with serial.Serial("COM3", 57600, timeout=1,parity=serial.PARITY_NONE) as ser:
-    print(ser.is_open)
-    availableBytes=ser.in_waiting
-    timer=int(time() * 1000)
+
+class MainListener(pro.ProtocolListener):
+    def OnProtocolConnected(self):
+        pass
+
+    def OnProtocolDisconnected(self):
+        pass
+
+    def OnReceiveDataPackage(self, data: bytes):
+        pass
+
+    def OnWrite(self, data: bytes):
+        print("[Write]")
+        dumpByteInHex(data)
+        g_ser.write(data)
+
+
+def job(ser: serial.Serial):
     while True:
-        if connected and int(time() * 1000)>=timer:
-            timer=int(time() * 1000)+5000
-            str="WwogIHsKICAibmFtZSI6ImFwcGxlIiwKICAibnVtYmVyIjozCiAgfSwKICB7CiAgICAibmFtZSI6InBlbiIsCiAgICAibnVtYmVyIjo0CiAgfSx7CiAgICAibmFtZSI6ImZ1Y2siLAogICAgIm51bWJlciI6NQogICAgCiAgfQpd"
-            datapackages=pro.DataPackage.splitPackage(str.encode("UTF-8"))
-            for datapackage in datapackages:
-                ser.write(datapackage.toBytes())
-
-
-        if availableBytes>0:
-            bs=ser.read(availableBytes)
-            OnReceivePackage(bs,ser)
-
+        # print("job")
+        buffer = bytearray(1024)
         availableBytes = ser.in_waiting
+        if availableBytes <= 0:
+            continue
+
+        print("received")
+        received_len = ser.readinto(buffer)
+        # buffer=ser.read(1024)
+        data = buffer[0:received_len]
+        dumpByteInHex(data)
+        bais = io.BytesIO(data)
+        while True:
+            headerBytes = bytearray(4)
+            len = bais.readinto(headerBytes)
+            if len != 4:
+                break
+            header = pro.PackageHeader(headerBytes=headerBytes)
+            dumpByteInHex(headerBytes)
+            lackBytes = bais.read(header.lackBytesLength)
+            dumpByteInHex(lackBytes)
+            socket.received(header_bytes=headerBytes, lack_bytes=lackBytes)
+
+        # ser.flushInput()
+
+
+with serial.Serial("COM3", 57600, timeout=1, parity=serial.PARITY_NONE) as ser:
+    print(ser.is_open)
+    socket = pro.ServerProtocolSocket()
+    socket.attach(MainListener())
+    g_ser = ser
+    t = threading.Thread(target=job, args=(ser,))
+    t.start()
+    while True:
+        if socket.isConnected():
+            input()
+            data = "WwogIHsKICAibmFtZSI6ImFwcGxlIiwKICAibnVtYmVyIjozCiAgfSwKICB7CiAgICAibmFtZSI6InBlbiIsCiAgICAibnVtYmVyIjo0CiAgfSx7CiAgICAibmFtZSI6ImZ1Y2siLAogICAgIm51bWJlciI6NQogICAgCiAgfQpd".encode()
+            socket.writeBytes(data)
+        pass

@@ -377,12 +377,9 @@ class ProtocolSocket(metaclass=abc.ABCMeta):
             return
         dataPackages = DataPackage.splitPackage(data=data)
         for package in dataPackages:
-            self.__writePackage(package)
+            self._writePackage(package)
 
-    def __writePackage(self, package: Package):
-        print("[Write Data]")
-        dumpByteInHex(package.toBytes())
-
+    def _writePackage(self, package: Package):
         if self.pro_listener:
             self.pro_listener.OnWrite(data=package.toBytes())
 
@@ -421,4 +418,38 @@ class ClientProtocolSocket(ProtocolSocket):
         self.sendHello()
 
     def sendHello(self):
-        self.__writePackage(ClientHelloPackage())
+        super()._writePackage(ClientHelloPackage())
+
+
+class ServerProtocolSocket(ProtocolSocket):
+
+    def received(self, header_bytes: bytes, lack_bytes: bytes):
+        header = PackageHeader(headerBytes=header_bytes)
+        type = PackageType.getPackageType(header)
+        print("Type:")
+        print(type)
+
+        if type == PackageType.ClientHello:
+            clientHelloPackage = ClientHelloPackage(header=header, lackBytes=lack_bytes)
+            self.onClientHelloReceive(clientHelloPackage)
+        elif type == PackageType.SplitData:
+            try:
+                splitDataPackage = SplitDataPackage(header=header, lackBytes=lack_bytes)
+                self.onSplitDataReceive(splitDataPackage)
+            except:
+                print("Error")
+
+    def onClientHelloReceive(self,clientHelloPackage:ClientHelloPackage):
+        # if self.isConnected():
+        #     return
+
+        if clientHelloPackage.verify():
+            serverHelloPackage=ServerHelloPackage(statusCode=StatusCode.ALLOW)
+            self.status = ConnectionStatus.Connected
+        else:
+            serverHelloPackage = ServerHelloPackage(statusCode=StatusCode.DENY)
+            self.status=ConnectionStatus.Disconnected
+
+        self._writePackage(serverHelloPackage)
+        if self.pro_listener:
+            self.pro_listener.OnProtocolConnected()
