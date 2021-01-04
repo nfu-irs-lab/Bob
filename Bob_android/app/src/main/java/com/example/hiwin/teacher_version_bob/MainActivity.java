@@ -330,7 +330,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             status("[Read]");
             status(DebugUtil.BytesInHexString(data));
             status("<Read>");
-
             ByteArrayInputStream bais = new ByteArrayInputStream(data);
             while (bais.available() > 0) {
                 try {

@@ -3,8 +3,8 @@ package com.example.hiwin.teacher_version_bob.protocol.core.data;
 import java.util.ArrayList;
 
 public class DataPackage {
-//	static final int SPLIT_SIZE = 50;
-	static final int SPLIT_SIZE = 2;
+	static final int SPLIT_SIZE = 50;
+//	static final int SPLIT_SIZE = 2;
 	private final ArrayList<SplitDataPackage> packages;
 	private final int total;
 	private int received_counter=0;

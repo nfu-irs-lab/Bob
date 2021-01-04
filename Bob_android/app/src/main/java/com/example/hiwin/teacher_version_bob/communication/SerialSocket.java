@@ -10,6 +10,7 @@ import android.content.IntentFilter;
 
 import java.io.IOException;
 import java.security.InvalidParameterException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.UUID;
 import java.util.concurrent.Executors;
@@ -17,7 +18,7 @@ import java.util.concurrent.Executors;
 public class SerialSocket implements Runnable {
 
     private static final UUID BLUETOOTH_SPP = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
-
+    private static final int READ_DELAY=100;
     private final BroadcastReceiver disconnectBroadcastReceiver;
 
     private Context context;
@@ -35,7 +36,7 @@ public class SerialSocket implements Runnable {
         disconnectBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                if(listener != null)
+                if (listener != null)
                     listener.onSerialIoError(new IOException("background disconnect"));
                 disconnect(); // disconnect now, else would be queued until UI re-attached
             }
@@ -58,7 +59,7 @@ public class SerialSocket implements Runnable {
     void disconnect() {
         listener = null; // ignore remaining data and errors
         // connected = false; // run loop will reset connected
-        if(socket != null) {
+        if (socket != null) {
             try {
                 socket.close();
             } catch (Exception ignored) {
@@ -82,10 +83,10 @@ public class SerialSocket implements Runnable {
         try {
             socket = device.createRfcommSocketToServiceRecord(BLUETOOTH_SPP);
             socket.connect();
-            if(listener != null)
+            if (listener != null)
                 listener.onSerialConnect();
         } catch (Exception e) {
-            if(listener != null)
+            if (listener != null)
                 listener.onSerialConnectError(e);
             try {
                 socket.close();
@@ -99,11 +100,23 @@ public class SerialSocket implements Runnable {
             byte[] buffer = new byte[1024];
             int len;
             //noinspection InfiniteLoopStatement
+
+            int last_availableBytes = 0;
             while (true) {
+                int current_availableBytes = socket.getInputStream().available();
+                getClass();
+                if (current_availableBytes - last_availableBytes> 0) {
+                     last_availableBytes = current_availableBytes;
+                     Thread.sleep(READ_DELAY);
+                    continue;
+                }
+                if(current_availableBytes==0)continue;
+
                 len = socket.getInputStream().read(buffer);
                 byte[] data = Arrays.copyOf(buffer, len);
-                if(listener != null)
+                if (listener != null)
                     listener.onSerialRead(data);
+                last_availableBytes=0;
             }
         } catch (Exception e) {
             connected = false;

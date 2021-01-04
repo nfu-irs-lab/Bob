@@ -56,7 +56,8 @@ def job(ser: serial.Serial):
         # ser.flushInput()
 
 
-with serial.Serial("COM3", 57600, timeout=1, parity=serial.PARITY_NONE) as ser:
+# with serial.Serial("COM3", 57600, timeout=1, parity=serial.PARITY_NONE) as ser:
+with serial.Serial("COM6", 38400, timeout=1, parity=serial.PARITY_NONE) as ser:
     print(ser.is_open)
     socket = pro.ServerProtocolSocket()
     socket.attach(MainListener())
