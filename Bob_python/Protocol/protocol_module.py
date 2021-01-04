@@ -2,7 +2,7 @@ from enum import Enum
 import abc
 
 VERIFY_UUID = "30b09b66-33d4-11eb-adc1-0242ac120002"
-SPLIT_SIZE = 50
+SPLIT_SIZE = 2
 
 
 def dumpByteInHex(raw):
