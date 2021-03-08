@@ -167,7 +167,7 @@ isMoving = false
 
 
 def getObjectByName(str):
-    f = open('objects.json', encoding='utf-8')
+    f = open('objects.xjson', encoding='utf-8')
     array = json.load(f)
     for data in array:
         item_name = data["name"]
