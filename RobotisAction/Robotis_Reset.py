@@ -4,7 +4,7 @@ import serial
 import time
 
 def Robotis(id, pos, speed):
-    ser = serial.Serial('/dev/ttyUSB0',  57142, timeout= 0.5);
+    ser = serial.Serial('/dev/ttyUSB1',  57142, timeout= 0.5);
     ser.bytesize = serial.EIGHTBITS
     arr =[ ]
     arr.append(0xff)
