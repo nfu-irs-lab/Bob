@@ -312,15 +312,7 @@ def detect(save_img=False):
 
             objs = []
             print(result)
-            for obj in result:
-                if (not isMoving):
-                    if obj['name'] == "knife":
-                        action_knife()
-                        isMoving = True
 
-                str_obj = getObjectByName(obj['name'])
-                if str_obj is not None:
-                    objs.append(str_obj)
 
 
             if current_milli_time() > timer:
@@ -332,6 +324,17 @@ def detect(save_img=False):
                 writeBase64Line(ser, json_result)
 
                 timer = current_milli_time() + 10000
+
+            for obj in result:
+                if (not isMoving):
+                    if obj['name'] == "knife":
+                        action_knife()
+                        isMoving = True
+
+                str_obj = getObjectByName(obj['name'])
+                if str_obj is not None:
+                    objs.append(str_obj)
+
 
             # Stream results
             # if view_img:
