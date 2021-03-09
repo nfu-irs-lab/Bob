@@ -24,7 +24,7 @@ from utils.torch_utils import select_device, load_classifier, time_synchronized
 
 
 def Robotis(id, pos, speed):
-    ser = serial.Serial('/dev/ttyUSB0', 57142, timeout=0.5);
+    ser = serial.Serial('/dev/ttyUSB1', 57142, timeout=0.5);
     ser.bytesize = serial.EIGHTBITS
     arr = []
     arr.append(0xff)
@@ -401,7 +401,7 @@ if __name__ == '__main__':
     opt = parser.parse_args()
     print(opt)
     try:
-        with serial.Serial("/dev/ttyUSB1", 38400, timeout=1, parity=serial.PARITY_NONE) as ser:
+        with serial.Serial("/dev/ttyUSB0", 38400, timeout=1, parity=serial.PARITY_NONE) as ser:
             print(ser.is_open)
             g_ser = ser
             t = threading.Thread(target=serial_monitor, args=(ser,))
