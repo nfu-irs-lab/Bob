@@ -345,6 +345,7 @@ def detect(save_img=False):
 
             if current_milli_time() > timer:
                 json_result = json.dumps(objs)
+                print(json_result)
                 writeBase64Line(ser, json_result)
                 timer = current_milli_time() + 1000
 
