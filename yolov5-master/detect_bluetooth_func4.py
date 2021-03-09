@@ -3,6 +3,7 @@ import base64
 import serial
 import threading
 import io
+import sys
 
 import argparse
 import time
@@ -19,6 +20,7 @@ from utils.general import check_img_size, non_max_suppression, apply_classifier,
     strip_optimizer, set_logging, increment_path
 from utils.plots import plot_one_box
 from utils.torch_utils import select_device, load_classifier, time_synchronized
+
 
 
 def Robotis(id, pos, speed):
@@ -163,8 +165,6 @@ def dumpByteInHex(raw):
 
 
 g_ser = None
-isMoving = False
-
 
 def getObjectByName(str):
     f = open('objects.xjson', encoding='utf-8')
@@ -209,7 +209,7 @@ timer = 0
 
 
 def detect(save_img=False):
-    global timer, isMoving
+    global timer
 
     source, weights, view_img, save_txt, imgsz = opt.source, opt.weights, opt.view_img, opt.save_txt, opt.img_size
     webcam = source.isnumeric() or source.endswith('.txt') or source.lower().startswith(
@@ -308,8 +308,6 @@ def detect(save_img=False):
                         label = f'{names[int(cls)]} {conf:.2f}'
                         plot_one_box(xyxy, im0, label=label, color=colors[int(cls)], line_thickness=3)
 
-
-
             print(result)
 
 
@@ -388,16 +386,19 @@ if __name__ == '__main__':
     parser.add_argument('--exist-ok', action='store_true', help='existing project/name ok, do not increment')
     opt = parser.parse_args()
     print(opt)
-
-    with serial.Serial("/dev/ttyUSB1", 38400, timeout=1, parity=serial.PARITY_NONE) as ser:
-        print(ser.is_open)
-        g_ser = ser
-        t = threading.Thread(target=serial_monitor, args=(ser,))
-        t.start()
-        with torch.no_grad():
-            if opt.update:  # update all models (to fix SourceChangeWarning)
-                for opt.weights in ['yolov5s.pt', 'yolov5m.pt', 'yolov5l.pt', 'yolov5x.pt']:
+    try:
+        with serial.Serial("/dev/ttyUSB1", 38400, timeout=1, parity=serial.PARITY_NONE) as ser:
+            print(ser.is_open)
+            g_ser = ser
+            t = threading.Thread(target=serial_monitor, args=(ser,))
+            t.start()
+            with torch.no_grad():
+                if opt.update:  # update all models (to fix SourceChangeWarning)
+                    for opt.weights in ['yolov5s.pt', 'yolov5m.pt', 'yolov5l.pt', 'yolov5x.pt']:
+                        detect()
+                        strip_optimizer(opt.weights)
+                else:
                     detect()
-                    strip_optimizer(opt.weights)
-            else:
-                detect()
+    except KeyboardInterrupt:
+        print("KeyboardInterrupt")
+        sys.exit()
