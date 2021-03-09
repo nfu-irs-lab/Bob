@@ -323,8 +323,7 @@ def detect(save_img=False):
 
 
 
-            # if current_milli_time() > timer:
-            #     json_result = json.dumps(objs)
+            #
 
                 # Print time (inference + NMS)
                 # print(f'{s}Done. ({t2 - t1:.3f}s)')
@@ -344,6 +343,10 @@ def detect(save_img=False):
                 if str_obj is not None:
                     objs.append(str_obj)
 
+            if current_milli_time() > timer:
+                json_result = json.dumps(objs)
+                writeBase64Line(ser, json_result)
+                timer = current_milli_time() + 1000
 
             # Stream results
             # if view_img:
