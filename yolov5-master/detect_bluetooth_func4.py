@@ -163,7 +163,7 @@ def dumpByteInHex(raw):
 
 
 g_ser = None
-isMoving = false
+isMoving = False
 
 
 def getObjectByName(str):
