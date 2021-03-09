@@ -334,20 +334,27 @@ def detect(save_img=False):
 
 
 
-            objs = []
-            for obj in result:
-                str_obj = getObjectByName(obj['name'])
-                if str_obj is not None:
-                    objs.append(str_obj)
+            # objs = []
+            # for obj in result:
+            #     str_obj = getObjectByName(obj['name'])
+            #     if str_obj is not None:
+            #         objs.append(str_obj)
 
-            if current_milli_time() > timer:
-                json_result = json.dumps(objs)
-                print(json_result)
-                writeBase64Line(ser, json_result)
-                timer = current_milli_time() + 1000
+            # if current_milli_time() > timer:
+            #     json_result = json.dumps(objs)
+            #     print(json_result)
+            #     writeBase64Line(ser, json_result)
+            #     timer = current_milli_time() + 1000
 
             for obj in result:
                 if obj['name'] == "knife":
+                    objs=[]
+                    str_obj = getObjectByName(obj['name'])
+                    if str_obj is not None:
+                        objs.append(str_obj)
+
+                    json_result = json.dumps(objs)
+                    writeBase64Line(ser, json_result)
                     action_knife()
 
             # Stream results
