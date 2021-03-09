@@ -336,9 +336,6 @@ def detect(save_img=False):
 
             objs = []
             for obj in result:
-                if obj['name'] == "knife":
-                    action_knife()
-
                 str_obj = getObjectByName(obj['name'])
                 if str_obj is not None:
                     objs.append(str_obj)
@@ -348,6 +345,10 @@ def detect(save_img=False):
                 print(json_result)
                 writeBase64Line(ser, json_result)
                 timer = current_milli_time() + 1000
+
+            for obj in result:
+                if obj['name'] == "knife":
+                    action_knife()
 
             # Stream results
             # if view_img:
