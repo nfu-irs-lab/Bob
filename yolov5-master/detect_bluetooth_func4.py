@@ -42,6 +42,16 @@ def Robotis(id, pos, speed):
     ary = bytearray(arr)
     ser.write(ary)
 
+def action_reset():
+    Robotis(1, 2000, 50)
+    Robotis(6, 2030, 50)
+    Robotis(2, 2048, 50)
+    Robotis(7, 2048, 50)
+    Robotis(3, 834, 50)
+    Robotis(8, 200, 50)
+    Robotis(4, 512, 50)
+    Robotis(9, 450, 50)
+    time.sleep(3)
 
 def action_knife():
     global isMoving
@@ -152,8 +162,8 @@ def action_knife():
     Robotis(8, 200, 50)
     Robotis(4, 350, 50)
     Robotis(9, 450, 50)
-    time.sleep(3)
-    isMoving=False
+    time.sleep(1)
+    action_reset()
 
 
 def current_milli_time():
@@ -209,6 +219,7 @@ timer = 0
 
 
 def detect(save_img=False):
+    action_reset()
     global timer
 
     source, weights, view_img, save_txt, imgsz = opt.source, opt.weights, opt.view_img, opt.save_txt, opt.img_size
