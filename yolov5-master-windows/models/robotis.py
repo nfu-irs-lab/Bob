@@ -1,5 +1,4 @@
 import time
-
 import serial
 import abc
 
@@ -25,7 +24,7 @@ class RobotUnitAction:
         else:
             raise Exception
 
-    def doAction(self, ser: RoboticsSerial):
+    def doUnitAction(self, ser: RoboticsSerial):
         if self.sleep_duration is not None:
             print("sleep:", self.sleep_duration)
             time.sleep(self.sleep_duration)
@@ -174,4 +173,4 @@ class KnifeAction(RobotAction):
 
     def doAction(self, ser: RoboticsSerial):
         for unit_action in self.action_list:
-            unit_action.doAction(ser)
+            unit_action.doUnitAction(ser)
