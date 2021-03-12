@@ -40,16 +40,16 @@ class RobotAction(metaclass=abc.ABCMeta):
     def __init__(self,action_list:list):
         self.action_list = action_list
 
-    @abc.abstractmethod
-    def doAction(self, ser: RoboticsSerial):
-        return NotImplemented
-
     @staticmethod
     def parseAction(string: str):
         if string == "knife":
             return KnifeAction()
         else:
             raise Exception
+
+    def doAction(self, ser: RoboticsSerial):
+        for unit_action in self.action_list:
+            unit_action.doUnitAction(ser)
 
 
 class KnifeAction(RobotAction):
@@ -171,6 +171,6 @@ class KnifeAction(RobotAction):
 
         return action_list
 
-    def doAction(self, ser: RoboticsSerial):
-        for unit_action in self.action_list:
-            unit_action.doUnitAction(ser)
+    # def doAction(self, ser: RoboticsSerial):
+    #     for unit_action in self.action_list:
+    #         unit_action.doUnitAction(ser)
