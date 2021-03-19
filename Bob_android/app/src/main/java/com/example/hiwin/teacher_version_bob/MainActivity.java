@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.hiwin.teacher_version_bob.communication.SerialListener;
 import com.example.hiwin.teacher_version_bob.communication.SerialService;
@@ -267,10 +268,10 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         updateList(datas);
     }
 
-    private void send_msg(String msg){
-        byte[] raw=Base64.encode(msg.getBytes(),Base64.URL_SAFE);
-        byte[] line=new byte[raw.length+1];
-        System.arraycopy(raw,0,line,0,raw.length);
+    private void send_msg(String msg) {
+        byte[] raw = Base64.encode(msg.getBytes(), Base64.URL_SAFE);
+        byte[] line = new byte[raw.length + 1];
+        System.arraycopy(raw, 0, line, 0, raw.length);
 //        line[line.length-1]='\n';
 
         try {
@@ -279,7 +280,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             e.printStackTrace();
         }
     }
-
 
 
     SerialListener serialListener = new SerialListener() {
@@ -326,12 +326,13 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                byte[] raw_bytes = Base64.decode(recv_data.getBytes(StandardCharsets.UTF_8), Base64.URL_SAFE);
-
-                                String msg=new String(raw_bytes, StandardCharsets.UTF_8);
                                 try {
+                                    byte[] raw_bytes = Base64.decode(recv_data.getBytes(StandardCharsets.UTF_8), Base64.URL_SAFE);
+
+                                    String msg = new String(raw_bytes, StandardCharsets.UTF_8);
                                     OnMessageReceived(msg);
-                                } catch (JSONException e) {
+                                } catch (Exception e) {
+                                    Toast.makeText(MainActivity.this,e.getMessage(),Toast.LENGTH_LONG).show();
                                     e.printStackTrace();
                                 }
 

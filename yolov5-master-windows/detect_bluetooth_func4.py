@@ -21,149 +21,13 @@ from utils.general import check_img_size, non_max_suppression, apply_classifier,
 from utils.plots import plot_one_box
 from utils.torch_utils import select_device, load_classifier, time_synchronized
 
+# Robotis-------------
+from models.robotis import RoboticsSerial
+from models.robotis import RobotAction
+from models.hc05 import HC05Serial
 
 
-def Robotis(id, pos, speed):
-    ser = serial.Serial('/dev/ttyUSB1', 57142, timeout=0.5)
-    ser.bytesize = serial.EIGHTBITS
-    arr = []
-    arr.append(0xff)
-    arr.append(0xff)
-    arr.append(id)
-    arr.append(0x07)
-    arr.append(0x03)
-    arr.append(0x1e)
-    arr.append(pos & 255)
-    arr.append(pos // 256)
-    arr.append(speed & 255)
-    arr.append(speed // 256)
-    tt = 0xff - (sum(arr[2:9]) & 255)
-    arr.append(tt)
-    ary = bytearray(arr)
-    ser.write(ary)
-
-def action_reset():
-    Robotis(1, 2000, 50)
-    Robotis(6, 2030, 50)
-    Robotis(2, 2048, 50)
-    Robotis(7, 2048, 50)
-    Robotis(3, 834, 50)
-    Robotis(8, 200, 50)
-    Robotis(4, 512, 50)
-    Robotis(9, 450, 50)
-    time.sleep(3)
-
-def action_knife():
-    global isMoving
-    Robotis(1, 2000, 50)
-    Robotis(6, 2030, 50)
-    Robotis(2, 2048, 50)
-    Robotis(7, 2048, 50)
-    Robotis(3, 834, 50)
-    Robotis(8, 200, 50)
-    Robotis(4, 512, 50)
-    Robotis(9, 450, 50)
-    time.sleep(3)
-    Robotis(1, 981, 50)
-    Robotis(6, 2924, 50)
-    Robotis(2, 2048, 50)
-    Robotis(7, 2048, 50)
-    Robotis(3, 834, 50)
-    Robotis(8, 1835, 50)
-    Robotis(4, 350, 50)
-    Robotis(9, 450, 50)
-    time.sleep(3)
-    Robotis(1, 981, 50)
-    Robotis(6, 2924, 50)
-    Robotis(2, 2400, 50)
-    Robotis(7, 1647, 50)
-    Robotis(3, 1835, 50)
-    Robotis(8, 200, 50)
-    Robotis(4, 350, 50)
-    Robotis(9, 450, 50)
-    time.sleep(3)
-    Robotis(1, 981, 50)
-    Robotis(6, 3150, 50)
-    Robotis(2, 2400, 50)
-    Robotis(7, 1647, 50)
-    Robotis(3, 1835, 50)
-    Robotis(8, 200, 50)
-    Robotis(4, 350, 50)
-    Robotis(9, 450, 50)
-    time.sleep(0.75)
-    Robotis(1, 981, 50)
-    Robotis(6, 2870, 50)
-    Robotis(2, 2400, 50)
-    Robotis(7, 1647, 50)
-    Robotis(3, 1835, 50)
-    Robotis(8, 200, 50)
-    Robotis(4, 350, 50)
-    Robotis(9, 450, 50)
-    time.sleep(0.75)
-    Robotis(1, 981, 50)
-    Robotis(6, 3150, 50)
-    Robotis(2, 2400, 50)
-    Robotis(7, 1647, 50)
-    Robotis(3, 1835, 50)
-    Robotis(8, 200, 50)
-    Robotis(4, 350, 50)
-    Robotis(9, 450, 50)
-    time.sleep(0.75)
-    Robotis(1, 981, 50)
-    Robotis(6, 2870, 50)
-    Robotis(2, 2400, 50)
-    Robotis(7, 1647, 50)
-    Robotis(3, 1835, 50)
-    Robotis(8, 200, 50)
-    Robotis(4, 350, 50)
-    Robotis(9, 450, 50)
-    time.sleep(0.75)
-    Robotis(1, 981, 50)
-    Robotis(6, 3150, 50)
-    Robotis(2, 2400, 50)
-    Robotis(7, 1647, 50)
-    Robotis(3, 1835, 50)
-    Robotis(8, 200, 50)
-    Robotis(4, 350, 50)
-    Robotis(9, 450, 50)
-    time.sleep(0.75)
-    Robotis(1, 981, 50)
-    Robotis(6, 2870, 50)
-    Robotis(2, 2400, 50)
-    Robotis(7, 1647, 50)
-    Robotis(3, 1835, 50)
-    Robotis(8, 200, 50)
-    Robotis(4, 350, 50)
-    Robotis(9, 450, 50)
-    time.sleep(0.75)
-    Robotis(1, 981, 50)
-    Robotis(6, 3150, 50)
-    Robotis(2, 2400, 50)
-    Robotis(7, 1647, 50)
-    Robotis(3, 1835, 50)
-    Robotis(8, 200, 50)
-    Robotis(4, 350, 50)
-    Robotis(9, 450, 50)
-    time.sleep(0.75)
-    Robotis(1, 981, 50)
-    Robotis(6, 2870, 50)
-    Robotis(2, 2400, 50)
-    Robotis(7, 1647, 50)
-    Robotis(3, 1835, 50)
-    Robotis(8, 200, 50)
-    Robotis(4, 350, 50)
-    Robotis(9, 450, 50)
-    time.sleep(0.75)
-    Robotis(1, 981, 50)
-    Robotis(6, 2924, 50)
-    Robotis(2, 2400, 50)
-    Robotis(7, 1647, 50)
-    Robotis(3, 1835, 50)
-    Robotis(8, 200, 50)
-    Robotis(4, 350, 50)
-    Robotis(9, 450, 50)
-    time.sleep(1)
-    action_reset()
+# Robotis-------------
 
 
 def current_milli_time():
@@ -175,6 +39,7 @@ def dumpByteInHex(raw):
 
 
 g_ser = None
+
 
 def getObjectByName(str):
     f = open('objects.xjson', encoding='utf-8')
@@ -215,12 +80,11 @@ def json_dict(name, number):
     return json
 
 
-timer = 0
-
-
 def detect(save_img=False):
-    # action_reset()
-    global timer
+    # robotics = RoboticsSerial('COM5')
+    app = HC05Serial('COM4')
+
+    # timer=0
 
     source, weights, view_img, save_txt, imgsz = opt.source, opt.weights, opt.view_img, opt.save_txt, opt.img_size
     webcam = source.isnumeric() or source.endswith('.txt') or source.lower().startswith(
@@ -320,48 +184,30 @@ def detect(save_img=False):
                         plot_one_box(xyxy, im0, label=label, color=colors[int(cls)], line_thickness=3)
 
             # print(result)
-
-
-
-            #
-
-                # Print time (inference + NMS)
-                # print(f'{s}Done. ({t2 - t1:.3f}s)')
-                # print(json_result)
-                # writeBase64Line(ser, json_result)
-
-                # timer = current_milli_time() + 10000
-
-
-
-            # objs = []
-            # for obj in result:
-            #     str_obj = getObjectByName(obj['name'])
-            #     if str_obj is not None:
-            #         objs.append(str_obj)
-
-            # if current_milli_time() > timer:
-            #     json_result = json.dumps(objs)
-            #     print(json_result)
-            #     writeBase64Line(ser, json_result)
-            #     timer = current_milli_time() + 1000
-
+            objs = []
             for obj in result:
-                if obj['name'] == "knife":
-                    objs=[]
-                    str_obj = getObjectByName(obj['name'])
-                    if str_obj is not None:
-                        objs.append(str_obj)
+                objs.append(obj['name'])
 
-                    json_result = json.dumps(objs)
-                    writeBase64Line(ser, json_result)
-                    # action_knife()
+            json_objs = []
+            action = None
+            print(objs)
+            for obj_name in objs:
+                buf = getObjectByName(obj_name)
+                if buf is not None:
+                    action = RobotAction.parseAction(buf['action'])
+                    json_objs.append(buf)
+            app.writeBase64Line(json.dumps(json_objs))
+
+            if action is not None:
+                print("Do",type(action))
+                time.sleep(3)
+                # action.doAction(robotics)
 
             # Stream results
-            # if view_img:
-            #     cv2.imshow(str(p), im0)
-            #     if cv2.waitKey(1) == ord('q'):  # q to quit
-            #         raise StopIteration
+            if view_img:
+                cv2.imshow(str(p), im0)
+                if cv2.waitKey(1) == ord('q'):  # q to quit
+                    raise StopIteration
 
             # Save results (image with detections)
             if save_img:
@@ -387,7 +233,6 @@ def detect(save_img=False):
     print(f'Done. ({time.time() - t0:.3f}s)')
 
 
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--weights', nargs='+', type=str, default='yolov5s.pt', help='model.pt path(s)')
@@ -408,19 +253,11 @@ if __name__ == '__main__':
     parser.add_argument('--exist-ok', action='store_true', help='existing project/name ok, do not increment')
     opt = parser.parse_args()
     print(opt)
-    try:
-        with serial.Serial("COM5", 38400, timeout=1, parity=serial.PARITY_NONE) as ser:
-            print(ser.is_open)
-            g_ser = ser
-            t = threading.Thread(target=serial_monitor, args=(ser,))
-            t.start()
-            with torch.no_grad():
-                if opt.update:  # update all models (to fix SourceChangeWarning)
-                    for opt.weights in ['yolov5s.pt', 'yolov5m.pt', 'yolov5l.pt', 'yolov5x.pt']:
-                        detect()
-                        strip_optimizer(opt.weights)
-                else:
-                    detect()
-    except KeyboardInterrupt:
-        print("KeyboardInterrupt")
-        sys.exit()
+
+    with torch.no_grad():
+        if opt.update:  # update all models (to fix SourceChangeWarning)
+            for opt.weights in ['yolov5s.pt', 'yolov5m.pt', 'yolov5l.pt', 'yolov5x.pt']:
+                detect()
+                strip_optimizer(opt.weights)
+        else:
+            detect()

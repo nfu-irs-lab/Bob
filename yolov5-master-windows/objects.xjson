@@ -1,8 +1,9 @@
 [
   {
     "name": "person",
-    "sentence": "The person stay beside my dad is my mom.",
     "group": "creature",
+    "sentence": "The person stay beside my dad is my mom.",
+    "action": "creature",
     "languages": [
       {
         "code": "zh_TW",
@@ -15,6 +16,7 @@
     "name": "keyboard",
     "group": "computer accessories",
     "sentence": "Hey!!!Don't break my keyboard.",
+    "action": "keyboard",
     "languages": [
       {
         "code": "zh_TW",
@@ -27,6 +29,7 @@
     "name": "knife",
     "group": "tool",
     "sentence": "Don't point the knife at me.",
+    "action": "knife",
     "languages": [
       {
         "code": "zh_TW",
