@@ -1,7 +1,10 @@
+from models.robotis import RobotAction, ResetAction
 from models.robotis import RoboticsSerial
-from models.robotis import RobotAction
 
-robot_serial = RoboticsSerial()
-action = RobotAction.parseAction("knife")
-action.doAction(robot_serial)
+ser = RoboticsSerial('COM8')
 
+# robot_serial = RoboticsSerial("COM8")
+action = RobotAction.parseAction("cake")
+action.doAction(ser)
+ResetAction().doAction(ser)
+ser.close()

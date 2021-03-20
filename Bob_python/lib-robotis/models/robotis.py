@@ -1,55 +1,94 @@
 import time
+
 import serial
 import abc
 
 
 class RoboticsSerial(serial.Serial):
-    def __init__(self):
-        super().__init__('COM5', 57142, timeout=0.5)
+    def __init__(self, device: str):
+        super().__init__(device, 57142, timeout=0.5)
         self.bytesize = serial.EIGHTBITS
 
 
-class RobotUnitAction:
-
-    def __init__(self, id: int = None, pos: int = None, speed: int = None, sleep_duration: float = None):
+class RobotUnitAction(metaclass=abc.ABCMeta):
+    def __init__(self, id: int = None, pos: int = None, speed: int = None,
+                 sleep_duration: float = None):
         if sleep_duration:
             self.sleep_duration = sleep_duration
             self.bytes_message = None
         elif id and pos and speed:
-            arr = [0xff, 0xff, id, 0x07, 0x03, 0x1e, pos & 255, pos // 256, speed & 255, speed // 256]
+
+            arr = []
+            arr.append(0xff)
+            arr.append(0xff)
+            arr.append(id)
+            arr.append(0x07)
+            arr.append(0x03)
+            arr.append(0x1e)
+            arr.append(pos & 255)
+            arr.append(pos // 256)
+            arr.append(speed & 255)
+            arr.append(speed // 256)
             tt = 0xff - (sum(arr[2:9]) & 255)
             arr.append(tt)
+
             self.bytes_message = bytes(arr)
             self.sleep_duration = None
         else:
             raise Exception
 
-    def doUnitAction(self, ser: RoboticsSerial):
+    def doUnitAction(self, ser: serial.Serial):
         if self.sleep_duration is not None:
-            print("sleep:", self.sleep_duration)
+            print("Sleep:", self.sleep_duration)
             time.sleep(self.sleep_duration)
 
         elif self.bytes_message is not None:
-            print(self.bytes_message)
-            # ser.write(self.bytes_message)
+            print("Send:", self.bytes_message)
+            ser.write(self.bytes_message)
+            time.sleep(0.1)
         else:
             raise Exception
 
 
-class RobotAction(metaclass=abc.ABCMeta):
-    def __init__(self,action_list:list):
+class RobotAction:
+    def __init__(self, action_list: list):
         self.action_list = action_list
 
     @staticmethod
     def parseAction(string: str):
         if string == "knife":
             return KnifeAction()
+        elif string == "reset":
+            return ResetAction()
+        elif string == "car":
+            return CarAction()
+        elif string=="cake":
+            return CarAction()
         else:
-            raise Exception
+            return None
 
-    def doAction(self, ser: RoboticsSerial):
+    def doAction(self, ser: serial.Serial):
         for unit_action in self.action_list:
             unit_action.doUnitAction(ser)
+
+
+class ResetAction(RobotAction):
+    def __init__(self):
+        super().__init__(self.getActionList())
+
+    @staticmethod
+    def getActionList() -> list:
+        action_list = []
+        action_list.append(RobotUnitAction(1, 2000, 50))
+        action_list.append(RobotUnitAction(6, 2030, 50))
+        action_list.append(RobotUnitAction(2, 2048, 50))
+        action_list.append(RobotUnitAction(7, 2048, 50))
+        action_list.append(RobotUnitAction(3, 834, 50))
+        action_list.append(RobotUnitAction(8, 200, 50))
+        action_list.append(RobotUnitAction(4, 512, 50))
+        action_list.append(RobotUnitAction(9, 450, 50))
+
+        return action_list
 
 
 class KnifeAction(RobotAction):
@@ -174,3 +213,169 @@ class KnifeAction(RobotAction):
     # def doAction(self, ser: RoboticsSerial):
     #     for unit_action in self.action_list:
     #         unit_action.doUnitAction(ser)
+
+
+class CarAction(RobotAction):
+    def __init__(self):
+        super().__init__(self.getActionList())
+
+    @staticmethod
+    def getActionList() -> list:
+        action_list = []
+        action_list.append(RobotUnitAction(1, 2000, 50))
+        action_list.append(RobotUnitAction(6, 2030, 50))
+        action_list.append(RobotUnitAction(2, 2048, 50))
+        action_list.append(RobotUnitAction(7, 2048, 50))
+        action_list.append(RobotUnitAction(3, 834, 50))
+        action_list.append(RobotUnitAction(8, 200, 50))
+        action_list.append(RobotUnitAction(4, 512, 50))
+        action_list.append(RobotUnitAction(9, 512, 50))
+        action_list.append(RobotUnitAction(sleep_duration=3))
+        action_list.append(RobotUnitAction(1, 1005, 50))
+        action_list.append(RobotUnitAction(6, 2980, 50))
+        action_list.append(RobotUnitAction(2, 2048, 50))
+        action_list.append(RobotUnitAction(7, 2048, 50))
+        action_list.append(RobotUnitAction(3, 834, 50))
+        action_list.append(RobotUnitAction(8, 200, 50))
+        action_list.append(RobotUnitAction(4, 512, 50))
+        action_list.append(RobotUnitAction(9, 512, 50))
+        action_list.append(RobotUnitAction(sleep_duration=3))
+        action_list.append(RobotUnitAction(1, 1005, 50))
+        action_list.append(RobotUnitAction(6, 2980, 50))
+        action_list.append(RobotUnitAction(2, 2245, 50))
+        action_list.append(RobotUnitAction(7, 1850, 50))
+        action_list.append(RobotUnitAction(3, 834, 50))
+        action_list.append(RobotUnitAction(8, 205, 50))
+        action_list.append(RobotUnitAction(4, 450, 50))
+        action_list.append(RobotUnitAction(9, 512, 50))
+        action_list.append(RobotUnitAction(sleep_duration=0.5))
+        action_list.append(RobotUnitAction(1, 1205, 50))
+        action_list.append(RobotUnitAction(6, 3180, 50))
+        action_list.append(RobotUnitAction(2, 2245, 50))
+        action_list.append(RobotUnitAction(7, 1850, 50))
+        action_list.append(RobotUnitAction(3, 834, 50))
+        action_list.append(RobotUnitAction(8, 205, 50))
+        action_list.append(RobotUnitAction(4, 450, 50))
+        action_list.append(RobotUnitAction(9, 512, 50))
+        action_list.append(RobotUnitAction(sleep_duration=0.75))
+        action_list.append(RobotUnitAction(1, 825, 50))
+        action_list.append(RobotUnitAction(6, 2780, 50))
+        action_list.append(RobotUnitAction(2, 2245, 50))
+        action_list.append(RobotUnitAction(7, 1850, 50))
+        action_list.append(RobotUnitAction(3, 834, 50))
+        action_list.append(RobotUnitAction(8, 205, 50))
+        action_list.append(RobotUnitAction(4, 450, 50))
+        action_list.append(RobotUnitAction(9, 512, 50))
+        action_list.append(RobotUnitAction(sleep_duration=0.75))
+        action_list.append(RobotUnitAction(1, 1205, 50))
+        action_list.append(RobotUnitAction(6, 3180, 50))
+        action_list.append(RobotUnitAction(2, 2245, 50))
+        action_list.append(RobotUnitAction(7, 1850, 50))
+        action_list.append(RobotUnitAction(3, 834, 50))
+        action_list.append(RobotUnitAction(8, 205, 50))
+        action_list.append(RobotUnitAction(4, 450, 50))
+        action_list.append(RobotUnitAction(9, 512, 50))
+        action_list.append(RobotUnitAction(sleep_duration=0.75))
+        action_list.append(RobotUnitAction(1, 825, 50))
+        action_list.append(RobotUnitAction(6, 2780, 50))
+        action_list.append(RobotUnitAction(2, 2245, 50))
+        action_list.append(RobotUnitAction(7, 1850, 50))
+        action_list.append(RobotUnitAction(3, 834, 50))
+        action_list.append(RobotUnitAction(8, 205, 50))
+        action_list.append(RobotUnitAction(4, 450, 50))
+        action_list.append(RobotUnitAction(9, 512, 50))
+        action_list.append(RobotUnitAction(sleep_duration=1))
+        action_list.append(RobotUnitAction(1, 1005, 50))
+        action_list.append(RobotUnitAction(6, 2980, 50))
+        action_list.append(RobotUnitAction(2, 2048, 50))
+        action_list.append(RobotUnitAction(7, 2048, 50))
+        action_list.append(RobotUnitAction(3, 834, 50))
+        action_list.append(RobotUnitAction(8, 200, 50))
+        action_list.append(RobotUnitAction(4, 512, 50))
+        action_list.append(RobotUnitAction(9, 512, 50))
+        action_list.append(RobotUnitAction(sleep_duration=1))
+
+        return action_list
+
+
+class CakeAction(RobotAction):
+    def __init__(self):
+        super().__init__(self.getActionList())
+
+    @staticmethod
+    def getActionList() -> list:
+        action_list = []
+        action_list.append(RobotUnitAction(1, 2000, 50))
+        action_list.append(RobotUnitAction(6, 2030, 50))
+        action_list.append(RobotUnitAction(2, 2048, 50))
+        action_list.append(RobotUnitAction(7, 2048, 50))
+        action_list.append(RobotUnitAction(3, 834, 50))
+        action_list.append(RobotUnitAction(8, 200, 50))
+        action_list.append(RobotUnitAction(4, 512, 50))
+        action_list.append(RobotUnitAction(9, 450, 50))
+        time.sleep(3)
+        action_list.append(RobotUnitAction(1, 1005, 50))
+        action_list.append(RobotUnitAction(6, 2980, 50))
+        action_list.append(RobotUnitAction(2, 2048, 50))
+        action_list.append(RobotUnitAction(7, 2048, 50))
+        action_list.append(RobotUnitAction(3, 834, 50))
+        action_list.append(RobotUnitAction(8, 200, 50))
+        action_list.append(RobotUnitAction(4, 512, 50))
+        action_list.append(RobotUnitAction(9, 450, 50))
+        time.sleep(2)
+        action_list.append(RobotUnitAction(1, 950, 50))
+        action_list.append(RobotUnitAction(6, 2980, 50))
+        action_list.append(RobotUnitAction(2, 2500, 50))
+        action_list.append(RobotUnitAction(7, 1700, 50))
+        action_list.append(RobotUnitAction(3, 600, 50))
+        action_list.append(RobotUnitAction(8, 512, 60))
+        action_list.append(RobotUnitAction(4, 512, 50))
+        action_list.append(RobotUnitAction(9, 350, 50))
+        time.sleep(3)
+        action_list.append(RobotUnitAction(1, 950, 50))
+        action_list.append(RobotUnitAction(6, 2980, 50))
+        action_list.append(RobotUnitAction(2, 2500, 50))
+        action_list.append(RobotUnitAction(7, 1700, 50))
+        action_list.append(RobotUnitAction(3, 600, 60))
+        action_list.append(RobotUnitAction(8, 512, 50))
+        action_list.append(RobotUnitAction(4, 200, 50))
+        action_list.append(RobotUnitAction(9, 350, 50))
+        time.sleep(0.75)
+        action_list.append(RobotUnitAction(1, 950, 50))
+        action_list.append(RobotUnitAction(6, 2980, 50))
+        action_list.append(RobotUnitAction(2, 2500, 50))
+        action_list.append(RobotUnitAction(7, 1700, 50))
+        action_list.append(RobotUnitAction(3, 600, 60))
+        action_list.append(RobotUnitAction(8, 512, 50))
+        action_list.append(RobotUnitAction(4, 512, 50))
+        action_list.append(RobotUnitAction(9, 350, 50))
+        time.sleep(0.75)
+        action_list.append(RobotUnitAction(1, 950, 50))
+        action_list.append(RobotUnitAction(6, 2980, 50))
+        action_list.append(RobotUnitAction(2, 2500, 50))
+        action_list.append(RobotUnitAction(7, 1700, 50))
+        action_list.append(RobotUnitAction(3, 600, 50))
+        action_list.append(RobotUnitAction(8, 512, 60))
+        action_list.append(RobotUnitAction(4, 200, 50))
+        action_list.append(RobotUnitAction(9, 350, 50))
+        time.sleep(0.75)
+        action_list.append(RobotUnitAction(1, 950, 50))
+        action_list.append(RobotUnitAction(6, 2980, 50))
+        action_list.append(RobotUnitAction(2, 2500, 50))
+        action_list.append(RobotUnitAction(7, 1700, 50))
+        action_list.append(RobotUnitAction(3, 600, 50))
+        action_list.append(RobotUnitAction(8, 512, 60))
+        action_list.append(RobotUnitAction(4, 512, 50))
+        action_list.append(RobotUnitAction(9, 350, 50))
+        time.sleep(3)
+        action_list.append(RobotUnitAction(1, 950, 50))
+        action_list.append(RobotUnitAction(6, 2980, 50))
+        action_list.append(RobotUnitAction(2, 2048, 50))
+        action_list.append(RobotUnitAction(7, 2048, 50))
+        action_list.append(RobotUnitAction(3, 834, 50))
+        action_list.append(RobotUnitAction(8, 200, 60))
+        action_list.append(RobotUnitAction(4, 512, 50))
+        action_list.append(RobotUnitAction(9, 450, 50))
+        time.sleep(1.5)
+
+        return action_list
