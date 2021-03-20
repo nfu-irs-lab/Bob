@@ -22,7 +22,7 @@ from utils.plots import plot_one_box
 from utils.torch_utils import select_device, load_classifier, time_synchronized
 
 # Robotis-------------
-from models.robotis import RoboticsSerial
+from models.robotis import RoboticsSerial, ResetAction
 from models.robotis import RobotAction
 from models.hc05 import HC05Serial
 
@@ -81,9 +81,9 @@ def json_dict(name, number):
 
 
 def detect(save_img=False):
-    # robotics = RoboticsSerial('COM5')
+    robotics = RoboticsSerial('COM8')
     app = HC05Serial('COM4')
-
+    send_timer = time.time()
     # timer=0
 
     source, weights, view_img, save_txt, imgsz = opt.source, opt.weights, opt.view_img, opt.save_txt, opt.img_size
@@ -189,19 +189,26 @@ def detect(save_img=False):
                 objs.append(obj['name'])
 
             json_objs = []
-            action = None
-            print(objs)
+            # print(objs)
+
             for obj_name in objs:
                 buf = getObjectByName(obj_name)
-                if buf is not None:
-                    action = RobotAction.parseAction(buf['action'])
-                    json_objs.append(buf)
-            app.writeBase64Line(json.dumps(json_objs))
+                if buf == None:
+                    continue
 
-            if action is not None:
-                print("Do",type(action))
-                time.sleep(3)
-                # action.doAction(robotics)
+                print(buf)
+                json_objs.append(buf)
+
+            if len(json_objs) != 0 and json_objs[0] is not None:
+                if json_objs[0] is not None:
+                    action = RobotAction.parseAction(json_objs[0]['action'])
+                    if action is not None:
+                        print("Do", type(action))
+                        app.writeBase64Line(json.dumps(json_objs))
+                        action.doAction(robotics)
+                        ResetAction().doAction(robotics)
+                        time.sleep(3)
+
 
             # Stream results
             if view_img:
