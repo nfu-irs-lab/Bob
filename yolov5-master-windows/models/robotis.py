@@ -63,7 +63,7 @@ class RobotAction:
         elif string == "car":
             return CarAction()
         elif string=="cake":
-            return CarAction()
+            return CakeAction()
         else:
             return None
 
@@ -313,7 +313,7 @@ class CakeAction(RobotAction):
         action_list.append(RobotUnitAction(8, 200, 50))
         action_list.append(RobotUnitAction(4, 512, 50))
         action_list.append(RobotUnitAction(9, 450, 50))
-        time.sleep(3)
+        action_list.append(RobotUnitAction(sleep_duration=3))
         action_list.append(RobotUnitAction(1, 1005, 50))
         action_list.append(RobotUnitAction(6, 2980, 50))
         action_list.append(RobotUnitAction(2, 2048, 50))
@@ -322,7 +322,7 @@ class CakeAction(RobotAction):
         action_list.append(RobotUnitAction(8, 200, 50))
         action_list.append(RobotUnitAction(4, 512, 50))
         action_list.append(RobotUnitAction(9, 450, 50))
-        time.sleep(2)
+        action_list.append(RobotUnitAction(sleep_duration=2))
         action_list.append(RobotUnitAction(1, 950, 50))
         action_list.append(RobotUnitAction(6, 2980, 50))
         action_list.append(RobotUnitAction(2, 2500, 50))
@@ -331,7 +331,7 @@ class CakeAction(RobotAction):
         action_list.append(RobotUnitAction(8, 512, 60))
         action_list.append(RobotUnitAction(4, 512, 50))
         action_list.append(RobotUnitAction(9, 350, 50))
-        time.sleep(3)
+        action_list.append(RobotUnitAction(sleep_duration=3))
         action_list.append(RobotUnitAction(1, 950, 50))
         action_list.append(RobotUnitAction(6, 2980, 50))
         action_list.append(RobotUnitAction(2, 2500, 50))
@@ -340,7 +340,7 @@ class CakeAction(RobotAction):
         action_list.append(RobotUnitAction(8, 512, 50))
         action_list.append(RobotUnitAction(4, 200, 50))
         action_list.append(RobotUnitAction(9, 350, 50))
-        time.sleep(0.75)
+        action_list.append(RobotUnitAction(sleep_duration=0.75))
         action_list.append(RobotUnitAction(1, 950, 50))
         action_list.append(RobotUnitAction(6, 2980, 50))
         action_list.append(RobotUnitAction(2, 2500, 50))
@@ -349,7 +349,7 @@ class CakeAction(RobotAction):
         action_list.append(RobotUnitAction(8, 512, 50))
         action_list.append(RobotUnitAction(4, 512, 50))
         action_list.append(RobotUnitAction(9, 350, 50))
-        time.sleep(0.75)
+        action_list.append(RobotUnitAction(sleep_duration=0.75))
         action_list.append(RobotUnitAction(1, 950, 50))
         action_list.append(RobotUnitAction(6, 2980, 50))
         action_list.append(RobotUnitAction(2, 2500, 50))
@@ -358,7 +358,7 @@ class CakeAction(RobotAction):
         action_list.append(RobotUnitAction(8, 512, 60))
         action_list.append(RobotUnitAction(4, 200, 50))
         action_list.append(RobotUnitAction(9, 350, 50))
-        time.sleep(0.75)
+        action_list.append(RobotUnitAction(sleep_duration=0.75))
         action_list.append(RobotUnitAction(1, 950, 50))
         action_list.append(RobotUnitAction(6, 2980, 50))
         action_list.append(RobotUnitAction(2, 2500, 50))
@@ -367,7 +367,7 @@ class CakeAction(RobotAction):
         action_list.append(RobotUnitAction(8, 512, 60))
         action_list.append(RobotUnitAction(4, 512, 50))
         action_list.append(RobotUnitAction(9, 350, 50))
-        time.sleep(3)
+        action_list.append(RobotUnitAction(sleep_duration=3))
         action_list.append(RobotUnitAction(1, 950, 50))
         action_list.append(RobotUnitAction(6, 2980, 50))
         action_list.append(RobotUnitAction(2, 2048, 50))
@@ -376,6 +376,6 @@ class CakeAction(RobotAction):
         action_list.append(RobotUnitAction(8, 200, 60))
         action_list.append(RobotUnitAction(4, 512, 50))
         action_list.append(RobotUnitAction(9, 450, 50))
-        time.sleep(1.5)
+        action_list.append(RobotUnitAction(sleep_duration=1.5))
 
         return action_list
