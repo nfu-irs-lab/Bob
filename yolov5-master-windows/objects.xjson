@@ -1,27 +1,27 @@
 [
   {
-    "name": "person",
-    "group": "creature",
-    "sentence": "The person stay beside my dad is my mom.",
-    "action": "creature",
+    "name": "car",
+    "group": "transportation",
+    "sentence": "This new car is very beautiful",
+    "action": "car",
     "languages": [
       {
         "code": "zh_TW",
-        "tr_name": "人",
-        "tr_sentence": "站在我爸爸旁邊的那個人是我媽媽。"
+        "tr_name": "車子",
+        "tr_sentence": "這台新車非常的漂亮。"
       }
     ]
   },
   {
-    "name": "keyboard",
-    "group": "computer accessories",
-    "sentence": "Hey!!!Don't break my keyboard.",
-    "action": "keyboard",
+    "name": "cake",
+    "group": "food",
+    "sentence": "This cake is delicious",
+    "action": "cake",
     "languages": [
       {
         "code": "zh_TW",
-        "tr_name": "鍵盤",
-        "tr_sentence": "嘿！！！不要砸壞我的鍵盤。"
+        "tr_name": "蛋糕",
+        "tr_sentence": "這個蛋糕很好吃。"
       }
     ]
   },
@@ -34,7 +34,7 @@
       {
         "code": "zh_TW",
         "tr_name": "刀",
-        "tr_sentence": "不要用刀子指著我"
+        "tr_sentence": "不要用刀子指著我。"
       }
     ]
   }
