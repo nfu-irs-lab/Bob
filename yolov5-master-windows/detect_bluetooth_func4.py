@@ -29,20 +29,8 @@ from models.hc05 import HC05Serial
 
 # Robotis-------------
 
-
-def current_milli_time():
-    return round(time.time() * 1000)
-
-
-def dumpByteInHex(raw):
-    print("[", raw.hex(), "]")
-
-
-g_ser = None
-
-
 def getObjectByName(str):
-    f = open('objects.xjson', encoding='utf-8')
+    f = open('resource/json/objects.json', encoding='utf-8')
     array = json.load(f)
     for data in array:
         item_name = data["name"]
@@ -54,27 +42,6 @@ def getObjectByName(str):
     return None
 
 
-def serial_monitor(ser: serial.Serial):
-    while True:
-        while ser.in_waiting > 0:
-            b = ser.readline()
-            line = b.decode("UTF-8").replace("\n", "")
-
-            print("Receive")
-            print(b)
-            print(line)
-
-
-def writeLine(ser: serial, msg: str):
-    ser.write((msg + "\n").encode("UTF-8"))
-
-
-def writeBase64Line(ser: serial, msg: str):
-    encoded_str = base64.b64encode(msg.encode("UTF-8"))
-    ser.write(encoded_str)
-    ser.write("\n".encode("UTF-8"))
-
-
 def json_dict(name, number):
     json = {"name": name, "number": number}
     return json
@@ -83,7 +50,6 @@ def json_dict(name, number):
 def detect(save_img=False):
     robotics = RoboticsSerial('COM8')
     app = HC05Serial('COM4')
-    send_timer = time.time()
     # timer=0
 
     source, weights, view_img, save_txt, imgsz = opt.source, opt.weights, opt.view_img, opt.save_txt, opt.img_size
@@ -208,7 +174,6 @@ def detect(save_img=False):
                         action.doAction(robotics)
                         ResetAction().doAction(robotics)
                         time.sleep(3)
-
 
             # Stream results
             if view_img:
