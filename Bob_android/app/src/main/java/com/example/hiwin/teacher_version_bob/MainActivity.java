@@ -18,7 +18,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.hiwin.teacher_version_bob.communication.SerialListener;
@@ -36,7 +38,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity implements ServiceConnection, AdapterView.OnItemClickListener {
+public class MainActivity extends AppCompatActivity implements ServiceConnection {
 
     /*
         reference:
@@ -63,10 +65,20 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
     private boolean initialStart = true;
     private Connected connected = Connected.False;
-    private ListView listView;
     private DetectedObjectAdapter adapter;
 
     private TextToSpeech textToSpeech;
+
+    static class ViewHolder {
+        static class PromptView {
+            static TextView prompt_sentence;
+        }
+
+        static TextView name;
+        static TextView tr_name;
+        static TextView sentence;
+        static TextView tr_sentence;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,9 +88,18 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         setSupportActionBar(toolbar);
         context = this;
 
-        listView = (ListView) findViewById(R.id.main_object_list);
-        listView.setAdapter(adapter);
-        listView.setOnItemClickListener(this);
+        ViewHolder.name = (TextView) findViewById(R.id.main_name);
+        ViewHolder.tr_name = (TextView) findViewById(R.id.main_tr_name);
+        ViewHolder.sentence = (TextView) findViewById(R.id.main_sentence);
+        ViewHolder.PromptView.prompt_sentence = (TextView) findViewById(R.id.main_prompt_sentence);
+        ViewHolder.tr_sentence = (TextView) findViewById(R.id.main_tr_sentence);
+
+        ViewHolder.name.setVisibility(View.INVISIBLE);
+        ViewHolder.tr_name.setVisibility(View.INVISIBLE);
+        ViewHolder.PromptView.prompt_sentence.setVisibility(View.INVISIBLE);
+        ViewHolder.sentence.setVisibility(View.INVISIBLE);
+        ViewHolder.tr_sentence.setVisibility(View.INVISIBLE);
+
 
         textToSpeech = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
             @Override
@@ -97,12 +118,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         deviceAddress = it.getStringExtra("address");
     }
 
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//        HashMap<String, Object> a = (HashMap<String, Object>) parent.getItemAtPosition(position);
-//        textToSpeech.speak(a.get("number") + " " + a.get("name") + " were detected.", TextToSpeech.QUEUE_FLUSH, null);
-//        Log.d("MainActivityLog", a.toString());
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -216,10 +231,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         service.disconnect();
     }
 
-    private void updateList(ArrayList<HashMap<String, Object>> data) {
-        adapter = new DetectedObjectAdapter(context, data);
-        listView.setAdapter(adapter);
-    }
 
     void BTLog(char tag, String str) {
         switch (tag) {
@@ -251,21 +262,31 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         BTLog('d', str);
         ArrayList<HashMap<String, Object>> datas = new ArrayList<>();
         JSONArray array = new JSONArray(str);
-        for (int i = 0; i < array.length(); i++) {
-            JSONObject object = array.getJSONObject(i);
-            JSONArray languages = object.getJSONArray("languages");
-            JSONObject zhTW = languages.getJSONObject(0);
+        JSONObject object = array.getJSONObject(0);
+        JSONArray languages = object.getJSONArray("languages");
+        JSONObject zhTW = languages.getJSONObject(0);
 
-            HashMap<String, Object> t = new HashMap<>();
-            t.put("name", object.getString("name"));
-            t.put("sentence", object.getString("sentence"));
-            t.put("tr_name", zhTW.getString("tr_name"));
-            t.put("tr_sentence", zhTW.getString("tr_sentence"));
+        ViewHolder.name.setText(object.getString("name"));
+        ViewHolder.sentence.setText(object.getString("sentence"));
+        ViewHolder.tr_name.setText(zhTW.getString("tr_name"));
+        ViewHolder.tr_sentence.setText(zhTW.getString("tr_sentence"));
 
-            datas.add(t);
+        ViewHolder.PromptView.prompt_sentence.setVisibility(View.VISIBLE);
+        ViewHolder.name.setVisibility(View.VISIBLE);
+        ViewHolder.tr_name.setVisibility(View.VISIBLE);
+        ViewHolder.sentence.setVisibility(View.VISIBLE);
+        ViewHolder.tr_sentence.setVisibility(View.VISIBLE);
+        if (!textToSpeech.isSpeaking()) {
+        textToSpeech.setLanguage(Locale.US);
+            textToSpeech.speak(ViewHolder.name.getText().toString(), TextToSpeech.QUEUE_ADD, null);
+        textToSpeech.setLanguage(Locale.TAIWAN);
+            textToSpeech.speak(ViewHolder.tr_name.getText().toString(), TextToSpeech.QUEUE_ADD, null);
+
+        textToSpeech.setLanguage(Locale.US);
+            textToSpeech.speak(ViewHolder.sentence.getText().toString(), TextToSpeech.QUEUE_ADD, null);
+        textToSpeech.setLanguage(Locale.TAIWAN);
+            textToSpeech.speak(ViewHolder.tr_sentence.getText().toString(), TextToSpeech.QUEUE_ADD, null);
         }
-
-        updateList(datas);
     }
 
     private void send_msg(String msg) {
@@ -332,7 +353,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                                     String msg = new String(raw_bytes, StandardCharsets.UTF_8);
                                     OnMessageReceived(msg);
                                 } catch (Exception e) {
-                                    Toast.makeText(MainActivity.this,e.getMessage(),Toast.LENGTH_LONG).show();
+                                    Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
                                     e.printStackTrace();
                                 }
 
