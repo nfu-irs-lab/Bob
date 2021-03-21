@@ -48,9 +48,9 @@ def json_dict(name, number):
 
 
 def detect(save_img=False):
-    robotics = RoboticsSerial('COM8')
+    # robotics = RoboticsSerial('COM8')
     app = HC05Serial('COM4')
-    # timer=0
+    app_timer = 0
 
     source, weights, view_img, save_txt, imgsz = opt.source, opt.weights, opt.view_img, opt.save_txt, opt.img_size
     webcam = source.isnumeric() or source.endswith('.txt') or source.lower().startswith(
@@ -165,15 +165,16 @@ def detect(save_img=False):
                 print(buf)
                 json_objs.append(buf)
 
-            if len(json_objs) != 0 and json_objs[0] is not None:
+            if time.time() > app_timer and len(json_objs) != 0 and json_objs[0] is not None:
                 if json_objs[0] is not None:
                     action = RobotAction.parseAction(json_objs[0]['action'])
                     if action is not None:
                         print("Do", type(action))
                         app.writeBase64Line(json.dumps(json_objs))
-                        action.doAction(robotics)
-                        ResetAction().doAction(robotics)
-                        time.sleep(3)
+                        app_timer=time.time()+0.5
+                        # action.doAction(robotics)
+                        # ResetAction().doAction(robotics)
+                        # time.sleep(3)
 
             # Stream results
             if view_img:
