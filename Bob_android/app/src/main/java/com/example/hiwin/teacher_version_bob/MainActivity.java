@@ -182,9 +182,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             });
         }
 
-//        if(service!=null&&service.isConnected()){
-//            send_msg("onResume");
-//        }
     }
 
     @Override
@@ -302,6 +299,18 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         }
     }
 
+    public static String dumpArray(byte[] array){
+        StringBuffer sb=new StringBuffer();
+        sb.append("[");
+        sb.append(array[0]);
+        for(int i=1;i<array.length;i++){
+            sb.append(",");
+            sb.append(array[i]);
+        }
+        sb.append("]");
+        return sb.toString();
+    }
+
 
     SerialListener serialListener = new SerialListener() {
         @Override
@@ -324,6 +333,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
         @Override
         public void onSerialRead(byte[] data) {
+            BTLog('v',dumpArray(data));
 
             for (byte datum : data) {
                 pre_data.add(datum);
@@ -343,6 +353,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                     if (chr == 0xa) {
                         pre_data = buffer;
                         final String recv_data = sb.toString();
+                        BTLog('v',recv_data);
                         sb = null;
                         runOnUiThread(new Runnable() {
                             @Override
@@ -376,4 +387,5 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         }
 
     };
+
 }
