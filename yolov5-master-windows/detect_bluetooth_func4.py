@@ -171,7 +171,7 @@ def detect(save_img=False):
                     if action is not None:
                         print("Do", type(action))
                         app.writeBase64Line(json.dumps(json_objs))
-                        app_timer=time.time()+0.5
+                        app_timer=time.time()+3
                         # action.doAction(robotics)
                         # ResetAction().doAction(robotics)
                         # time.sleep(3)
