@@ -42,7 +42,7 @@ def getObjectByName(str):
     return None
 
 
-def json_dict(name, number):
+def toJson(name, number):
     json = {"name": name, "number": number}
     return json
 
@@ -101,7 +101,6 @@ def detect(save_img=False):
         img /= 255.0  # 0 - 255 to 0.0 - 1.0
         if img.ndimension() == 3:
             img = img.unsqueeze(0)
-        result = []
         # Inference
         t1 = time_synchronized()
         pred = model(img, augment=opt.augment)[0]
@@ -126,6 +125,9 @@ def detect(save_img=False):
             txt_path = str(save_dir / 'labels' / p.stem) + ('' if dataset.mode == 'image' else f'_{frame}')  # img.txt
             s += '%gx%g ' % img.shape[2:]  # print string
             gn = torch.tensor(im0.shape)[[1, 0, 1, 0]]  # normalization gain whwh
+
+            result = []
+            # det:已辨識到的物件
             if len(det):
                 # Rescale boxes from img_size to im0 size
                 det[:, :4] = scale_coords(img.shape[2:], det[:, :4], im0.shape).round()
@@ -135,15 +137,15 @@ def detect(save_img=False):
                     n = (det[:, -1] == c).sum()  # detections per class
                     s += f'{n} {names[int(c)]}s, '  # add to string
 
-                    result.append(json_dict(names[int(c)], int(n)))
+                    result.append(toJson(names[int(c)], int(n)))
 
                 # Write results
                 for *xyxy, conf, cls in reversed(det):
-                    if save_txt:  # Write to file
-                        xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()  # normalized xywh
-                        line = (cls, *xywh, conf) if opt.save_conf else (cls, *xywh)  # label format
-                        with open(txt_path + '.txt', 'a') as f:
-                            f.write(('%g ' * len(line)).rstrip() % line + '\n')
+                    # if save_txt:  # Write to file
+                    #     xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()  # normalized xywh
+                    #     line = (cls, *xywh, conf) if opt.save_conf else (cls, *xywh)  # label format
+                    #     with open(txt_path + '.txt', 'a') as f:
+                    #         f.write(('%g ' * len(line)).rstrip() % line + '\n')
 
                     if save_img or view_img:  # Add bbox to image
                         label = f'{names[int(cls)]} {conf:.2f}'
@@ -171,10 +173,9 @@ def detect(save_img=False):
                     if action is not None:
                         print("Do", type(action))
                         app.writeBase64Line(json.dumps(json_objs))
-                        app_timer=time.time()+3
+                        app_timer = time.time() + 3
                         # action.doAction(robotics)
                         # ResetAction().doAction(robotics)
-                        # time.sleep(3)
 
             # Stream results
             if view_img:
