@@ -1,10 +1,4 @@
 import json
-import base64
-import serial
-import threading
-import Protocol.protocol_module as pro
-import io
-
 import argparse
 import time
 from pathlib import Path
@@ -21,62 +15,38 @@ from utils.general import check_img_size, non_max_suppression, apply_classifier,
 from utils.plots import plot_one_box
 from utils.torch_utils import select_device, load_classifier, time_synchronized
 
-
-def dumpByteInHex(raw):
-    print("[", raw.hex(), "]")
-
-g_ser = None
-
-
-class MainListener(pro.ProtocolListener):
-    def OnProtocolConnected(self):
-        pass
-
-    def OnProtocolDisconnected(self):
-        pass
-
-    def OnReceiveDataPackage(self, data: bytes):
-        pass
-
-    def OnWrite(self, data: bytes):
-        print("[Write]")
-        dumpByteInHex(data)
-        g_ser.write(data)
+# Robotis-------------
+from models.robotis import RoboticsSerial, ResetAction
+from models.robotis import RobotAction
+from models.hc05 import HC05Serial
 
 
-def job(ser: serial.Serial):
-    while True:
-        # print("job")
-        buffer = bytearray(1024)
-        availableBytes = ser.in_waiting
-        if availableBytes <= 0:
-            continue
+# Robotis-------------
 
-        print("received")
-        received_len = ser.readinto(buffer)
-        # buffer=ser.read(1024)
-        data = buffer[0:received_len]
-        dumpByteInHex(data)
-        bais = io.BytesIO(data)
-        while True:
-            headerBytes = bytearray(4)
-            len = bais.readinto(headerBytes)
-            if len != 4:
-                break
-            header = pro.PackageHeader(headerBytes=headerBytes)
-            dumpByteInHex(headerBytes)
-            lackBytes = bais.read(header.lackBytesLength)
-            dumpByteInHex(lackBytes)
-            socket.received(header_bytes=headerBytes, lack_bytes=lackBytes)
+def getObjectByName(str):
+    f = open('resource/json/objects.json', encoding='utf-8')
+    array = json.load(f)
+    for data in array:
+        item_name = data["name"]
+        if item_name == str:
+            f.close()
 
-        # ser.flushInput()
+            return data
+    f.close()
+    return None
 
 
-def json_dict(name,number):
-    json = {"name":name,"number":number}
+def toJson(name, number):
+    json = {"name": name, "number": number}
     return json
 
+
 def detect(save_img=False):
+
+    robotics = RoboticsSerial('/dev/ttyUSB1')
+    app = HC05Serial('/dev/ttyUSB0')
+    app_timer = 0
+
     source, weights, view_img, save_txt, imgsz = opt.source, opt.weights, opt.view_img, opt.save_txt, opt.img_size
     webcam = source.isnumeric() or source.endswith('.txt') or source.lower().startswith(
         ('rtsp://', 'rtmp://', 'http://'))
@@ -126,7 +96,6 @@ def detect(save_img=False):
         img /= 255.0  # 0 - 255 to 0.0 - 1.0
         if img.ndimension() == 3:
             img = img.unsqueeze(0)
-        result = []
         # Inference
         t1 = time_synchronized()
         pred = model(img, augment=opt.augment)[0]
@@ -151,6 +120,9 @@ def detect(save_img=False):
             txt_path = str(save_dir / 'labels' / p.stem) + ('' if dataset.mode == 'image' else f'_{frame}')  # img.txt
             s += '%gx%g ' % img.shape[2:]  # print string
             gn = torch.tensor(im0.shape)[[1, 0, 1, 0]]  # normalization gain whwh
+
+            result = []
+            # det:已辨識到的物件
             if len(det):
                 # Rescale boxes from img_size to im0 size
                 det[:, :4] = scale_coords(img.shape[2:], det[:, :4], im0.shape).round()
@@ -160,29 +132,45 @@ def detect(save_img=False):
                     n = (det[:, -1] == c).sum()  # detections per class
                     s += f'{n} {names[int(c)]}s, '  # add to string
 
-                    result.append(json_dict(names[int(c)],int(n)))
+                    result.append(toJson(names[int(c)], int(n)))
 
                 # Write results
                 for *xyxy, conf, cls in reversed(det):
-                    if save_txt:  # Write to file
-                        xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()  # normalized xywh
-                        line = (cls, *xywh, conf) if opt.save_conf else (cls, *xywh)  # label format
-                        with open(txt_path + '.txt', 'a') as f:
-                            f.write(('%g ' * len(line)).rstrip() % line + '\n')
+                    # if save_txt:  # Write to file
+                    #     xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()  # normalized xywh
+                    #     line = (cls, *xywh, conf) if opt.save_conf else (cls, *xywh)  # label format
+                    #     with open(txt_path + '.txt', 'a') as f:
+                    #         f.write(('%g ' * len(line)).rstrip() % line + '\n')
 
                     if save_img or view_img:  # Add bbox to image
                         label = f'{names[int(cls)]} {conf:.2f}'
                         plot_one_box(xyxy, im0, label=label, color=colors[int(cls)], line_thickness=3)
 
-            json_result = json.dumps(result)
-            result_encode = json_result.encode("UTF-8")
-            result_base64 = base64.b64encode(result_encode)
-            base64_result = result_base64.decode("UTF-8")
+            # print(result)
+            objs = []
+            for obj in result:
+                objs.append(obj['name'])
 
-            # Print time (inference + NMS)
-            # print(f'{s}Done. ({t2 - t1:.3f}s)')
-            print(base64_result)
-            socket.writeBytes(result_base64)
+            json_objs = []
+            # print(objs)
+
+            for obj_name in objs:
+                buf = getObjectByName(obj_name)
+                if buf == None:
+                    continue
+
+                print(buf)
+                json_objs.append(buf)
+
+            if time.time() > app_timer and len(json_objs) != 0 and json_objs[0] is not None:
+                if json_objs[0] is not None:
+                    action = RobotAction.parseAction(json_objs[0]['action'])
+                    if action is not None:
+                        print("Do", type(action))
+                        app.writeBase64Line(json.dumps(json_objs))
+                        app_timer = time.time() + 3
+                        action.doAction(robotics)
+                        ResetAction().doAction(robotics)
 
             # Stream results
             if view_img:
@@ -213,8 +201,6 @@ def detect(save_img=False):
 
     print(f'Done. ({time.time() - t0:.3f}s)')
 
-    return result_base64
-
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -237,18 +223,10 @@ if __name__ == '__main__':
     opt = parser.parse_args()
     print(opt)
 
-    with serial.Serial("/dev/ttyUSB0", 38400, timeout=1, parity=serial.PARITY_NONE) as ser:
-        print(ser.is_open)
-        socket = pro.ServerProtocolSocket()
-        socket.attach(MainListener())
-        g_ser = ser
-        t = threading.Thread(target=job, args=(ser,))
-        t.start()
-        with torch.no_grad():
-            if opt.update:  # update all models (to fix SourceChangeWarning)
-                for opt.weights in ['yolov5s.pt', 'yolov5m.pt', 'yolov5l.pt', 'yolov5x.pt']:
-
-                    detect()
-                    strip_optimizer(opt.weights)
-            else:
+    with torch.no_grad():
+        if opt.update:  # update all models (to fix SourceChangeWarning)
+            for opt.weights in ['yolov5s.pt', 'yolov5m.pt', 'yolov5l.pt', 'yolov5x.pt']:
                 detect()
+                strip_optimizer(opt.weights)
+        else:
+            detect()
