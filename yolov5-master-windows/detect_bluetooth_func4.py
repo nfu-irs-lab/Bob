@@ -48,7 +48,7 @@ def toJson(name, number):
 
 
 def detect(save_img=False):
-    # robotics = RoboticsSerial('COM8')
+    robotics = RoboticsSerial('COM8')
     app = HC05Serial('COM4')
     app_timer = 0
 
@@ -174,8 +174,8 @@ def detect(save_img=False):
                         print("Do", type(action))
                         app.writeBase64Line(json.dumps(json_objs))
                         app_timer = time.time() + 3
-                        # action.doAction(robotics)
-                        # ResetAction().doAction(robotics)
+                        action.doAction(robotics)
+                        ResetAction().doAction(robotics)
 
             # Stream results
             if view_img:
