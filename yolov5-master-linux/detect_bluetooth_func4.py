@@ -158,14 +158,23 @@ def detect(save_img=False):
 
             for obj_name in objs:
                 buf = getObjectByName(obj_name)
+
+                print("found:", buf)
                 if buf == None:
                     continue
 
                 print(buf)
                 json_objs.append(buf)
 
+            # json_objs2=[]
+            # json_objs2.append( getObjectByName("cake"))
+            # if time.time()>app_timer:
+            #     app.writeBase64Line(json.dumps(json_objs2))
+            #     app_timer=time.time()+10
+
             if time.time() > app_timer and len(json_objs) != 0 and json_objs[0] is not None:
                 if json_objs[0] is not None:
+
                     action = RobotAction.parseAction(json_objs[0]['action'])
                     if action is not None:
                         print("Do", type(action))
