@@ -64,6 +64,11 @@ class RobotAction:
             return CarAction()
         elif string == "cake":
             return CakeAction()
+        elif string=="bowl":
+            return BowlAction()
+        elif string=="bird":
+            return BirdlAction()
+
         else:
             return None
 
@@ -329,6 +334,140 @@ class CakeAction(RobotAction):
         action_list.append(RobotUnitAction(sleep_duration=0.75))
         action_list.append(RobotUnitAction(1, 2982, 50))
         action_list.append(RobotUnitAction(6, 1000, 50))
+        action_list.append(RobotUnitAction(2, 2048, 50))
+        action_list.append(RobotUnitAction(7, 2048, 50))
+        action_list.append(RobotUnitAction(3, 838, 50))
+        action_list.append(RobotUnitAction(8, 208, 50))
+        action_list.append(RobotUnitAction(4, 512, 50))
+        action_list.append(RobotUnitAction(9, 450, 50))
+        action_list.append(RobotUnitAction(sleep_duration=3))
+        return action_list
+
+
+class CakeAction(RobotAction):
+    def __init__(self):
+        super().__init__(self.getActionList())
+
+    @staticmethod
+    def getActionList() -> list:
+        action_list = []
+        action_list.append(RobotUnitAction(1, 2000, 50))
+        action_list.append(RobotUnitAction(6, 1990, 50))
+        action_list.append(RobotUnitAction(2, 2048, 50))
+        action_list.append(RobotUnitAction(7, 2048, 50))
+        action_list.append(RobotUnitAction(3, 838, 50))
+        action_list.append(RobotUnitAction(8, 208, 50))
+        action_list.append(RobotUnitAction(4, 512, 50))
+        action_list.append(RobotUnitAction(9, 450, 50))
+        action_list.append(RobotUnitAction(sleep_duration=3))
+        action_list.append(RobotUnitAction(1, 2982, 50))
+        action_list.append(RobotUnitAction(6, 1000, 50))
+        action_list.append(RobotUnitAction(2, 2048, 50))
+        action_list.append(RobotUnitAction(7, 2048, 50))
+        action_list.append(RobotUnitAction(3, 838, 50))
+        action_list.append(RobotUnitAction(8, 208, 50))
+        action_list.append(RobotUnitAction(4, 512, 50))
+        action_list.append(RobotUnitAction(9, 450, 50))
+        action_list.append(RobotUnitAction(sleep_duration=3))
+        action_list.append(RobotUnitAction(1, 2982, 50))
+        action_list.append(RobotUnitAction(6, 1000, 50))
+        action_list.append(RobotUnitAction(2, 2483, 50))
+        action_list.append(RobotUnitAction(7, 1692, 50))
+        action_list.append(RobotUnitAction(3, 1194, 50))
+        action_list.append(RobotUnitAction(8, 0, 50))
+        action_list.append(RobotUnitAction(4, 512, 50))
+
+class BowlAction(RobotAction):
+    def __init__(self):
+        super().__init__(self.getActionList())
+
+    @staticmethod
+    def getActionList() -> list:
+        action_list = []
+        action_list.append(RobotUnitAction(1, 2000, 50))
+        action_list.append(RobotUnitAction(6, 1990, 50))
+        action_list.append(RobotUnitAction(2, 2048, 50))
+        action_list.append(RobotUnitAction(7, 2048, 50))
+        action_list.append(RobotUnitAction(3, 838, 50))
+        action_list.append(RobotUnitAction(8, 208, 50))
+        action_list.append(RobotUnitAction(4, 512, 50))
+        action_list.append(RobotUnitAction(9, 450, 50))
+        action_list.append(RobotUnitAction(sleep_duration=3))
+        action_list.append(RobotUnitAction(1, 2982, 50))
+        action_list.append(RobotUnitAction(6, 1000, 50))
+        action_list.append(RobotUnitAction(2, 2048, 50))
+        action_list.append(RobotUnitAction(7, 2048, 50))
+        action_list.append(RobotUnitAction(3, 838, 50))
+        action_list.append(RobotUnitAction(8, 208, 50))
+        action_list.append(RobotUnitAction(4, 512, 50))
+        action_list.append(RobotUnitAction(9, 450, 50))
+        action_list.append(RobotUnitAction(sleep_duration=2))
+        action_list.append(RobotUnitAction(1, 2982, 50))
+        action_list.append(RobotUnitAction(6, 1000, 50))
+        action_list.append(RobotUnitAction(2, 2382, 50))
+        action_list.append(RobotUnitAction(7, 1730, 50))
+        action_list.append(RobotUnitAction(3, 1540, 50))
+        action_list.append(RobotUnitAction(8, 1, 50))
+        action_list.append(RobotUnitAction(4, 512, 50))
+        action_list.append(RobotUnitAction(9, 450, 50))
+        action_list.append(RobotUnitAction(sleep_duration=3))
+        action_list.append(RobotUnitAction(1, 2982, 50))
+        action_list.append(RobotUnitAction(6, 1000, 50))
+        action_list.append(RobotUnitAction(2, 2048, 50))
+        action_list.append(RobotUnitAction(7, 2048, 50))
+        action_list.append(RobotUnitAction(3, 838, 50))
+        action_list.append(RobotUnitAction(8, 208, 50))
+        action_list.append(RobotUnitAction(4, 512, 50))
+        action_list.append(RobotUnitAction(9, 450, 50))
+        action_list.append(RobotUnitAction(sleep_duration=2))
+        return action_list
+
+
+class BirdlAction(RobotAction):
+    def __init__(self):
+        super().__init__(self.getActionList())
+
+    @staticmethod
+    def getActionList() -> list:
+        action_list = []
+        action_list.append(RobotUnitAction(1, 2000, 50))
+        action_list.append(RobotUnitAction(6, 1990, 50))
+        action_list.append(RobotUnitAction(2, 2048, 50))
+        action_list.append(RobotUnitAction(7, 2048, 50))
+        action_list.append(RobotUnitAction(3, 838, 50))
+        action_list.append(RobotUnitAction(8, 208, 50))
+        action_list.append(RobotUnitAction(4, 512, 50))
+        action_list.append(RobotUnitAction(9, 450, 50))
+        action_list.append(RobotUnitAction(sleep_duration=3))
+        action_list.append(RobotUnitAction(1, 2000, 50))
+        action_list.append(RobotUnitAction(6, 1990, 50))
+        action_list.append(RobotUnitAction(2, 1247, 50))
+        action_list.append(RobotUnitAction(7, 2908, 50))
+        action_list.append(RobotUnitAction(3, 838, 50))
+        action_list.append(RobotUnitAction(8, 208, 50))
+        action_list.append(RobotUnitAction(4, 512, 50))
+        action_list.append(RobotUnitAction(9, 450, 50))
+        action_list.append(RobotUnitAction(sleep_duration=2))
+        action_list.append(RobotUnitAction(1, 2000, 50))
+        action_list.append(RobotUnitAction(6, 1990, 50))
+        action_list.append(RobotUnitAction(2, 2048, 50))
+        action_list.append(RobotUnitAction(7, 2048, 50))
+        action_list.append(RobotUnitAction(3, 838, 50))
+        action_list.append(RobotUnitAction(8, 208, 50))
+        action_list.append(RobotUnitAction(4, 512, 50))
+        action_list.append(RobotUnitAction(9, 450, 50))
+        action_list.append(RobotUnitAction(sleep_duration=2))
+        action_list.append(RobotUnitAction(1, 2000, 50))
+        action_list.append(RobotUnitAction(6, 1990, 50))
+        action_list.append(RobotUnitAction(2, 1247, 50))
+        action_list.append(RobotUnitAction(7, 2908, 50))
+        action_list.append(RobotUnitAction(3, 838, 50))
+        action_list.append(RobotUnitAction(8, 208, 50))
+        action_list.append(RobotUnitAction(4, 512, 50))
+        action_list.append(RobotUnitAction(9, 450, 50))
+        action_list.append(RobotUnitAction(sleep_duration=2))
+        action_list.append(RobotUnitAction(1, 2000, 50))
+        action_list.append(RobotUnitAction(6, 1990, 50))
         action_list.append(RobotUnitAction(2, 2048, 50))
         action_list.append(RobotUnitAction(7, 2048, 50))
         action_list.append(RobotUnitAction(3, 838, 50))

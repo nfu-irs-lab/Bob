@@ -43,8 +43,10 @@ def toJson(name, number):
 
 def detect(save_img=False):
 
-    robotics = RoboticsSerial('/dev/ttyUSB0')
-    app = HC05Serial('/dev/ttyUSB1')
+    robotics = RoboticsSerial('/dev/ttyUSB1')
+    ResetAction().doAction(robotics)
+
+    app = HC05Serial('/dev/ttyUSB0')
     app_timer = 0
 
     source, weights, view_img, save_txt, imgsz = opt.source, opt.weights, opt.view_img, opt.save_txt, opt.img_size
