@@ -6,23 +6,22 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.speech.tts.TextToSpeech;
 import android.support.constraint.ConstraintLayout;
-import android.support.constraint.ConstraintSet;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.hiwin.teacher_version_bob.view.AnimateAction;
-import com.example.hiwin.teacher_version_bob.view.Face;
-import com.example.hiwin.teacher_version_bob.view.ObjectShower;
-import com.example.hiwin.teacher_version_bob.view.SeeLeftAndRightAction;
+import com.example.hiwin.teacher_version_bob.view.anim.AnimateAction;
+import com.example.hiwin.teacher_version_bob.view.FaceFragment;
+import com.example.hiwin.teacher_version_bob.view.ObjectShowerFragment;
+import com.example.hiwin.teacher_version_bob.view.anim.CarAction;
+import com.example.hiwin.teacher_version_bob.view.anim.SeeLeftAndRightAction;
 
+import java.util.HashMap;
 import java.util.Locale;
 
 public class MainActivity2 extends AppCompatActivity {
@@ -47,7 +46,7 @@ public class MainActivity2 extends AppCompatActivity {
     private View contentView;
 
 
-    private Face face;
+    FragmentManager fragmentManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +54,8 @@ public class MainActivity2 extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         main_root = (ConstraintLayout) findViewById(R.id.main_root);
+        fragmentManager = getSupportFragmentManager();
+
         setSupportActionBar(toolbar);
         context = this;
 
@@ -67,62 +68,155 @@ public class MainActivity2 extends AppCompatActivity {
             }
         });
 
+        AnimateAction action = new SeeLeftAndRightAction(new Animator.AnimatorListener() {
 
-        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-        View face_root = inflater.inflate(R.layout.activity_content_face, (ViewGroup) findViewById(R.id.face_root));
-
-        final Face face = new Face(face_root);
-        contentView=face.getRoot();
-        ConstraintSet set = new ConstraintSet();
-        contentView.setId(View.generateViewId());
-        ViewGroup.LayoutParams parms = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        contentView.setLayoutParams(parms);
-
-        main_root.addView(contentView, 0);
-        set.clone(main_root);
-        set.connect(contentView.getId(), ConstraintSet.TOP, R.id.main_toolbar, ConstraintSet.BOTTOM, 0);
-        set.connect(contentView.getId(), ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM, 0);
-        set.applyTo(main_root);
-
-
-
-        new Thread(new Runnable() {
             @Override
-            public void run() {
-                final AnimateAction action = new SeeLeftAndRightAction(MainActivity2.this, face);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        synchronized (this) {
-                            action.start();
-                        }
-                    }
-                });
-                while (true) {
-                    action.attach(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            super.onAnimationEnd(animation);
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    synchronized (this) {
-                                        action.start();
-                                    }
-                                }
-                            });
-
-                        }
-
-                        @Override
-                        public void onAnimationStart(Animator animation) {
-                            super.onAnimationStart(animation);
-                        }
-                    });
-
-                }
+            public void onAnimationEnd(Animator animation) {
+                Toast.makeText(context, "end", Toast.LENGTH_SHORT).show();
             }
-        }).start();
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+                Toast.makeText(context, "repeat", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onAnimationStart(Animator animation, boolean isReverse) {
+//                Toast.makeText(context, "start", Toast.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation, boolean isReverse) {
+//                Toast.makeText(context, "end", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onAnimationStart(Animator animation) {
+                Toast.makeText(context, "start", Toast.LENGTH_SHORT).show();
+            }
+
+
+
+        });
+        FaceFragment fragment = new FaceFragment(action, 0);
+        postFragment(fragment, "face");
+
+//        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//        AnimateAction action=new SeeLeftAndRightAction();
+//        FaceFragment fragment = new FaceFragment(action, Animation.INFINITE);
+//
+//        fragmentTransaction.replace(R.id.frame, fragment, "face");
+//        fragmentTransaction.commit();
+
+//        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+//        View face_root = inflater.inflate(R.layout.activity_content_face, (ViewGroup) findViewById(R.id.face_root));
+//
+//        final Face face = new Face(face_root);
+//        contentView=face.getRoot();
+//        ConstraintSet set = new ConstraintSet();
+//        contentView.setId(View.generateViewId());
+//        ViewGroup.LayoutParams parms = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+//        contentView.setLayoutParams(parms);
+//
+//        main_root.addView(contentView, 0);
+//        set.clone(main_root);
+//        set.connect(contentView.getId(), ConstraintSet.TOP, R.id.main_toolbar, ConstraintSet.BOTTOM, 0);
+//        set.connect(contentView.getId(), ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM, 0);
+//        set.applyTo(main_root);
+//
+//
+//
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                final AnimateAction action = new SeeLeftAndRightAction(MainActivity2.this, face);
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        synchronized (this) {
+//                            action.start();
+//                        }
+//                    }
+//                });
+//                while (true) {
+//                    action.attach(new AnimatorListenerAdapter() {
+//                        @Override
+//                        public void onAnimationEnd(Animator animation) {
+//                            super.onAnimationEnd(animation);
+//                            runOnUiThread(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    synchronized (this) {
+//                                        action.start();
+//                                    }
+//                                }
+//                            });
+//
+//                        }
+//
+//                        @Override
+//                        public void onAnimationStart(Animator animation) {
+//                            super.onAnimationStart(animation);
+//                        }
+//                    });
+//
+//                }
+//            }
+//       new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                final AnimateAction action = new SeeLeftAndRightAction(MainActivity2.this, face);
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        synchronized (this) {
+//                            action.start();
+//                        }
+//                    }
+//                });
+//                while (true) {
+//                    action.attach(new AnimatorListenerAdapter() {
+//                        @Override
+//                        public void onAnimationEnd(Animator animation) {
+//                            super.onAnimationEnd(animation);
+//                            runOnUiThread(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    synchronized (this) {
+//                                        action.start();
+//                                    }
+//                                }
+//                            });
+//
+//                        }
+//
+//                        @Override
+//                        public void onAnimationStart(Animator animation) {
+//                            super.onAnimationStart(animation);
+//                        }
+//                    });
+//
+//                }
+//            }
+//        }).start();
+
+    }
+
+    public void postFragment(Fragment fragment, String id) {
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.setReorderingAllowed(true);
+        fragmentTransaction.replace(R.id.frame, fragment, id);
+        fragmentTransaction.commit();
+    }
+
+    public void removeFragment(String id) {
+        fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
     }
 
@@ -133,13 +227,16 @@ public class MainActivity2 extends AppCompatActivity {
 
     void showObjectAndFace(final String name, final String tr_name, final String sentence, final String tr_sentence) {
 
+//        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+//        View face_root = inflater.inflate(R.layout.activity_content_face, (ViewGroup) findViewById(R.id.face_root));
+//        View object_root = inflater.inflate(R.layout.activity_content_object, (ViewGroup) findViewById(R.id.object_root));
 
-        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-        View face_root = inflater.inflate(R.layout.activity_content_face, (ViewGroup) findViewById(R.id.face_root));
-        View object_root = inflater.inflate(R.layout.activity_content_object, (ViewGroup) findViewById(R.id.object_root));
+//
+//        FragmentManager fragmentManager =getSupportFragmentManager();
+//        final FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//        FaceFragment fragment = new FaceFragment();
+//        fragmentTransaction.replace(R.id.frame, fragment, "face");
 
-        final Face face = new Face(face_root);
-        final ObjectShower objectShower = new ObjectShower(object_root);
 
 
         new Thread(new Runnable() {
@@ -149,9 +246,12 @@ public class MainActivity2 extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        contentView = objectShower.getRoot();
-                        objectShower.setData(getDrawableByString(name), name, tr_name);
-                        objectShower.show();
+                        HashMap<String,Object> data=new HashMap<>();
+                        data.put("img",getDrawableByString(name));
+                        data.put("name",(name));
+                        data.put("tr_name",(tr_name));
+                        ObjectShowerFragment fragment=new ObjectShowerFragment(data);
+                        postFragment(fragment,"shower");
                     }
                 });
 
@@ -164,10 +264,9 @@ public class MainActivity2 extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        contentView = face.getRoot();
-                        face.showFace();
-                        AnimateAction action = new SeeLeftAndRightAction(MainActivity2.this, face);
-                        action.attach(new AnimatorListenerAdapter() {
+//                        removeFragment("face");
+
+                        AnimateAction action=new CarAction(new AnimatorListenerAdapter() {
 
                             @Override
                             public void onAnimationStart(Animator animation) {
@@ -194,12 +293,14 @@ public class MainActivity2 extends AppCompatActivity {
                             public void onAnimationEnd(Animator animation) {
                                 super.onAnimationEnd(animation);
                                 Toast.makeText(MainActivity2.this, "end", Toast.LENGTH_LONG).show();
-                                face.hindFace();
+//                                face.hindFace();
                             }
 
                         });
 
-                        action.start();
+                        FaceFragment fragment = new FaceFragment(action, 1);
+                        postFragment(fragment, "face2");
+
                     }
                 });
 

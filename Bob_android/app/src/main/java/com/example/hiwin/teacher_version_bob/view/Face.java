@@ -1,9 +1,11 @@
 package com.example.hiwin.teacher_version_bob.view;
 
+import android.animation.AnimatorSet;
 import android.view.View;
 import android.widget.ImageView;
 
 import com.example.hiwin.teacher_version_bob.R;
+import com.example.hiwin.teacher_version_bob.view.anim.AnimateAction;
 
 public class Face{
     private final ImageView left_eye;
@@ -18,25 +20,11 @@ public class Face{
         this.right_eye = (ImageView) face.findViewById(R.id.face_right_eye);
         this.mouth = (ImageView) face.findViewById(R.id.face_mouth);
     }
-//
-//
-//    private AnimatorSet getSeeLeftAndRight(Animator.AnimatorListener listener) {
-//
-//        AnimatorSet bouncer = new AnimatorSet();
-//        bouncer.addListener(listener);
-//
-//        if (!bouncer.isRunning()) {
-//            ObjectAnimator animation = ObjectAnimator.ofFloat(left_eye, "translationX", 0f, 200f, 0f, -200f, 0);
-//            ObjectAnimator animation2 = ObjectAnimator.ofFloat(right_eye, "translationX", 0f, 200f, 0f, -200f, 0);
-//            ObjectAnimator animation3 = ObjectAnimator.ofFloat(mouth, "translationX", 0f, 220f, 0f, -220f, 0);
-//            int r = (int) ((Math.random() * 12000) + 5000);
-//            animation.setDuration(r);
-//            animation2.setDuration(r);
-//            animation3.setDuration(r);
-//            bouncer.play(animation).with(animation2).with(animation3);
-//        }
-//        return bouncer;
-//    }
+
+    public void doAnimation(AnimateAction animateAction, int repeatCount){
+        AnimatorSet set=animateAction.getAnimatorSet(this,repeatCount);
+        set.start();
+    }
 
     public void showFace() {
         left_eye.setVisibility(View.VISIBLE);

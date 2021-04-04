@@ -1,47 +1,44 @@
-package com.example.hiwin.teacher_version_bob.view;
+package com.example.hiwin.teacher_version_bob.view.anim;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.app.Activity;
+
+import com.example.hiwin.teacher_version_bob.view.Face;
 
 public class SeeLeftAndRightAction implements AnimateAction, Animator.AnimatorListener {
-    private final Activity activity;
-    private final Face face;
     private Animator.AnimatorListener listener;
 
-    public SeeLeftAndRightAction(Activity activity, Face face) {
-        this.activity = activity;
-        this.face = face;
-    }
-
-    public void attach(Animator.AnimatorListener listener) {
+    public SeeLeftAndRightAction(Animator.AnimatorListener listener) {
         this.listener = listener;
     }
 
+    public void attach(Animator.AnimatorListener listener) {
+        synchronized (this) {
+            this.listener = listener;
+        }
+    }
 
-    @Override
-    public void start() {
-        face.showFace();
+    public AnimatorSet getAnimatorSet(Face face, int repeatCount) {
         final AnimatorSet bouncer = new AnimatorSet();
         bouncer.addListener(this);
-        if (!bouncer.isRunning()) {
-            ObjectAnimator animation = ObjectAnimator.ofFloat(
-                    face.getFace(), "translationX", 0f, 200f, 0f, -200f, 0);
-            int r = (int) ((Math.random() * 12000) + 5000);
-            animation.setDuration(r);
-            bouncer.play(animation);
-        }
+        ObjectAnimator animation = ObjectAnimator.ofFloat(
+                face.getFace(), "translationX", 0f, 200f, 0f, -200f, 0);
+        int r = (int) ((Math.random() * 12000) + 5000);
+        animation.setRepeatCount(repeatCount);
 
+        animation.setDuration(r);
+        bouncer.play(animation);
 
-        bouncer.start();
-
+        return bouncer;
     }
 
     @Override
     public void onAnimationStart(Animator animation) {
-        if (listener != null)
-            listener.onAnimationStart(animation);
+        synchronized (this) {
+            if (listener != null)
+                listener.onAnimationStart(animation);
+        }
     }
 
     @Override
