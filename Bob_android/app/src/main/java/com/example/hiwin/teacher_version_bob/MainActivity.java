@@ -7,6 +7,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.drawable.Drawable;
 import android.os.IBinder;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
@@ -17,9 +18,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ImageView;
-import android.widget.ListView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,8 +33,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Locale;
 
@@ -69,17 +67,34 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
     private TextToSpeech textToSpeech;
 
+//    static class ViewHolder {
+//        static class PromptView {
+//            static TextView prompt_sentence;
+//        }
+//
+//        static TextView name;
+//        static TextView tr_name;
+//        static TextView sentence;
+//        static TextView tr_sentence;
+//    }
+
+
     static class ViewHolder {
-        static class PromptView {
-            static TextView prompt_sentence;
+        static class Face {
+            static ImageView left_eye;
+            static ImageView right_eye;
+            static ImageView mouth;
         }
 
-        static TextView name;
-        static TextView tr_name;
-        static TextView sentence;
-        static TextView tr_sentence;
-    }
+        static class ObjectShower {
+            static LinearLayout layout;
+            static ImageView img;
+            static TextView name;
+            static TextView tr_name;
+        }
 
+    }
+//    public FaceAdaptor face;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,18 +103,51 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         setSupportActionBar(toolbar);
         context = this;
 
-        ViewHolder.name = (TextView) findViewById(R.id.main_name);
-        ViewHolder.tr_name = (TextView) findViewById(R.id.main_tr_name);
-        ViewHolder.sentence = (TextView) findViewById(R.id.main_sentence);
-        ViewHolder.PromptView.prompt_sentence = (TextView) findViewById(R.id.main_prompt_sentence);
-        ViewHolder.tr_sentence = (TextView) findViewById(R.id.main_tr_sentence);
+        ViewHolder.Face.left_eye = (ImageView) findViewById(R.id.main_left_eye);
+        ViewHolder.Face.right_eye = (ImageView) findViewById(R.id.main_right_eye);
+        ViewHolder.Face.mouth = (ImageView) findViewById(R.id.main_mouth);
+//        ViewHolder.Face.left_eye.setVisibility(View.INVISIBLE);
+//        ViewHolder.Face.right_eye.setVisibility(View.INVISIBLE);
+//        ViewHolder.Face.mouth.setVisibility(View.INVISIBLE);
 
-        ViewHolder.name.setVisibility(View.INVISIBLE);
-        ViewHolder.tr_name.setVisibility(View.INVISIBLE);
-        ViewHolder.PromptView.prompt_sentence.setVisibility(View.INVISIBLE);
-        ViewHolder.sentence.setVisibility(View.INVISIBLE);
-        ViewHolder.tr_sentence.setVisibility(View.INVISIBLE);
+        ViewHolder.ObjectShower.layout = (LinearLayout) findViewById(R.id.object_layout);
+        ViewHolder.ObjectShower.name = (TextView) findViewById(R.id.object_name);
+        ViewHolder.ObjectShower.tr_name = (TextView) findViewById(R.id.object_tr_name);
+        ViewHolder.ObjectShower.img = (ImageView) findViewById(R.id.object_img);
 
+        ViewHolder.ObjectShower.layout.setVisibility(View.INVISIBLE);
+
+
+
+        ViewHolder.Face.left_eye.setVisibility(View.VISIBLE);
+        ViewHolder.Face.right_eye.setVisibility(View.VISIBLE);
+        ViewHolder.Face.mouth.setVisibility(View.VISIBLE);
+
+//        face=new FaceAdaptor(ViewHolder.Face.left_eye,ViewHolder.Face.right_eye,ViewHolder.Face.mouth);
+//        face.hindFace();
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                while(true){
+//                    final AnimatorSet animatorSet=face.setSeeLeftAndRight();
+//                    runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            animatorSet.start();
+//                        }
+//                    });
+//
+//                    try {
+//                        Thread.sleep(17000);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//
+//
+//
+//                }
+//            }
+//        }).start();
 
         textToSpeech = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
             @Override
@@ -256,36 +304,65 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     }
 
     private void OnMessageReceived(String str) throws JSONException {
+//        face.hindFace();
         BTLog('d', str);
-        ArrayList<HashMap<String, Object>> datas = new ArrayList<>();
         JSONArray array = new JSONArray(str);
-        JSONObject object = array.getJSONObject(0);
+        final JSONObject object = array.getJSONObject(0);
         JSONArray languages = object.getJSONArray("languages");
-        JSONObject zhTW = languages.getJSONObject(0);
+        final JSONObject zhTW = languages.getJSONObject(0);
 
-        ViewHolder.name.setText(object.getString("name"));
-        ViewHolder.sentence.setText(object.getString("sentence"));
-        ViewHolder.tr_name.setText(zhTW.getString("tr_name"));
-        ViewHolder.tr_sentence.setText(zhTW.getString("tr_sentence"));
 
-        ViewHolder.PromptView.prompt_sentence.setVisibility(View.VISIBLE);
-        ViewHolder.name.setVisibility(View.VISIBLE);
-        ViewHolder.tr_name.setVisibility(View.VISIBLE);
-        ViewHolder.sentence.setVisibility(View.VISIBLE);
-        ViewHolder.tr_sentence.setVisibility(View.VISIBLE);
-        if (!textToSpeech.isSpeaking()) {
-        textToSpeech.setLanguage(Locale.US);
-            textToSpeech.speak(ViewHolder.name.getText().toString(), TextToSpeech.QUEUE_ADD, null);
-        textToSpeech.setLanguage(Locale.TAIWAN);
-            textToSpeech.speak(ViewHolder.tr_name.getText().toString(), TextToSpeech.QUEUE_ADD, null);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    ViewHolder.ObjectShower.layout.setVisibility(View.VISIBLE);
+                    ViewHolder.ObjectShower.name.setText(object.getString("name"));
+                    ViewHolder.ObjectShower.tr_name.setText(zhTW.getString("tr_name"));
+                    ViewHolder.ObjectShower.img.setImageDrawable(getDrawableByString(object.getString("name")));
+//                    Thread.sleep(5000);
+//                    ViewHolder.ObjectShower.layout.setVisibility(View.INVISIBLE);
+//
+//                    AnimatorSet animatorSet=face.setSeeLeftAndRight();
+//                    face.showFace();
+//                    animatorSet.start();
+                    if (!textToSpeech.isSpeaking()) {
+                        textToSpeech.setLanguage(Locale.US);
+                        textToSpeech.speak(object.getString("name"), TextToSpeech.QUEUE_ADD, null);
+                        textToSpeech.speak(object.getString("name"), TextToSpeech.QUEUE_ADD, null);
+                        textToSpeech.speak(object.getString("name"), TextToSpeech.QUEUE_ADD, null);
 
-        textToSpeech.setLanguage(Locale.US);
-            textToSpeech.speak(ViewHolder.sentence.getText().toString(), TextToSpeech.QUEUE_ADD, null);
-        textToSpeech.setLanguage(Locale.TAIWAN);
-            textToSpeech.speak(ViewHolder.tr_sentence.getText().toString(), TextToSpeech.QUEUE_ADD, null);
-        }
+                        textToSpeech.setLanguage(Locale.TAIWAN);
+                        textToSpeech.speak(zhTW.getString("tr_name"), TextToSpeech.QUEUE_ADD, null);
+
+                        textToSpeech.setLanguage(Locale.US);
+                        textToSpeech.speak(object.getString("sentence"), TextToSpeech.QUEUE_ADD, null);
+                        textToSpeech.speak(object.getString("sentence"), TextToSpeech.QUEUE_ADD, null);
+                        textToSpeech.speak(object.getString("sentence"), TextToSpeech.QUEUE_ADD, null);
+                        textToSpeech.setLanguage(Locale.TAIWAN);
+                        textToSpeech.speak(zhTW.getString("tr_sentence"), TextToSpeech.QUEUE_ADD, null);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+
     }
+    Drawable getDrawableByString(String str){
+        switch (str){
+            case "car":
+                return getResources().getDrawable(R.drawable.ic_eco_car);
 
+            case "knife":
+                return getResources().getDrawable(R.drawable.ic_french_knife);
+
+            case "cake":
+                return getResources().getDrawable(R.drawable.ic_birthday_cake);
+        }
+        return null;
+    }
     private void send_msg(String msg) {
         byte[] raw = Base64.encode(msg.getBytes(), Base64.URL_SAFE);
         byte[] line = new byte[raw.length + 1];
@@ -299,11 +376,11 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         }
     }
 
-    public static String dumpArray(byte[] array){
-        StringBuffer sb=new StringBuffer();
+    public static String dumpArray(byte[] array) {
+        StringBuffer sb = new StringBuffer();
         sb.append("[");
         sb.append(array[0]);
-        for(int i=1;i<array.length;i++){
+        for (int i = 1; i < array.length; i++) {
             sb.append(",");
             sb.append(array[i]);
         }
@@ -333,7 +410,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
         @Override
         public void onSerialRead(byte[] data) {
-            BTLog('v',dumpArray(data));
+            BTLog('v', dumpArray(data));
 
             for (byte datum : data) {
                 pre_data.add(datum);
@@ -353,7 +430,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                     if (chr == 0xa) {
                         pre_data = buffer;
                         final String recv_data = sb.toString();
-                        BTLog('v',recv_data);
+                        BTLog('v', recv_data);
                         sb = null;
                         runOnUiThread(new Runnable() {
                             @Override

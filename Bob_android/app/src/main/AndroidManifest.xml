@@ -15,25 +15,28 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".MainActivity2" android:configChanges="orientation|keyboardHidden" android:screenOrientation="landscape">
+        <activity
+            android:name=".MainActivity2"
+            android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="landscape">
 
-             <intent-filter>
-             <action android:name="android.intent.action.MAIN" />
+                         <intent-filter>
+                             <action android:name="android.intent.action.MAIN" />
 
-             <category android:name="android.intent.category.LAUNCHER" />
-             </intent-filter>
+                             <category android:name="android.intent.category.LAUNCHER" />
+                         </intent-filter>
 
         </activity>
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"></activity>
+        <activity android:name=".BluetoothConnectionActivity">
 
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.MAIN" /> -->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
 
 
-            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-            <!-- </intent-filter> -->
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
         </activity>
-        <activity android:name=".BluetoothConnectionActivity"></activity>
         <activity android:name=".BluetoothTerminalActivity" />
 
         <service android:name=".communication.SerialService" />
