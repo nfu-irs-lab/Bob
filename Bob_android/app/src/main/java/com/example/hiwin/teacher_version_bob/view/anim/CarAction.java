@@ -3,14 +3,17 @@ package com.example.hiwin.teacher_version_bob.view.anim;
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.content.Context;
 
+import com.example.hiwin.teacher_version_bob.R;
 import com.example.hiwin.teacher_version_bob.view.Face;
 
 public class CarAction implements AnimateAction, Animator.AnimatorListener {
     private Animator.AnimatorListener listener;
-
-    public CarAction(Animator.AnimatorListener listener) {
+    private Context context;
+    public CarAction(Context context, Animator.AnimatorListener listener) {
         this.listener = listener;
+        this.context=context;
     }
 
     public void attach(Animator.AnimatorListener listener) {
@@ -20,6 +23,8 @@ public class CarAction implements AnimateAction, Animator.AnimatorListener {
     }
 
     public AnimatorSet getAnimatorSet(Face face, int repeatCount) {
+        face.getLeftEye().setImageDrawable(context.getDrawable(R.drawable.ic_eye));
+        face.getRightEye().setImageDrawable(context.getDrawable(R.drawable.ic_eye));
         final AnimatorSet bouncer = new AnimatorSet();
         bouncer.addListener(this);
         ObjectAnimator animation = ObjectAnimator.ofFloat(

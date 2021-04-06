@@ -3,6 +3,11 @@
   <component name="WizardSettings">
     <option name="children">
       <map>
+        <entry key="imageWizard">
+          <value>
+            <PersistentState />
+          </value>
+        </entry>
         <entry key="vectorWizard">
           <value>
             <PersistentState>
@@ -14,8 +19,8 @@
                         <option name="values">
                           <map>
                             <entry key="assetSourceType" value="FILE" />
-                            <entry key="outputName" value="ic_french_knife" />
-                            <entry key="sourceFile" value="D:\Projects\git\Bob\Bob_android\svg\french-knife.svg" />
+                            <entry key="outputName" value="ic_eye" />
+                            <entry key="sourceFile" value="C:\Users\vince\Downloads\eye.svg" />
                           </map>
                         </option>
                       </PersistentState>

@@ -266,7 +266,7 @@ public class MainActivity2 extends AppCompatActivity {
                     public void run() {
 //                        removeFragment("face");
 
-                        AnimateAction action=new CarAction(new AnimatorListenerAdapter() {
+                        AnimateAction action=new CarAction(context,new AnimatorListenerAdapter() {
 
                             @Override
                             public void onAnimationStart(Animator animation) {
