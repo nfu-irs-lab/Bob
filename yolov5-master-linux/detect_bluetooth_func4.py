@@ -6,6 +6,7 @@ from pathlib import Path
 import cv2
 import torch
 import torch.backends.cudnn as cudnn
+import re
 from numpy import random
 
 from models.experimental import attempt_load
@@ -15,6 +16,7 @@ from utils.general import check_img_size, non_max_suppression, apply_classifier,
 from utils.plots import plot_one_box
 from utils.torch_utils import select_device, load_classifier, time_synchronized
 
+from serial.tools.list_ports import comports
 # Robotis-------------
 from models.robotis import RoboticsSerial, ResetAction
 from models.robotis import RobotAction
@@ -42,11 +44,23 @@ def toJson(name, number):
 
 
 def detect(save_img=False):
+    global robotics, app
+    coms=comports()
 
-    robotics = RoboticsSerial('/dev/ttyUSB1')
+    for com in coms:
+        print(com.description)
+        if re.search(".*CP2102.*",com.description):
+            print(com.description)
+            app = HC05Serial(com.device)
+        elif re.search(".*FT232R.*",com.description):
+            print(com.description)
+            robotics = RoboticsSerial(com.device)
+    print(robotics)
+    print(app)
     ResetAction().doAction(robotics)
 
-    app = HC05Serial('/dev/ttyUSB0')
+
+
     app_timer = 0
 
     source, weights, view_img, save_txt, imgsz = opt.source, opt.weights, opt.view_img, opt.save_txt, opt.img_size
