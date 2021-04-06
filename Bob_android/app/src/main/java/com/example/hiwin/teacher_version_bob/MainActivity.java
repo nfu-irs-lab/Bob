@@ -1,5 +1,7 @@
 package com.example.hiwin.teacher_version_bob;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -10,6 +12,9 @@ import android.content.ServiceConnection;
 import android.graphics.drawable.Drawable;
 import android.os.IBinder;
 import android.speech.tts.TextToSpeech;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -17,15 +22,15 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.hiwin.teacher_version_bob.communication.SerialListener;
 import com.example.hiwin.teacher_version_bob.communication.SerialService;
 import com.example.hiwin.teacher_version_bob.communication.SerialSocket;
+import com.example.hiwin.teacher_version_bob.view.FaceFragment;
+import com.example.hiwin.teacher_version_bob.view.ObjectShowerFragment;
+import com.example.hiwin.teacher_version_bob.view.anim.AnimateAction;
+import com.example.hiwin.teacher_version_bob.view.anim.CarAction;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,6 +38,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Locale;
 
@@ -65,36 +71,9 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     private Connected connected = Connected.False;
     private DetectedObjectAdapter adapter;
 
+    private FragmentManager fragmentManager;
     private TextToSpeech textToSpeech;
 
-//    static class ViewHolder {
-//        static class PromptView {
-//            static TextView prompt_sentence;
-//        }
-//
-//        static TextView name;
-//        static TextView tr_name;
-//        static TextView sentence;
-//        static TextView tr_sentence;
-//    }
-
-
-    static class ViewHolder {
-        static class Face {
-            static ImageView left_eye;
-            static ImageView right_eye;
-            static ImageView mouth;
-        }
-
-        static class ObjectShower {
-            static LinearLayout layout;
-            static ImageView img;
-            static TextView name;
-            static TextView tr_name;
-        }
-
-    }
-//    public FaceAdaptor face;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,51 +82,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         setSupportActionBar(toolbar);
         context = this;
 
-        ViewHolder.Face.left_eye = (ImageView) findViewById(R.id.main_left_eye);
-        ViewHolder.Face.right_eye = (ImageView) findViewById(R.id.main_right_eye);
-        ViewHolder.Face.mouth = (ImageView) findViewById(R.id.main_mouth);
-//        ViewHolder.Face.left_eye.setVisibility(View.INVISIBLE);
-//        ViewHolder.Face.right_eye.setVisibility(View.INVISIBLE);
-//        ViewHolder.Face.mouth.setVisibility(View.INVISIBLE);
-
-        ViewHolder.ObjectShower.layout = (LinearLayout) findViewById(R.id.object_layout);
-        ViewHolder.ObjectShower.name = (TextView) findViewById(R.id.object_name);
-        ViewHolder.ObjectShower.tr_name = (TextView) findViewById(R.id.object_tr_name);
-        ViewHolder.ObjectShower.img = (ImageView) findViewById(R.id.object_img);
-
-        ViewHolder.ObjectShower.layout.setVisibility(View.INVISIBLE);
-
-
-
-        ViewHolder.Face.left_eye.setVisibility(View.VISIBLE);
-        ViewHolder.Face.right_eye.setVisibility(View.VISIBLE);
-        ViewHolder.Face.mouth.setVisibility(View.VISIBLE);
-
-//        face=new FaceAdaptor(ViewHolder.Face.left_eye,ViewHolder.Face.right_eye,ViewHolder.Face.mouth);
-//        face.hindFace();
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                while(true){
-//                    final AnimatorSet animatorSet=face.setSeeLeftAndRight();
-//                    runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            animatorSet.start();
-//                        }
-//                    });
-//
-//                    try {
-//                        Thread.sleep(17000);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
-//
-//
-//
-//                }
-//            }
-//        }).start();
+        fragmentManager = getSupportFragmentManager();
 
         textToSpeech = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
             @Override
@@ -302,64 +237,111 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             connection.setTitle("Disconnected");
         }
     }
+    public void postFragment(Fragment fragment, String id) {
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.setReorderingAllowed(true);
+        fragmentTransaction.replace(R.id.frame, fragment, id);
+        fragmentTransaction.commit();
+    }
+
+    void showObjectAndFace(final String name, final String tr_name, final String sentence, final String tr_sentence) {
+
+
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        HashMap<String,Object> data=new HashMap<>();
+                        data.put("img",getDrawableByString(name));
+                        data.put("name",(name));
+                        data.put("tr_name",(tr_name));
+                        ObjectShowerFragment fragment=new ObjectShowerFragment(data);
+                        postFragment(fragment,"shower");
+                    }
+                });
+
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        AnimateAction action=new CarAction(context,new AnimatorListenerAdapter() {
+
+                            @Override
+                            public void onAnimationStart(Animator animation) {
+                                super.onAnimationStart(animation);
+                                if (!textToSpeech.isSpeaking()) {
+                                    textToSpeech.setLanguage(Locale.US);
+                                    textToSpeech.speak(name, TextToSpeech.QUEUE_ADD, null);
+                                    textToSpeech.speak(name, TextToSpeech.QUEUE_ADD, null);
+                                    textToSpeech.speak(name, TextToSpeech.QUEUE_ADD, null);
+
+                                    textToSpeech.setLanguage(Locale.TAIWAN);
+                                    textToSpeech.speak(tr_name, TextToSpeech.QUEUE_ADD, null);
+
+                                    textToSpeech.setLanguage(Locale.US);
+                                    textToSpeech.speak(sentence, TextToSpeech.QUEUE_ADD, null);
+                                    textToSpeech.speak(sentence, TextToSpeech.QUEUE_ADD, null);
+                                    textToSpeech.speak(sentence, TextToSpeech.QUEUE_ADD, null);
+                                    textToSpeech.setLanguage(Locale.TAIWAN);
+                                    textToSpeech.speak(tr_sentence, TextToSpeech.QUEUE_ADD, null);
+                                }
+                            }
+
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                Toast.makeText(MainActivity.this, "end", Toast.LENGTH_LONG).show();
+                            }
+
+                        });
+
+                        FaceFragment fragment = new FaceFragment(action, 1);
+                        postFragment(fragment, "face2");
+
+                    }
+                });
+
+
+            }
+        }).start();
+
+    }
 
     private void OnMessageReceived(String str) throws JSONException {
-//        face.hindFace();
         BTLog('d', str);
         JSONArray array = new JSONArray(str);
         final JSONObject object = array.getJSONObject(0);
         JSONArray languages = object.getJSONArray("languages");
         final JSONObject zhTW = languages.getJSONObject(0);
 
-
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    ViewHolder.ObjectShower.layout.setVisibility(View.VISIBLE);
-                    ViewHolder.ObjectShower.name.setText(object.getString("name"));
-                    ViewHolder.ObjectShower.tr_name.setText(zhTW.getString("tr_name"));
-                    ViewHolder.ObjectShower.img.setImageDrawable(getDrawableByString(object.getString("name")));
-//                    Thread.sleep(5000);
-//                    ViewHolder.ObjectShower.layout.setVisibility(View.INVISIBLE);
-//
-//                    AnimatorSet animatorSet=face.setSeeLeftAndRight();
-//                    face.showFace();
-//                    animatorSet.start();
-                    if (!textToSpeech.isSpeaking()) {
-                        textToSpeech.setLanguage(Locale.US);
-                        textToSpeech.speak(object.getString("name"), TextToSpeech.QUEUE_ADD, null);
-                        textToSpeech.speak(object.getString("name"), TextToSpeech.QUEUE_ADD, null);
-                        textToSpeech.speak(object.getString("name"), TextToSpeech.QUEUE_ADD, null);
-
-                        textToSpeech.setLanguage(Locale.TAIWAN);
-                        textToSpeech.speak(zhTW.getString("tr_name"), TextToSpeech.QUEUE_ADD, null);
-
-                        textToSpeech.setLanguage(Locale.US);
-                        textToSpeech.speak(object.getString("sentence"), TextToSpeech.QUEUE_ADD, null);
-                        textToSpeech.speak(object.getString("sentence"), TextToSpeech.QUEUE_ADD, null);
-                        textToSpeech.speak(object.getString("sentence"), TextToSpeech.QUEUE_ADD, null);
-                        textToSpeech.setLanguage(Locale.TAIWAN);
-                        textToSpeech.speak(zhTW.getString("tr_sentence"), TextToSpeech.QUEUE_ADD, null);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+        showObjectAndFace(object.getString("name"),zhTW.getString("tr_name"),object.getString("sentence"),zhTW.getString("tr_sentence"));
 
 
     }
     Drawable getDrawableByString(String str){
         switch (str){
             case "car":
-                return getResources().getDrawable(R.drawable.ic_eco_car);
+                return getDrawable(R.drawable.object_car);
 
             case "knife":
-                return getResources().getDrawable(R.drawable.ic_french_knife);
+                return getDrawable(R.drawable.object_knife);
 
             case "cake":
-                return getResources().getDrawable(R.drawable.ic_birthday_cake);
+                return getDrawable(R.drawable.object_cake);
+            case "bird":
+                return getDrawable(R.drawable.object_bird);
+            case "bowl":
+                return getDrawable(R.drawable.object_bowl);
         }
         return null;
     }

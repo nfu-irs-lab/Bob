@@ -5,7 +5,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.speech.tts.TextToSpeech;
-import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -42,8 +41,6 @@ public class MainActivity2 extends AppCompatActivity {
     private Context context;
     private TextToSpeech textToSpeech;
 
-    private ConstraintLayout main_root;
-    private View contentView;
 
 
     FragmentManager fragmentManager;
@@ -53,7 +50,6 @@ public class MainActivity2 extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
-        main_root = (ConstraintLayout) findViewById(R.id.main_root);
         fragmentManager = getSupportFragmentManager();
 
         setSupportActionBar(toolbar);
@@ -215,11 +211,6 @@ public class MainActivity2 extends AppCompatActivity {
         fragmentTransaction.commit();
     }
 
-    public void removeFragment(String id) {
-        fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-
-    }
-
 
     public void test(View v) {
         showObjectAndFace("car", "車", "My car is beautiful.", "我的車很猛");
@@ -315,13 +306,13 @@ public class MainActivity2 extends AppCompatActivity {
         switch (str) {
             case "car":
 
-                return getDrawable(R.drawable.ic_eco_car);
+                return getDrawable(R.drawable.object_car);
 
             case "knife":
-                return getDrawable(R.drawable.ic_french_knife);
+                return getDrawable(R.drawable.object_knife);
 
             case "cake":
-                return getDrawable(R.drawable.ic_birthday_cake);
+                return getDrawable(R.drawable.object_cake);
         }
         return null;
     }

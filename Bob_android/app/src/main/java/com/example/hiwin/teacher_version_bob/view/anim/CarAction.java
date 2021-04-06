@@ -54,7 +54,6 @@ public class CarAction implements AnimateAction, Animator.AnimatorListener {
         if (listener != null)
             listener.onAnimationEnd(animation);
     }
-
     @Override
     public void onAnimationCancel(Animator animation) {
         if (listener != null)

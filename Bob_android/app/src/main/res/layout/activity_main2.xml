@@ -61,7 +61,7 @@
             android:id="@+id/object_img"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:srcCompat="@drawable/ic_birthday_cake" />
+            app:srcCompat="@drawable/object_cake" />
 
         <TextView
             android:id="@+id/object_name"
