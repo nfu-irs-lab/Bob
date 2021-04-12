@@ -3,14 +3,17 @@ package com.example.hiwin.teacher_version_bob.view.anim;
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.content.Context;
 
+import com.example.hiwin.teacher_version_bob.R;
 import com.example.hiwin.teacher_version_bob.view.Face;
 
-public class SeeLeftAndRightAction implements AnimateAction, Animator.AnimatorListener {
+public class BowlAction implements AnimateAction, Animator.AnimatorListener {
     private Animator.AnimatorListener listener;
-
-    public SeeLeftAndRightAction(Animator.AnimatorListener listener) {
+    private Context context;
+    public BowlAction(Context context, Animator.AnimatorListener listener) {
         this.listener = listener;
+        this.context=context;
     }
 
     public void attach(Animator.AnimatorListener listener) {
@@ -20,16 +23,20 @@ public class SeeLeftAndRightAction implements AnimateAction, Animator.AnimatorLi
     }
 
     public AnimatorSet getAnimatorSet(Face face, int repeatCount) {
+        face.getIface().setImageDrawable(context.getDrawable(R.drawable.face_relieved));
         final AnimatorSet bouncer = new AnimatorSet();
         bouncer.addListener(this);
         ObjectAnimator animation = ObjectAnimator.ofFloat(
                 face.getIface(), "translationX", 0f, 0f, 0f, 0f, 0f);
-        int r = (int) ((Math.random() * 12000) + 5000);
+        ObjectAnimator animation2 = ObjectAnimator.ofFloat(
+                face.getIface(), "translationX", 0f, 0f, 0f, 0f, 0f);
+        int r =5000;
         animation.setRepeatCount(repeatCount);
+        animation2.setRepeatCount(repeatCount);
 
         animation.setDuration(r);
-        bouncer.play(animation);
-
+        animation2.setDuration(r);
+        bouncer.play(animation).with(animation2);
         return bouncer;
     }
 
@@ -46,7 +53,6 @@ public class SeeLeftAndRightAction implements AnimateAction, Animator.AnimatorLi
         if (listener != null)
             listener.onAnimationEnd(animation);
     }
-
     @Override
     public void onAnimationCancel(Animator animation) {
         if (listener != null)

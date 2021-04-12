@@ -6,47 +6,13 @@
     android:layout_height="match_parent"
     android:id="@+id/face_root">
 
-    <android.support.constraint.ConstraintLayout
+    <ImageView
         android:id="@+id/face_face"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:id="@+id/face_left_eye"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="200dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/circle" />
-
-        <ImageView
-            android:id="@+id/face_right_eye"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="200dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/circle" />
-
-        <ImageView
-            android:id="@+id/face_mouth"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="100dp"
-            android:layout_marginTop="50dp"
-            android:layout_marginEnd="100dp"
-            app:layout_constraintEnd_toStartOf="@+id/face_right_eye"
-            app:layout_constraintStart_toEndOf="@+id/face_left_eye"
-            app:layout_constraintTop_toBottomOf="@+id/face_right_eye"
-            app:srcCompat="@drawable/line" />
-    </android.support.constraint.ConstraintLayout>
-
-
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/face_kissing" />
 </android.support.constraint.ConstraintLayout>

@@ -30,7 +30,11 @@ import com.example.hiwin.teacher_version_bob.communication.SerialSocket;
 import com.example.hiwin.teacher_version_bob.view.FaceFragment;
 import com.example.hiwin.teacher_version_bob.view.ObjectShowerFragment;
 import com.example.hiwin.teacher_version_bob.view.anim.AnimateAction;
+import com.example.hiwin.teacher_version_bob.view.anim.BirdAction;
+import com.example.hiwin.teacher_version_bob.view.anim.BowlAction;
+import com.example.hiwin.teacher_version_bob.view.anim.CakeAction;
 import com.example.hiwin.teacher_version_bob.view.anim.CarAction;
+import com.example.hiwin.teacher_version_bob.view.anim.KnifeAction;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -273,8 +277,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-
-                        AnimateAction action=new CarAction(context,new AnimatorListenerAdapter() {
+                        Animator.AnimatorListener listener=new AnimatorListenerAdapter() {
 
                             @Override
                             public void onAnimationStart(Animator animation) {
@@ -303,7 +306,29 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                                 Toast.makeText(MainActivity.this, "end", Toast.LENGTH_LONG).show();
                             }
 
-                        });
+                        };
+
+
+                        AnimateAction action;
+                        switch (name){
+                            case "car":
+                                action=new CarAction(context,listener);
+                                break;
+                            case "knife":
+                                action=new KnifeAction(context,listener);
+                                break;
+                            case "bird":
+                                action=new BirdAction(context,listener);
+                                break;
+                            case "bowl":
+                                action=new BowlAction(context,listener);
+                                break;
+                            case "cake":
+                                action=new CakeAction(context,listener);
+                                break;
+                            default:
+                                throw new RuntimeException();
+                        }
 
                         FaceFragment fragment = new FaceFragment(action, 1);
                         postFragment(fragment, "face2");

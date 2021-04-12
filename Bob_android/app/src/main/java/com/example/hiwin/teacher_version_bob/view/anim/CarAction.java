@@ -23,14 +23,13 @@ public class CarAction implements AnimateAction, Animator.AnimatorListener {
     }
 
     public AnimatorSet getAnimatorSet(Face face, int repeatCount) {
-        face.getLeftEye().setImageDrawable(context.getDrawable(R.drawable.ic_eye));
-        face.getRightEye().setImageDrawable(context.getDrawable(R.drawable.ic_eye));
+        face.getIface().setImageDrawable(context.getDrawable(R.drawable.face_kissing));
         final AnimatorSet bouncer = new AnimatorSet();
         bouncer.addListener(this);
         ObjectAnimator animation = ObjectAnimator.ofFloat(
-                face.getLeftEye(), "translationX", 0f, 200f, 0f, -200f, 0);
+                face.getIface(), "translationX", 0f, 0f, 0f, 0f, 0f);
         ObjectAnimator animation2 = ObjectAnimator.ofFloat(
-                face.getRightEye(), "translationX", 0f, 200f, 0f, -200f, 0);
+                face.getIface(), "translationX", 0f, 0f, 0f, 0f, 0f);
         int r =5000;
         animation.setRepeatCount(repeatCount);
         animation2.setRepeatCount(repeatCount);
