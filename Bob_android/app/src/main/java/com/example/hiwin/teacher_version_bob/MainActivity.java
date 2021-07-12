@@ -28,9 +28,8 @@ import com.example.hiwin.teacher_version_bob.communication.SerialListener;
 import com.example.hiwin.teacher_version_bob.communication.SerialService;
 import com.example.hiwin.teacher_version_bob.communication.SerialSocket;
 import com.example.hiwin.teacher_version_bob.view.FaceFragment;
+import com.example.hiwin.teacher_version_bob.view.FaceFragmentListener;
 import com.example.hiwin.teacher_version_bob.view.ObjectShowerFragment;
-import com.example.hiwin.teacher_version_bob.view.anim.AnimateAction;
-import com.example.hiwin.teacher_version_bob.view.anim.CarAction;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -83,6 +82,30 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         context = this;
 
         fragmentManager = getSupportFragmentManager();
+
+//        final FaceFragment fragment = new FaceFragment();
+//        fragment.setListener(new FaceFragmentListener() {
+//            @Override
+//            public void start() {
+//
+//            }
+//
+//            @Override
+//            public void timeout() {
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        fragment.getFace().stopFace();
+//                        Toast.makeText(MainActivity.this,"timeout",Toast.LENGTH_LONG).show();
+//                    }
+//                });
+//            }
+//        });
+//        Bundle bundle=new Bundle();
+//        bundle.putInt("duration",3000);
+//        bundle.putString("face_type","car");
+//        fragment.setArguments(bundle);
+//        postFragment(fragment, "face2");
 
         textToSpeech = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
             @Override
@@ -237,6 +260,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             connection.setTitle("Disconnected");
         }
     }
+
     public void postFragment(Fragment fragment, String id) {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.setReorderingAllowed(true);
@@ -247,7 +271,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     void showObjectAndFace(final String name, final String tr_name, final String sentence, final String tr_sentence) {
 
 
-
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -255,12 +278,12 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        HashMap<String,Object> data=new HashMap<>();
-                        data.put("img",getDrawableByString(name));
-                        data.put("name",(name));
-                        data.put("tr_name",(tr_name));
-                        ObjectShowerFragment fragment=new ObjectShowerFragment(data);
-                        postFragment(fragment,"shower");
+                        HashMap<String, Object> data = new HashMap<>();
+                        data.put("img", getDrawableByString(name));
+                        data.put("name", (name));
+                        data.put("tr_name", (tr_name));
+                        ObjectShowerFragment fragment = new ObjectShowerFragment(data);
+                        postFragment(fragment, "shower");
                     }
                 });
 
@@ -270,46 +293,86 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                     e.printStackTrace();
                 }
 
-                runOnUiThread(new Runnable() {
+                final FaceFragment fragment = new FaceFragment();
+                fragment.setListener(new FaceFragmentListener() {
                     @Override
-                    public void run() {
+                    public void start() {
+                        if (!textToSpeech.isSpeaking()) {
+                            textToSpeech.setLanguage(Locale.US);
+                            textToSpeech.speak(name, TextToSpeech.QUEUE_ADD, null);
+                            textToSpeech.speak(name, TextToSpeech.QUEUE_ADD, null);
+                            textToSpeech.speak(name, TextToSpeech.QUEUE_ADD, null);
 
-                        AnimateAction action=new CarAction(context,new AnimatorListenerAdapter() {
+                            textToSpeech.setLanguage(Locale.TAIWAN);
+                            textToSpeech.speak(tr_name, TextToSpeech.QUEUE_ADD, null);
 
+                            textToSpeech.setLanguage(Locale.US);
+                            textToSpeech.speak(sentence, TextToSpeech.QUEUE_ADD, null);
+                            textToSpeech.speak(sentence, TextToSpeech.QUEUE_ADD, null);
+                            textToSpeech.speak(sentence, TextToSpeech.QUEUE_ADD, null);
+                            textToSpeech.setLanguage(Locale.TAIWAN);
+                            textToSpeech.speak(tr_sentence, TextToSpeech.QUEUE_ADD, null);
+                        }
+                    }
+
+                    @Override
+                    public void timeout() {
+                        runOnUiThread(new Runnable() {
                             @Override
-                            public void onAnimationStart(Animator animation) {
-                                super.onAnimationStart(animation);
-                                if (!textToSpeech.isSpeaking()) {
-                                    textToSpeech.setLanguage(Locale.US);
-                                    textToSpeech.speak(name, TextToSpeech.QUEUE_ADD, null);
-                                    textToSpeech.speak(name, TextToSpeech.QUEUE_ADD, null);
-                                    textToSpeech.speak(name, TextToSpeech.QUEUE_ADD, null);
-
-                                    textToSpeech.setLanguage(Locale.TAIWAN);
-                                    textToSpeech.speak(tr_name, TextToSpeech.QUEUE_ADD, null);
-
-                                    textToSpeech.setLanguage(Locale.US);
-                                    textToSpeech.speak(sentence, TextToSpeech.QUEUE_ADD, null);
-                                    textToSpeech.speak(sentence, TextToSpeech.QUEUE_ADD, null);
-                                    textToSpeech.speak(sentence, TextToSpeech.QUEUE_ADD, null);
-                                    textToSpeech.setLanguage(Locale.TAIWAN);
-                                    textToSpeech.speak(tr_sentence, TextToSpeech.QUEUE_ADD, null);
-                                }
+                            public void run() {
+                                fragment.getFace().stopFace();
+                                Toast.makeText(MainActivity.this, "timeout", Toast.LENGTH_LONG).show();
                             }
-
-                            @Override
-                            public void onAnimationEnd(Animator animation) {
-                                super.onAnimationEnd(animation);
-                                Toast.makeText(MainActivity.this, "end", Toast.LENGTH_LONG).show();
-                            }
-
                         });
-
-                        FaceFragment fragment = new FaceFragment(action, 1);
-                        postFragment(fragment, "face2");
-
                     }
                 });
+                Bundle bundle = new Bundle();
+                bundle.putInt("duration", 3000);
+                bundle.putString("face_type", name);
+                fragment.setArguments(bundle);
+                postFragment(fragment, "face2");
+
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//
+//
+//                        Animator.AnimatorListener listener = new AnimatorListenerAdapter() {
+//
+//                            @Override
+//                            public void onAnimationStart(Animator animation) {
+//                                super.onAnimationStart(animation);
+//                                if (!textToSpeech.isSpeaking()) {
+//                                    textToSpeech.setLanguage(Locale.US);
+//                                    textToSpeech.speak(name, TextToSpeech.QUEUE_ADD, null);
+//                                    textToSpeech.speak(name, TextToSpeech.QUEUE_ADD, null);
+//                                    textToSpeech.speak(name, TextToSpeech.QUEUE_ADD, null);
+//
+//                                    textToSpeech.setLanguage(Locale.TAIWAN);
+//                                    textToSpeech.speak(tr_name, TextToSpeech.QUEUE_ADD, null);
+//
+//                                    textToSpeech.setLanguage(Locale.US);
+//                                    textToSpeech.speak(sentence, TextToSpeech.QUEUE_ADD, null);
+//                                    textToSpeech.speak(sentence, TextToSpeech.QUEUE_ADD, null);
+//                                    textToSpeech.speak(sentence, TextToSpeech.QUEUE_ADD, null);
+//                                    textToSpeech.setLanguage(Locale.TAIWAN);
+//                                    textToSpeech.speak(tr_sentence, TextToSpeech.QUEUE_ADD, null);
+//                                }
+//                            }
+//
+//                            @Override
+//                            public void onAnimationEnd(Animator animation) {
+//                                super.onAnimationEnd(animation);
+//                                Toast.makeText(MainActivity.this, "end", Toast.LENGTH_LONG).show();
+//                            }
+//
+//                        };
+//
+//                        FaceFragment fragment = new FaceFragment();
+//                        postFragment(fragment, "face2");
+//
+//                    }
+//                });
 
 
             }
@@ -324,12 +387,13 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         JSONArray languages = object.getJSONArray("languages");
         final JSONObject zhTW = languages.getJSONObject(0);
 
-        showObjectAndFace(object.getString("name"),zhTW.getString("tr_name"),object.getString("sentence"),zhTW.getString("tr_sentence"));
+        showObjectAndFace(object.getString("name"), zhTW.getString("tr_name"), object.getString("sentence"), zhTW.getString("tr_sentence"));
 
 
     }
-    Drawable getDrawableByString(String str){
-        switch (str){
+
+    Drawable getDrawableByString(String str) {
+        switch (str) {
             case "car":
                 return getDrawable(R.drawable.object_car);
 
@@ -345,6 +409,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         }
         return null;
     }
+
     private void send_msg(String msg) {
         byte[] raw = Base64.encode(msg.getBytes(), Base64.URL_SAFE);
         byte[] line = new byte[raw.length + 1];
