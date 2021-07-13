@@ -2,24 +2,22 @@ package com.example.hiwin.teacher_version_bob;
 
 import android.content.Context;
 import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
 
-import java.util.Locale;
-import java.util.UUID;
+import java.util.*;
 
 import static android.speech.tts.TextToSpeech.QUEUE_ADD;
 
 public class ObjectSpeaker {
-    private static ObjectSpeaker speaker;
-
-    public static ObjectSpeaker init(Context context) {
-        if (speaker == null)
-            speaker = new ObjectSpeaker(context);
-        return speaker;
+    public interface SpeakerListener{
+        void onSpeakComplete();
     }
-
+    List<String> queue=new ArrayList<>();
+    private static ObjectSpeaker speaker;
     private final TextToSpeech tts;
+    private SpeakerListener speakerListener;
 
-    private ObjectSpeaker(Context context) {
+    public ObjectSpeaker(Context context) {
         tts = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
@@ -27,6 +25,27 @@ public class ObjectSpeaker {
                     tts.setLanguage(Locale.US);
                     tts.setSpeechRate(0.6f);
                 }
+            }
+        });
+
+        tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+            @Override
+            public void onStart(String utteranceId) {
+
+            }
+
+            @Override
+            public void onDone(String utteranceId) {
+                queue.remove(utteranceId);
+                if(queue.isEmpty()){
+                    if(speakerListener!=null)
+                        speakerListener.onSpeakComplete();
+                }
+            }
+
+            @Override
+            public void onError(String utteranceId) {
+
             }
         });
     }
@@ -63,17 +82,25 @@ public class ObjectSpeaker {
         for (int i = 0; i < vocabulary.length(); i++) {
             addTextToQueue(vocabulary.charAt(i) + "");
             addDelayToQueue(600);
-//            tts.speak(vocabulary.charAt(i) + "", QUEUE_ADD, null, "spv" + i);
-//            tts.playSilentUtterance(600, QUEUE_ADD, "s1");
         }
     }
     private void addTextToQueue(String string){
-        tts.speak(string, QUEUE_ADD, null, UUID.randomUUID().toString());
+        String id=UUID.randomUUID().toString();
+        tts.speak(string, QUEUE_ADD, null, id);
+        queue.add(id);
     }
+
     private void addDelayToQueue(int durationInMs){
-        tts.playSilentUtterance(durationInMs, QUEUE_ADD, UUID.randomUUID().toString());
+        String id=UUID.randomUUID().toString();
+        tts.playSilentUtterance(durationInMs, QUEUE_ADD,id);
+        queue.add(id);
     }
     private void setLanguage(Locale locale){
         tts.setLanguage(locale);
     }
+
+    public void setSpeakerListener(SpeakerListener speakerListener) {
+        this.speakerListener = speakerListener;
+    }
+
 }

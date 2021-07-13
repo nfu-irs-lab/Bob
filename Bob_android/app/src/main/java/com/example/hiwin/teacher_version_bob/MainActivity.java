@@ -1,7 +1,5 @@
 package com.example.hiwin.teacher_version_bob;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -71,7 +69,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     private DetectedObjectAdapter adapter;
 
     private FragmentManager fragmentManager;
-    private TextToSpeech textToSpeech;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,41 +77,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
         context = this;
-
         fragmentManager = getSupportFragmentManager();
-
-//        final FaceFragment fragment = new FaceFragment();
-//        fragment.setListener(new FaceFragmentListener() {
-//            @Override
-//            public void start() {
-//
-//            }
-//
-//            @Override
-//            public void timeout() {
-//                runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        fragment.getFace().stopFace();
-//                        Toast.makeText(MainActivity.this,"timeout",Toast.LENGTH_LONG).show();
-//                    }
-//                });
-//            }
-//        });
-//        Bundle bundle=new Bundle();
-//        bundle.putInt("duration",3000);
-//        bundle.putString("face_type","car");
-//        fragment.setArguments(bundle);
-//        postFragment(fragment, "face2");
-
-        textToSpeech = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-                if (status != TextToSpeech.ERROR) {
-                    textToSpeech.setLanguage(Locale.US);
-                }
-            }
-        });
 
 //        OnAttach
         boolean sus = bindService(new Intent(context, SerialService.class), this, Context.BIND_AUTO_CREATE);
@@ -193,9 +156,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
-        if (textToSpeech != null)
-            textToSpeech.shutdown();
 
         if (connected != Connected.False)
             disconnect();
@@ -292,88 +252,15 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-
                 final FaceFragment fragment = new FaceFragment();
-                fragment.setListener(new FaceFragmentListener() {
-                    @Override
-                    public void start() {
-                        if (!textToSpeech.isSpeaking()) {
-                            textToSpeech.setLanguage(Locale.US);
-                            textToSpeech.speak(name, TextToSpeech.QUEUE_ADD, null);
-                            textToSpeech.speak(name, TextToSpeech.QUEUE_ADD, null);
-                            textToSpeech.speak(name, TextToSpeech.QUEUE_ADD, null);
 
-                            textToSpeech.setLanguage(Locale.TAIWAN);
-                            textToSpeech.speak(tr_name, TextToSpeech.QUEUE_ADD, null);
-
-                            textToSpeech.setLanguage(Locale.US);
-                            textToSpeech.speak(sentence, TextToSpeech.QUEUE_ADD, null);
-                            textToSpeech.speak(sentence, TextToSpeech.QUEUE_ADD, null);
-                            textToSpeech.speak(sentence, TextToSpeech.QUEUE_ADD, null);
-                            textToSpeech.setLanguage(Locale.TAIWAN);
-                            textToSpeech.speak(tr_sentence, TextToSpeech.QUEUE_ADD, null);
-                        }
-                    }
-
-                    @Override
-                    public void timeout() {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                fragment.getFace().stopFace();
-                                Toast.makeText(MainActivity.this, "timeout", Toast.LENGTH_LONG).show();
-                            }
-                        });
-                    }
-                });
                 Bundle bundle = new Bundle();
-                bundle.putInt("duration", 3000);
-                bundle.putString("face_type", name);
+                bundle.putString("name", (name));
+                bundle.putString("tr_name", (tr_name));
+                bundle.putString("sentence", sentence);
+                bundle.putString("tr_sentence", tr_sentence);
                 fragment.setArguments(bundle);
                 postFragment(fragment, "face2");
-
-//                runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//
-//
-//                        Animator.AnimatorListener listener = new AnimatorListenerAdapter() {
-//
-//                            @Override
-//                            public void onAnimationStart(Animator animation) {
-//                                super.onAnimationStart(animation);
-//                                if (!textToSpeech.isSpeaking()) {
-//                                    textToSpeech.setLanguage(Locale.US);
-//                                    textToSpeech.speak(name, TextToSpeech.QUEUE_ADD, null);
-//                                    textToSpeech.speak(name, TextToSpeech.QUEUE_ADD, null);
-//                                    textToSpeech.speak(name, TextToSpeech.QUEUE_ADD, null);
-//
-//                                    textToSpeech.setLanguage(Locale.TAIWAN);
-//                                    textToSpeech.speak(tr_name, TextToSpeech.QUEUE_ADD, null);
-//
-//                                    textToSpeech.setLanguage(Locale.US);
-//                                    textToSpeech.speak(sentence, TextToSpeech.QUEUE_ADD, null);
-//                                    textToSpeech.speak(sentence, TextToSpeech.QUEUE_ADD, null);
-//                                    textToSpeech.speak(sentence, TextToSpeech.QUEUE_ADD, null);
-//                                    textToSpeech.setLanguage(Locale.TAIWAN);
-//                                    textToSpeech.speak(tr_sentence, TextToSpeech.QUEUE_ADD, null);
-//                                }
-//                            }
-//
-//                            @Override
-//                            public void onAnimationEnd(Animator animation) {
-//                                super.onAnimationEnd(animation);
-//                                Toast.makeText(MainActivity.this, "end", Toast.LENGTH_LONG).show();
-//                            }
-//
-//                        };
-//
-//                        FaceFragment fragment = new FaceFragment();
-//                        postFragment(fragment, "face2");
-//
-//                    }
-//                });
-
 
             }
         }).start();
