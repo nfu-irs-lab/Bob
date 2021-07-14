@@ -1,7 +1,5 @@
 package com.example.hiwin.teacher_version_bob.view;
 
-import android.annotation.SuppressLint;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -13,17 +11,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.hiwin.teacher_version_bob.R;
+import com.example.hiwin.teacher_version_bob.object.JObject;
+import com.example.hiwin.teacher_version_bob.object.ObjectShower;
 
-import java.util.HashMap;
-
-@SuppressLint("ValidFragment")
 public class ObjectShowerFragment extends Fragment {
     private Handler mHandler = new Handler(Looper.getMainLooper());
     private ObjectShower objectShower;
-    private HashMap<String,Object> datas;
-    public ObjectShowerFragment(HashMap<String,Object> datas){
-        this.datas=datas;
-    }
+    private JObject object;
 
     @Nullable
     @Override
@@ -40,11 +34,13 @@ public class ObjectShowerFragment extends Fragment {
         mHandler.post(new Runnable() {
             @Override
             public void run() {
-                objectShower.setData((Drawable) datas.get("img"),datas.get("name").toString(),datas.get("tr_name").toString());
+                objectShower.warpObject(object);
                 objectShower.show();
             }
         });
     }
 
-
+    public void setObject(JObject object) {
+        this.object = object;
+    }
 }

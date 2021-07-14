@@ -1,5 +1,6 @@
-package com.example.hiwin.teacher_version_bob.view;
+package com.example.hiwin.teacher_version_bob.object;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.text.Layout;
 import android.view.View;
@@ -14,6 +15,7 @@ public class ObjectShower {
     private final TextView tr_name;
     private final View root;
     private final View layout;
+
     public ObjectShower(View root) {
         this.root=root;
         this.layout=root.findViewById(R.id.object_layout);
@@ -22,10 +24,10 @@ public class ObjectShower {
         this.tr_name = (TextView) layout.findViewById(R.id.object_tr_name);
     }
 
-    public void setData(Drawable drawable,String name,String tr_name){
-        img.setImageDrawable(drawable);
-        this.name.setText(name);
-        this.tr_name.setText(tr_name);
+    public void warpObject(JObject object){
+        img.setImageDrawable(root.getContext().getDrawable(object.getDrawableId()));
+        this.name.setText(object.getName());
+        this.tr_name.setText(object.getTranslatedName());
     }
 
     public void show(){

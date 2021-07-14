@@ -11,8 +11,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.ImageView;
-import com.example.hiwin.teacher_version_bob.ObjectSpeaker;
+import com.example.hiwin.teacher_version_bob.object.ObjectSpeaker;
 import com.example.hiwin.teacher_version_bob.R;
+import com.example.hiwin.teacher_version_bob.object.JObject;
 
 import java.io.IOException;
 
@@ -21,6 +22,7 @@ public class FaceFragment extends Fragment implements FaceFragmentListener {
     private Handler mHandler = new Handler(Looper.getMainLooper());
     private FaceFragmentListener listener;
 
+    private JObject object;
     public void setListener(FaceFragmentListener listener) {
         this.listener = listener;
     }
@@ -39,10 +41,6 @@ public class FaceFragment extends Fragment implements FaceFragmentListener {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Bundle bundle=getArguments();
-        final String name=bundle.getString("name");
-        final String tr_name=bundle.getString("tr_name");
-        final String sentence=bundle.getString("sentence");
-        final String tr_sentence=bundle.getString("tr_sentence");
 
         faceController.setListener(new FaceController.FaceListener() {
             ObjectSpeaker speaker;
@@ -55,7 +53,7 @@ public class FaceFragment extends Fragment implements FaceFragmentListener {
                     }
                 });
 
-                speaker.speak(name,tr_name,sentence,tr_sentence);
+                speaker.speak(object);
             }
 
             @Override
@@ -65,7 +63,7 @@ public class FaceFragment extends Fragment implements FaceFragmentListener {
         });
 
         try {
-            faceController.warp(FaceController.FaceType.valueOf(name));
+            faceController.warp(FaceController.FaceType.valueOf(object.getName()));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -83,5 +81,9 @@ public class FaceFragment extends Fragment implements FaceFragmentListener {
     @Override
     public void complete() {
         listener.complete();
+    }
+
+    public void setObject(JObject object) {
+        this.object = object;
     }
 }

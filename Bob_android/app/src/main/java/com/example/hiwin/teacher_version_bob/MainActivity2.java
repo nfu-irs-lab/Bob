@@ -7,9 +7,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
+import com.example.hiwin.teacher_version_bob.object.JObject;
+import com.example.hiwin.teacher_version_bob.object.ObjectSpeaker;
 import com.example.hiwin.teacher_version_bob.view.FaceController;
-
-import java.io.IOException;
 
 
 public class MainActivity2 extends AppCompatActivity {
@@ -32,7 +32,8 @@ public class MainActivity2 extends AppCompatActivity {
             public void onFaceMotionComplete(FaceController controller) {
                 Toast.makeText(MainActivity2.this,"Gif Complete",Toast.LENGTH_SHORT).show();
                 controller.hind();
-                speaker.speak("Car","車","My car","我的車");
+                JObject object=new JObject("Car","車","My car","我的車");
+                speaker.speak(object);
             }
         });
 
@@ -51,7 +52,6 @@ public class MainActivity2 extends AppCompatActivity {
 
         try {
             faceController.warp(FaceController.FaceType.car);
-//            faceController.start();
             faceController.show();
 
         } catch (Exception e) {

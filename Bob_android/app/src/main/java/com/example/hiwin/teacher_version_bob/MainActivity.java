@@ -25,6 +25,7 @@ import android.widget.Toast;
 import com.example.hiwin.teacher_version_bob.communication.SerialListener;
 import com.example.hiwin.teacher_version_bob.communication.SerialService;
 import com.example.hiwin.teacher_version_bob.communication.SerialSocket;
+import com.example.hiwin.teacher_version_bob.object.JObject;
 import com.example.hiwin.teacher_version_bob.view.FaceFragment;
 import com.example.hiwin.teacher_version_bob.view.FaceFragmentListener;
 import com.example.hiwin.teacher_version_bob.view.ObjectShowerFragment;
@@ -228,9 +229,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         fragmentTransaction.commit();
     }
 
-    void showObjectAndFace(final String name, final String tr_name, final String sentence, final String tr_sentence) {
-
-
+    void showObjectAndFace(final JObject object) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -238,11 +237,8 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        HashMap<String, Object> data = new HashMap<>();
-                        data.put("img", getDrawableByString(name));
-                        data.put("name", (name));
-                        data.put("tr_name", (tr_name));
-                        ObjectShowerFragment fragment = new ObjectShowerFragment(data);
+                        ObjectShowerFragment fragment = new ObjectShowerFragment();
+                        fragment.setObject(object);
                         postFragment(fragment, "shower");
                     }
                 });
@@ -252,14 +248,9 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                final FaceFragment fragment = new FaceFragment();
 
-                Bundle bundle = new Bundle();
-                bundle.putString("name", (name));
-                bundle.putString("tr_name", (tr_name));
-                bundle.putString("sentence", sentence);
-                bundle.putString("tr_sentence", tr_sentence);
-                fragment.setArguments(bundle);
+                final FaceFragment fragment = new FaceFragment();
+                fragment.setObject(object);
                 postFragment(fragment, "face2");
 
             }
@@ -271,30 +262,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         BTLog('d', str);
         JSONArray array = new JSONArray(str);
         final JSONObject object = array.getJSONObject(0);
-        JSONArray languages = object.getJSONArray("languages");
-        final JSONObject zhTW = languages.getJSONObject(0);
-
-        showObjectAndFace(object.getString("name"), zhTW.getString("tr_name"), object.getString("sentence"), zhTW.getString("tr_sentence"));
-
-
-    }
-
-    Drawable getDrawableByString(String str) {
-        switch (str) {
-            case "car":
-                return getDrawable(R.drawable.object_car);
-
-            case "knife":
-                return getDrawable(R.drawable.object_knife);
-
-            case "cake":
-                return getDrawable(R.drawable.object_cake);
-            case "bird":
-                return getDrawable(R.drawable.object_bird);
-            case "bowl":
-                return getDrawable(R.drawable.object_bowl);
-        }
-        return null;
+        showObjectAndFace((new JObject.JSONParser()).parse(object,"zhTW"));
     }
 
     private void send_msg(String msg) {

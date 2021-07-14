@@ -1,4 +1,4 @@
-package com.example.hiwin.teacher_version_bob;
+package com.example.hiwin.teacher_version_bob.object;
 
 import android.content.Context;
 import android.speech.tts.TextToSpeech;
@@ -12,8 +12,8 @@ public class ObjectSpeaker {
     public interface SpeakerListener{
         void onSpeakComplete();
     }
+
     List<String> queue=new ArrayList<>();
-    private static ObjectSpeaker speaker;
     private final TextToSpeech tts;
     private SpeakerListener speakerListener;
 
@@ -50,31 +50,31 @@ public class ObjectSpeaker {
         });
     }
 
-    public void speak(String name, String tr_name, String sentence, String tr_sentence) {
+    public void speak(JObject object) {
 
         if (!tts.isSpeaking()) {
             setLanguage(Locale.US);
-            addTextToQueue(name);
+            addTextToQueue(object.getName());
             addDelayToQueue(100);
-            addTextToQueue(name);
+            addTextToQueue(object.getName());
             addDelayToQueue(100);
-            addTextToQueue(name);
+            addTextToQueue(object.getName());
             addDelayToQueue(600);
-            spellVocabulary(name);
+            spellVocabulary(object.getName());
 
             setLanguage(Locale.TAIWAN);
-            addTextToQueue(tr_name);
+            addTextToQueue(object.getTranslatedName());
 
             setLanguage(Locale.US);
-            addTextToQueue(sentence);
+            addTextToQueue(object.getSentence());
             addDelayToQueue(100);
-            addTextToQueue(sentence);
+            addTextToQueue(object.getSentence());
             addDelayToQueue(100);
-            addTextToQueue(sentence);
+            addTextToQueue(object.getSentence());
             addDelayToQueue(100);
 
             setLanguage(Locale.TAIWAN);
-            addTextToQueue(tr_sentence);
+            addTextToQueue(object.getTranslatedSentence());
         }
     }
 
