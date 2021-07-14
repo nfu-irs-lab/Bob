@@ -13,19 +13,17 @@ public class ObjectShower {
     private final ImageView img;
     private final TextView name;
     private final TextView tr_name;
-    private final View root;
     private final View layout;
 
-    public ObjectShower(View root) {
-        this.root=root;
-        this.layout=root.findViewById(R.id.object_layout);
-        this.img =(ImageView) layout.findViewById(R.id.object_img);
-        this.name = (TextView) layout.findViewById(R.id.object_name);
-        this.tr_name = (TextView) layout.findViewById(R.id.object_tr_name);
+    public ObjectShower(View layout,int object_image_id,int object_name_id,int object_tr_name_id) {
+        this.layout=layout;
+        this.img =(ImageView) layout.findViewById(object_image_id);
+        this.name = (TextView) layout.findViewById(object_name_id);
+        this.tr_name = (TextView) layout.findViewById(object_tr_name_id);
     }
 
     public void warpObject(JObject object){
-        img.setImageDrawable(root.getContext().getDrawable(object.getDrawableId()));
+        img.setImageDrawable(layout.getContext().getDrawable(object.getDrawableId()));
         this.name.setText(object.getName());
         this.tr_name.setText(object.getTranslatedName());
     }
@@ -37,9 +35,4 @@ public class ObjectShower {
     public void hind(){
         layout.setVisibility(View.INVISIBLE);
     }
-
-    public View getRoot() {
-        return root;
-    }
-
 }

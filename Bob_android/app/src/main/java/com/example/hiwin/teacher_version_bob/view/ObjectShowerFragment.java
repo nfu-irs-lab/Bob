@@ -22,9 +22,11 @@ public class ObjectShowerFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.activity_content_object, container, false);
-        objectShower=new ObjectShower(root);
+        View root = inflater.inflate(R.layout.fragment_object, container, false);
+        View object_layout=root.findViewById(R.id.object_layout);
+        objectShower=new ObjectShower(object_layout,R.id.object_img,R.id.object_name,R.id.object_tr_name);
         objectShower.hind();
+
         return root;
     }
 

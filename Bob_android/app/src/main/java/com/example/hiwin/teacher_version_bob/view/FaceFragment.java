@@ -30,7 +30,7 @@ public class FaceFragment extends Fragment implements FaceFragmentListener {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.activity_content_face, container, false);
+        View root = inflater.inflate(R.layout.fragment_face, container, false);
         ImageView imgFace = (ImageView) root.findViewById(R.id.face_gif);
         faceController=new FaceController(imgFace,getResources());
 
