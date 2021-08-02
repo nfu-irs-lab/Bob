@@ -7,9 +7,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.drawable.Drawable;
 import android.os.IBinder;
-import android.speech.tts.TextToSpeech;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -26,6 +24,8 @@ import com.example.hiwin.teacher_version_bob.communication.SerialListener;
 import com.example.hiwin.teacher_version_bob.communication.SerialService;
 import com.example.hiwin.teacher_version_bob.communication.SerialSocket;
 import com.example.hiwin.teacher_version_bob.object.JObject;
+import com.example.hiwin.teacher_version_bob.object.ObjectSpeaker;
+import com.example.hiwin.teacher_version_bob.view.FaceController;
 import com.example.hiwin.teacher_version_bob.view.FaceFragment;
 import com.example.hiwin.teacher_version_bob.view.FaceFragmentListener;
 import com.example.hiwin.teacher_version_bob.view.ObjectShowerFragment;
@@ -36,9 +36,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements ServiceConnection {
 
@@ -67,8 +65,8 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
     private boolean initialStart = true;
     private Connected connected = Connected.False;
-    private DetectedObjectAdapter adapter;
 
+    private ObjectSpeaker speaker;
     private FragmentManager fragmentManager;
 
     @Override
@@ -79,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         setSupportActionBar(toolbar);
         context = this;
         fragmentManager = getSupportFragmentManager();
+        speaker = new ObjectSpeaker(this);
 
 //        OnAttach
         boolean sus = bindService(new Intent(context, SerialService.class), this, Context.BIND_AUTO_CREATE);
@@ -125,12 +124,12 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         service.attach(serialListener);
         if (initialStart) {
             initialStart = false;
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    setMenuConnectionStatus(connected);
-                }
-            });
+//            runOnUiThread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    setMenuConnectionStatus(connected);
+//                }
+//            });
         }
     }
 
@@ -196,6 +195,16 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     }
 
 
+    void setMenuConnectionStatus(Connected connected) {
+        if (connected == Connected.False) {
+            connection.setIcon(R.drawable.link);
+            connection.setTitle("Connected");
+        } else if (connected == Connected.True) {
+            connection.setIcon(R.drawable.link_off);
+            connection.setTitle("Disconnected");
+        }
+    }
+
     void BTLog(char tag, String str) {
         switch (tag) {
             case 'v':
@@ -212,14 +221,29 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         }
     }
 
-    void setMenuConnectionStatus(Connected connected) {
-        if (connected == Connected.False) {
-            connection.setIcon(R.drawable.link);
-            connection.setTitle("Connected");
-        } else if (connected == Connected.True) {
-            connection.setIcon(R.drawable.link_off);
-            connection.setTitle("Disconnected");
-        }
+    void showObjectAndFace(final JObject object) {
+        final ObjectShowerFragment objectShowerFragment = new ObjectShowerFragment();
+        objectShowerFragment.setObject(object);
+        runOnUiThread(()->postFragment(objectShowerFragment, "shower"));
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) { }
+        final FaceFragment faceFragment = new FaceFragment();
+        faceFragment.setObject(object);
+        faceFragment.setListener(new FaceFragmentListener() {
+            @Override
+            public void start(FaceController controller) {
+                speaker.setSpeakerListener(controller::hind);
+                speaker.speak(object);
+            }
+
+            @Override
+            public void complete(FaceController controller) {
+
+            }
+        });
+        runOnUiThread(()->postFragment(faceFragment, "face2"));
+
     }
 
     public void postFragment(Fragment fragment, String id) {
@@ -227,35 +251,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         fragmentTransaction.setReorderingAllowed(true);
         fragmentTransaction.replace(R.id.frame, fragment, id);
         fragmentTransaction.commit();
-    }
-
-    void showObjectAndFace(final JObject object) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        ObjectShowerFragment fragment = new ObjectShowerFragment();
-                        fragment.setObject(object);
-                        postFragment(fragment, "shower");
-                    }
-                });
-
-                try {
-                    Thread.sleep(3000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                final FaceFragment fragment = new FaceFragment();
-                fragment.setObject(object);
-                postFragment(fragment, "face2");
-
-            }
-        }).start();
-
     }
 
     private void OnMessageReceived(String str) throws JSONException {

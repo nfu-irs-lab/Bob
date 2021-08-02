@@ -10,7 +10,7 @@ import java.io.IOException;
 
 public class FaceController {
     public enum FaceType {
-        car(R.raw.gif_car), cake(R.raw.git_cake), knife(R.raw.gif_knife);
+        car(R.raw.face_happy), cake(R.raw.git_cake), knife(R.raw.gif_knife);
         private final int id;
 
         FaceType(int id) {
@@ -40,7 +40,7 @@ public class FaceController {
     public void warp(FaceType faceType) throws IOException {
         final FaceController f = this;
         GifDrawable drawable = new GifDrawable(resources, faceType.getId());
-        drawable.setLoopCount(1);
+        drawable.setLoopCount(10);
         drawable.addAnimationListener(new AnimationListener() {
             @Override
             public void onAnimationCompleted(int i) {
@@ -52,6 +52,7 @@ public class FaceController {
     }
 
     public void start() {
+        listener.onFaceMotionStarted(this);
         gifController.start();
     }
 

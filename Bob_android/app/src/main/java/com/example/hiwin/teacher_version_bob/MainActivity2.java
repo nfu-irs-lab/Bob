@@ -25,15 +25,14 @@ public class MainActivity2 extends AppCompatActivity {
         faceController.setListener(new FaceController.FaceListener() {
             @Override
             public void onFaceMotionStarted(FaceController controller) {
-
+                JObject object=new JObject("Car","車","My car","我的車");
+                speaker.speak(object);
             }
 
             @Override
             public void onFaceMotionComplete(FaceController controller) {
                 Toast.makeText(MainActivity2.this,"Gif Complete",Toast.LENGTH_SHORT).show();
-                controller.hind();
-                JObject object=new JObject("Car","車","My car","我的車");
-                speaker.speak(object);
+//                controller.hind();
             }
         });
 
@@ -45,6 +44,8 @@ public class MainActivity2 extends AppCompatActivity {
                     @Override
                     public void run() {
                         Toast.makeText(MainActivity2.this,"Speaker Complete",Toast.LENGTH_SHORT).show();
+
+                        faceController.hind();
                     }
                 });
             }

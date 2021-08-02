@@ -62,7 +62,7 @@ public class JObject {
             case "bowl":
                 return R.drawable.object_bowl;
         }
-        return -1;
+        throw  new RuntimeException("Drawable not found");
     }
 
     @Override

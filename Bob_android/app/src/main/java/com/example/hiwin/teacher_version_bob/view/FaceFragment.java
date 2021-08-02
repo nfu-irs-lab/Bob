@@ -1,5 +1,6 @@
 package com.example.hiwin.teacher_version_bob.view;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -17,12 +18,13 @@ import com.example.hiwin.teacher_version_bob.object.JObject;
 
 import java.io.IOException;
 
-public class FaceFragment extends Fragment implements FaceFragmentListener {
+public class FaceFragment extends Fragment {
     FaceController faceController;
     private Handler mHandler = new Handler(Looper.getMainLooper());
     private FaceFragmentListener listener;
 
     private JObject object;
+
     public void setListener(FaceFragmentListener listener) {
         this.listener = listener;
     }
@@ -32,7 +34,7 @@ public class FaceFragment extends Fragment implements FaceFragmentListener {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_face, container, false);
         ImageView imgFace = (ImageView) root.findViewById(R.id.face_gif);
-        faceController=new FaceController(imgFace,getResources());
+        faceController = new FaceController(imgFace, getResources());
 
         return root;
     }
@@ -40,25 +42,22 @@ public class FaceFragment extends Fragment implements FaceFragmentListener {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Bundle bundle=getArguments();
+        Context context=getContext();
+        final ObjectSpeaker speaker = new ObjectSpeaker(context);
+        speaker.setSpeakerListener(() -> faceController.hind());
 
         faceController.setListener(new FaceController.FaceListener() {
-            ObjectSpeaker speaker;
             @Override
             public void onFaceMotionStarted(FaceController controller) {
-                speaker=new ObjectSpeaker(getContext());
-                speaker.setSpeakerListener(new ObjectSpeaker.SpeakerListener() {
-                    @Override
-                    public void onSpeakComplete() {
-                    }
-                });
-
+                if(listener!=null)
+                    listener.start(faceController);
                 speaker.speak(object);
             }
 
             @Override
             public void onFaceMotionComplete(FaceController controller) {
-                complete();
+                if(listener!=null)
+                    listener.complete(faceController);
             }
         });
 
@@ -73,15 +72,6 @@ public class FaceFragment extends Fragment implements FaceFragmentListener {
     }
 
 
-    @Override
-    public void start() {
-        listener.start();
-    }
-
-    @Override
-    public void complete() {
-        listener.complete();
-    }
 
     public void setObject(JObject object) {
         this.object = object;
