@@ -1,7 +1,5 @@
 package com.example.hiwin.teacher_version_bob;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -9,9 +7,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.drawable.Drawable;
 import android.os.IBinder;
-import android.speech.tts.TextToSpeech;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -27,19 +23,19 @@ import android.widget.Toast;
 import com.example.hiwin.teacher_version_bob.communication.SerialListener;
 import com.example.hiwin.teacher_version_bob.communication.SerialService;
 import com.example.hiwin.teacher_version_bob.communication.SerialSocket;
+import com.example.hiwin.teacher_version_bob.object.DataObject;
+import com.example.hiwin.teacher_version_bob.object.ObjectSpeaker;
+import com.example.hiwin.teacher_version_bob.view.FaceController;
 import com.example.hiwin.teacher_version_bob.view.FaceFragment;
 import com.example.hiwin.teacher_version_bob.view.FaceFragmentListener;
 import com.example.hiwin.teacher_version_bob.view.ObjectShowerFragment;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements ServiceConnection {
 
@@ -68,10 +64,9 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
     private boolean initialStart = true;
     private Connected connected = Connected.False;
-    private DetectedObjectAdapter adapter;
 
+    private ObjectSpeaker speaker;
     private FragmentManager fragmentManager;
-    private TextToSpeech textToSpeech;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,41 +75,8 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
         context = this;
-
         fragmentManager = getSupportFragmentManager();
-
-//        final FaceFragment fragment = new FaceFragment();
-//        fragment.setListener(new FaceFragmentListener() {
-//            @Override
-//            public void start() {
-//
-//            }
-//
-//            @Override
-//            public void timeout() {
-//                runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        fragment.getFace().stopFace();
-//                        Toast.makeText(MainActivity.this,"timeout",Toast.LENGTH_LONG).show();
-//                    }
-//                });
-//            }
-//        });
-//        Bundle bundle=new Bundle();
-//        bundle.putInt("duration",3000);
-//        bundle.putString("face_type","car");
-//        fragment.setArguments(bundle);
-//        postFragment(fragment, "face2");
-
-        textToSpeech = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-                if (status != TextToSpeech.ERROR) {
-                    textToSpeech.setLanguage(Locale.US);
-                }
-            }
-        });
+        speaker = new ObjectSpeaker(this);
 
 //        OnAttach
         boolean sus = bindService(new Intent(context, SerialService.class), this, Context.BIND_AUTO_CREATE);
@@ -161,12 +123,12 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         service.attach(serialListener);
         if (initialStart) {
             initialStart = false;
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    setMenuConnectionStatus(connected);
-                }
-            });
+//            runOnUiThread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    setMenuConnectionStatus(connected);
+//                }
+//            });
         }
     }
 
@@ -193,9 +155,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
-        if (textToSpeech != null)
-            textToSpeech.shutdown();
 
         if (connected != Connected.False)
             disconnect();
@@ -235,6 +194,16 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     }
 
 
+    void setMenuConnectionStatus(Connected connected) {
+        if (connected == Connected.False) {
+            connection.setIcon(R.drawable.link);
+            connection.setTitle("Connected");
+        } else if (connected == Connected.True) {
+            connection.setIcon(R.drawable.link_off);
+            connection.setTitle("Disconnected");
+        }
+    }
+
     void BTLog(char tag, String str) {
         switch (tag) {
             case 'v':
@@ -251,14 +220,29 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         }
     }
 
-    void setMenuConnectionStatus(Connected connected) {
-        if (connected == Connected.False) {
-            connection.setIcon(R.drawable.link);
-            connection.setTitle("Connected");
-        } else if (connected == Connected.True) {
-            connection.setIcon(R.drawable.link_off);
-            connection.setTitle("Disconnected");
-        }
+    void showObjectAndFace(final DataObject object) {
+        final ObjectShowerFragment objectShowerFragment = new ObjectShowerFragment();
+        objectShowerFragment.setObject(object);
+        runOnUiThread(()->postFragment(objectShowerFragment, "shower"));
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) { }
+        final FaceFragment faceFragment = new FaceFragment();
+        faceFragment.setObject(object);
+        faceFragment.setListener(new FaceFragmentListener() {
+            @Override
+            public void start(FaceController controller) {
+                speaker.setSpeakerListener(()->runOnUiThread(controller::hind));
+                speaker.speak(object);
+            }
+
+            @Override
+            public void complete(FaceController controller) {
+
+            }
+        });
+        runOnUiThread(()->postFragment(faceFragment, "face2"));
+
     }
 
     public void postFragment(Fragment fragment, String id) {
@@ -268,146 +252,10 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         fragmentTransaction.commit();
     }
 
-    void showObjectAndFace(final String name, final String tr_name, final String sentence, final String tr_sentence) {
-
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        HashMap<String, Object> data = new HashMap<>();
-                        data.put("img", getDrawableByString(name));
-                        data.put("name", (name));
-                        data.put("tr_name", (tr_name));
-                        ObjectShowerFragment fragment = new ObjectShowerFragment(data);
-                        postFragment(fragment, "shower");
-                    }
-                });
-
-                try {
-                    Thread.sleep(3000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                final FaceFragment fragment = new FaceFragment();
-                fragment.setListener(new FaceFragmentListener() {
-                    @Override
-                    public void start() {
-                        if (!textToSpeech.isSpeaking()) {
-                            textToSpeech.setLanguage(Locale.US);
-                            textToSpeech.speak(name, TextToSpeech.QUEUE_ADD, null);
-                            textToSpeech.speak(name, TextToSpeech.QUEUE_ADD, null);
-                            textToSpeech.speak(name, TextToSpeech.QUEUE_ADD, null);
-
-                            textToSpeech.setLanguage(Locale.TAIWAN);
-                            textToSpeech.speak(tr_name, TextToSpeech.QUEUE_ADD, null);
-
-                            textToSpeech.setLanguage(Locale.US);
-                            textToSpeech.speak(sentence, TextToSpeech.QUEUE_ADD, null);
-                            textToSpeech.speak(sentence, TextToSpeech.QUEUE_ADD, null);
-                            textToSpeech.speak(sentence, TextToSpeech.QUEUE_ADD, null);
-                            textToSpeech.setLanguage(Locale.TAIWAN);
-                            textToSpeech.speak(tr_sentence, TextToSpeech.QUEUE_ADD, null);
-                        }
-                    }
-
-                    @Override
-                    public void timeout() {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                fragment.getFace().stopFace();
-                                Toast.makeText(MainActivity.this, "timeout", Toast.LENGTH_LONG).show();
-                            }
-                        });
-                    }
-                });
-                Bundle bundle = new Bundle();
-                bundle.putInt("duration", 3000);
-                bundle.putString("face_type", name);
-                fragment.setArguments(bundle);
-                postFragment(fragment, "face2");
-
-//                runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//
-//
-//                        Animator.AnimatorListener listener = new AnimatorListenerAdapter() {
-//
-//                            @Override
-//                            public void onAnimationStart(Animator animation) {
-//                                super.onAnimationStart(animation);
-//                                if (!textToSpeech.isSpeaking()) {
-//                                    textToSpeech.setLanguage(Locale.US);
-//                                    textToSpeech.speak(name, TextToSpeech.QUEUE_ADD, null);
-//                                    textToSpeech.speak(name, TextToSpeech.QUEUE_ADD, null);
-//                                    textToSpeech.speak(name, TextToSpeech.QUEUE_ADD, null);
-//
-//                                    textToSpeech.setLanguage(Locale.TAIWAN);
-//                                    textToSpeech.speak(tr_name, TextToSpeech.QUEUE_ADD, null);
-//
-//                                    textToSpeech.setLanguage(Locale.US);
-//                                    textToSpeech.speak(sentence, TextToSpeech.QUEUE_ADD, null);
-//                                    textToSpeech.speak(sentence, TextToSpeech.QUEUE_ADD, null);
-//                                    textToSpeech.speak(sentence, TextToSpeech.QUEUE_ADD, null);
-//                                    textToSpeech.setLanguage(Locale.TAIWAN);
-//                                    textToSpeech.speak(tr_sentence, TextToSpeech.QUEUE_ADD, null);
-//                                }
-//                            }
-//
-//                            @Override
-//                            public void onAnimationEnd(Animator animation) {
-//                                super.onAnimationEnd(animation);
-//                                Toast.makeText(MainActivity.this, "end", Toast.LENGTH_LONG).show();
-//                            }
-//
-//                        };
-//
-//                        FaceFragment fragment = new FaceFragment();
-//                        postFragment(fragment, "face2");
-//
-//                    }
-//                });
-
-
-            }
-        }).start();
-
-    }
-
     private void OnMessageReceived(String str) throws JSONException {
         BTLog('d', str);
-        JSONArray array = new JSONArray(str);
-        final JSONObject object = array.getJSONObject(0);
-        JSONArray languages = object.getJSONArray("languages");
-        final JSONObject zhTW = languages.getJSONObject(0);
-
-        showObjectAndFace(object.getString("name"), zhTW.getString("tr_name"), object.getString("sentence"), zhTW.getString("tr_sentence"));
-
-
-    }
-
-    Drawable getDrawableByString(String str) {
-        switch (str) {
-            case "car":
-                return getDrawable(R.drawable.object_car);
-
-            case "knife":
-                return getDrawable(R.drawable.object_knife);
-
-            case "cake":
-                return getDrawable(R.drawable.object_cake);
-            case "bird":
-                return getDrawable(R.drawable.object_bird);
-            case "bowl":
-                return getDrawable(R.drawable.object_bowl);
-        }
-        return null;
+        final JSONObject object = new JSONObject(str);
+        showObjectAndFace((new DataObject.JSONParser()).parse(object,"zh_TW"));
     }
 
     private void send_msg(String msg) {
@@ -483,7 +331,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                             @Override
                             public void run() {
                                 try {
-                                    byte[] raw_bytes = Base64.decode(recv_data.getBytes(StandardCharsets.UTF_8), Base64.URL_SAFE);
+                                    byte[] raw_bytes = Base64.decode(recv_data.getBytes(StandardCharsets.UTF_8), Base64.DEFAULT);
 
                                     String msg = new String(raw_bytes, StandardCharsets.UTF_8);
                                     OnMessageReceived(msg);

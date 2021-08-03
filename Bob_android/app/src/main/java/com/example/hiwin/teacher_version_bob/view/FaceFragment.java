@@ -1,6 +1,5 @@
 package com.example.hiwin.teacher_version_bob.view;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,14 +11,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.ImageView;
+import com.example.hiwin.teacher_version_bob.object.ObjectSpeaker;
 import com.example.hiwin.teacher_version_bob.R;
+import com.example.hiwin.teacher_version_bob.object.DataObject;
 
 import java.io.IOException;
 
-public class FaceFragment extends Fragment implements FaceFragmentListener {
-    private Face face;
+public class FaceFragment extends Fragment {
+    FaceController faceController;
     private Handler mHandler = new Handler(Looper.getMainLooper());
     private FaceFragmentListener listener;
+
+    private DataObject object;
 
     public void setListener(FaceFragmentListener listener) {
         this.listener = listener;
@@ -28,13 +32,9 @@ public class FaceFragment extends Fragment implements FaceFragmentListener {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.activity_content_face, container, false);
-        try {
-            face = new Face(getResources(), Face.FaceType.getInstance(getArguments().getString("face_type")), root);
-            face.hindFace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        View root = inflater.inflate(R.layout.fragment_face, container, false);
+        ImageView imgFace = (ImageView) root.findViewById(R.id.face_gif);
+        faceController = new FaceController(imgFace, getResources());
 
         return root;
     }
@@ -42,40 +42,37 @@ public class FaceFragment extends Fragment implements FaceFragmentListener {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        final int duration = getArguments().getInt("duration");
+//        Context context=getContext();
+//        final ObjectSpeaker speaker = new ObjectSpeaker(context);
+//        speaker.setSpeakerListener(() -> getActivity().runOnUiThread(()->faceController.hind()));
 
-        mHandler.post(new Runnable() {
+        faceController.setListener(new FaceController.FaceListener() {
             @Override
-            public void run() {
-                face.showFace();
+            public void onFaceMotionStarted(FaceController controller) {
+                if(listener!=null)
+                    listener.start(faceController);
+            }
 
+            @Override
+            public void onFaceMotionComplete(FaceController controller) {
+                if(listener!=null)
+                    listener.complete(faceController);
             }
         });
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(duration);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                timeout();
-            }
-        }).start();
 
+        try {
+            faceController.warp(FaceController.FaceType.valueOf(object.getName()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        faceController.show();
+        faceController.start();
     }
 
-    public Face getFace() {
-        return face;
-    }
 
-    @Override
-    public void start() {
-        listener.start();
-    }
 
-    @Override
-    public void timeout() {
-        listener.timeout();
+    public void setObject(DataObject object) {
+        this.object = object;
     }
 }

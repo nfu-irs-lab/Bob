@@ -1,7 +1,5 @@
 package com.example.hiwin.teacher_version_bob.view;
 
-import android.annotation.SuppressLint;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -13,24 +11,22 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.hiwin.teacher_version_bob.R;
+import com.example.hiwin.teacher_version_bob.object.DataObject;
+import com.example.hiwin.teacher_version_bob.object.ObjectShower;
 
-import java.util.HashMap;
-
-@SuppressLint("ValidFragment")
 public class ObjectShowerFragment extends Fragment {
     private Handler mHandler = new Handler(Looper.getMainLooper());
     private ObjectShower objectShower;
-    private HashMap<String,Object> datas;
-    public ObjectShowerFragment(HashMap<String,Object> datas){
-        this.datas=datas;
-    }
+    private DataObject object;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.activity_content_object, container, false);
-        objectShower=new ObjectShower(root);
+        View root = inflater.inflate(R.layout.fragment_object, container, false);
+        View object_layout=root.findViewById(R.id.object_layout);
+        objectShower=new ObjectShower(object_layout,R.id.object_img,R.id.object_name,R.id.object_tr_name);
         objectShower.hind();
+
         return root;
     }
 
@@ -40,11 +36,13 @@ public class ObjectShowerFragment extends Fragment {
         mHandler.post(new Runnable() {
             @Override
             public void run() {
-                objectShower.setData((Drawable) datas.get("img"),datas.get("name").toString(),datas.get("tr_name").toString());
+                objectShower.warpObject(object);
                 objectShower.show();
             }
         });
     }
 
-
+    public void setObject(DataObject object) {
+        this.object = object;
+    }
 }
