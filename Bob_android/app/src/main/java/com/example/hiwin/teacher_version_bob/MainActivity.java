@@ -255,8 +255,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
     private void OnMessageReceived(String str) throws JSONException {
         BTLog('d', str);
-        JSONArray array = new JSONArray(str);
-        final JSONObject object = array.getJSONObject(0);
+        final JSONObject object = new JSONObject(str);
         showObjectAndFace((new JObject.JSONParser()).parse(object,"zhTW"));
     }
 
@@ -333,7 +332,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                             @Override
                             public void run() {
                                 try {
-                                    byte[] raw_bytes = Base64.decode(recv_data.getBytes(StandardCharsets.UTF_8), Base64.URL_SAFE);
+                                    byte[] raw_bytes = Base64.decode(recv_data.getBytes(StandardCharsets.UTF_8), Base64.DEFAULT);
 
                                     String msg = new String(raw_bytes, StandardCharsets.UTF_8);
                                     OnMessageReceived(msg);
