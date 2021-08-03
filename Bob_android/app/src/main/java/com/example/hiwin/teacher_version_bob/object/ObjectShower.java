@@ -1,8 +1,5 @@
 package com.example.hiwin.teacher_version_bob.object;
 
-import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.text.Layout;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -22,8 +19,8 @@ public class ObjectShower {
         this.tr_name = (TextView) layout.findViewById(object_tr_name_id);
     }
 
-    public void warpObject(JObject object){
-        img.setImageDrawable(layout.getContext().getDrawable(object.getDrawableId()));
+    public void warpObject(DataObject object){
+        img.setImageDrawable(layout.getContext().getDrawable(getDrawableId(object)));
         this.name.setText(object.getName());
         this.tr_name.setText(object.getTranslatedName());
     }
@@ -34,5 +31,27 @@ public class ObjectShower {
 
     public void hind(){
         layout.setVisibility(View.INVISIBLE);
+    }
+
+    private int getDrawableId(DataObject object) {
+        switch (object.getName()) {
+            case "car":
+                return R.drawable.object_car;
+            case "knife":
+                return R.drawable.object_knife;
+            case "cake":
+                return R.drawable.object_cake;
+            case "bird":
+                return R.drawable.object_bird;
+            case "bowl":
+                return R.drawable.object_bowl;
+            case "person":
+                return R.drawable.object_person;
+            case "cat":
+                return R.drawable.object_cat;
+            case "bottle":
+                return R.drawable.object_bottle;
+        }
+        throw  new RuntimeException("Drawable not found");
     }
 }

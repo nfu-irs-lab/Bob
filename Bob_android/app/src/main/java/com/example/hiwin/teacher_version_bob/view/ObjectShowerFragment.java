@@ -11,13 +11,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.hiwin.teacher_version_bob.R;
-import com.example.hiwin.teacher_version_bob.object.JObject;
+import com.example.hiwin.teacher_version_bob.object.DataObject;
 import com.example.hiwin.teacher_version_bob.object.ObjectShower;
 
 public class ObjectShowerFragment extends Fragment {
     private Handler mHandler = new Handler(Looper.getMainLooper());
     private ObjectShower objectShower;
-    private JObject object;
+    private DataObject object;
 
     @Nullable
     @Override
@@ -42,7 +42,7 @@ public class ObjectShowerFragment extends Fragment {
         });
     }
 
-    public void setObject(JObject object) {
+    public void setObject(DataObject object) {
         this.object = object;
     }
 }

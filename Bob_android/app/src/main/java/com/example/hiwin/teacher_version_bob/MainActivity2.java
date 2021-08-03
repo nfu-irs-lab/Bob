@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
-import com.example.hiwin.teacher_version_bob.object.JObject;
+import com.example.hiwin.teacher_version_bob.object.DataObject;
 import com.example.hiwin.teacher_version_bob.object.ObjectSpeaker;
 import com.example.hiwin.teacher_version_bob.view.FaceController;
 
@@ -25,7 +25,7 @@ public class MainActivity2 extends AppCompatActivity {
         faceController.setListener(new FaceController.FaceListener() {
             @Override
             public void onFaceMotionStarted(FaceController controller) {
-                JObject object=new JObject("Car","車","My car","我的車");
+                DataObject object=new DataObject("Car","車","My car","我的車");
                 speaker.speak(object);
             }
 

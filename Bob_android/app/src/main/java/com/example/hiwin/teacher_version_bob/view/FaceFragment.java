@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import com.example.hiwin.teacher_version_bob.object.ObjectSpeaker;
 import com.example.hiwin.teacher_version_bob.R;
-import com.example.hiwin.teacher_version_bob.object.JObject;
+import com.example.hiwin.teacher_version_bob.object.DataObject;
 
 import java.io.IOException;
 
@@ -23,7 +23,7 @@ public class FaceFragment extends Fragment {
     private Handler mHandler = new Handler(Looper.getMainLooper());
     private FaceFragmentListener listener;
 
-    private JObject object;
+    private DataObject object;
 
     public void setListener(FaceFragmentListener listener) {
         this.listener = listener;
@@ -73,7 +73,7 @@ public class FaceFragment extends Fragment {
 
 
 
-    public void setObject(JObject object) {
+    public void setObject(DataObject object) {
         this.object = object;
     }
 }
