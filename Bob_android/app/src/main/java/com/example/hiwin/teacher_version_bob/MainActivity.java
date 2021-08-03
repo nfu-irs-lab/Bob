@@ -232,7 +232,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         faceFragment.setListener(new FaceFragmentListener() {
             @Override
             public void start(FaceController controller) {
-                speaker.setSpeakerListener(controller::hind);
+                speaker.setSpeakerListener(()->runOnUiThread(controller::hind));
                 speaker.speak(object);
             }
 
@@ -255,7 +255,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     private void OnMessageReceived(String str) throws JSONException {
         BTLog('d', str);
         final JSONObject object = new JSONObject(str);
-        showObjectAndFace((new DataObject.JSONParser()).parse(object,"zhTW"));
+        showObjectAndFace((new DataObject.JSONParser()).parse(object,"zh_TW"));
     }
 
     private void send_msg(String msg) {

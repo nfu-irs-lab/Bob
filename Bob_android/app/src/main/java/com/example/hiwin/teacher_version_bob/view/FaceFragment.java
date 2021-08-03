@@ -42,16 +42,15 @@ public class FaceFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Context context=getContext();
-        final ObjectSpeaker speaker = new ObjectSpeaker(context);
-        speaker.setSpeakerListener(() -> faceController.hind());
+//        Context context=getContext();
+//        final ObjectSpeaker speaker = new ObjectSpeaker(context);
+//        speaker.setSpeakerListener(() -> getActivity().runOnUiThread(()->faceController.hind()));
 
         faceController.setListener(new FaceController.FaceListener() {
             @Override
             public void onFaceMotionStarted(FaceController controller) {
                 if(listener!=null)
                     listener.start(faceController);
-                speaker.speak(object);
             }
 
             @Override
