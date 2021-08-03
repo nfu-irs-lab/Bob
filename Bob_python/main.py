@@ -75,6 +75,8 @@ if not bt.isOpen():
     bt.open()
 
 robot = RoboticsRobot(getRobotCom('COM1'))
+robot.doAction(getActionFromName("reset"))
+
 if not robot.isOpen():
     robot.open()
 
