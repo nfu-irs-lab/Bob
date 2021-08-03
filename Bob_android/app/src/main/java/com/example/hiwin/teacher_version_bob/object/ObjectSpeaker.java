@@ -50,7 +50,7 @@ public class ObjectSpeaker {
         });
     }
 
-    public void speak(JObject object) {
+    public void speak(DataObject object) {
 
         if (!tts.isSpeaking()) {
             setLanguage(Locale.US);

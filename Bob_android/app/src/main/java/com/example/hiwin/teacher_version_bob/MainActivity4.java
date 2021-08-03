@@ -1,40 +1,18 @@
 package com.example.hiwin.teacher_version_bob;
 
-import android.annotation.SuppressLint;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Base64;
-import android.util.Log;
 import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.Toast;
-import com.example.hiwin.teacher_version_bob.communication.SerialListener;
-import com.example.hiwin.teacher_version_bob.communication.SerialService;
-import com.example.hiwin.teacher_version_bob.communication.SerialSocket;
-import com.example.hiwin.teacher_version_bob.object.JObject;
+import com.example.hiwin.teacher_version_bob.object.DataObject;
 import com.example.hiwin.teacher_version_bob.object.ObjectSpeaker;
 import com.example.hiwin.teacher_version_bob.view.FaceController;
 import com.example.hiwin.teacher_version_bob.view.FaceFragment;
 import com.example.hiwin.teacher_version_bob.view.FaceFragmentListener;
 import com.example.hiwin.teacher_version_bob.view.ObjectShowerFragment;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.LinkedList;
 
 public class MainActivity4 extends AppCompatActivity {
 
@@ -53,7 +31,7 @@ public class MainActivity4 extends AppCompatActivity {
         speaker = new ObjectSpeaker(this);
         new Thread(() -> {
             try {
-                JObject object = new JObject("car", "車", "My car", "我的車");
+                DataObject object = new DataObject("car", "車", "My car", "我的車");
                 showObjectAndFace(object);
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -69,7 +47,7 @@ public class MainActivity4 extends AppCompatActivity {
         return true;
     }
 
-    void showObjectAndFace(final JObject object) throws InterruptedException {
+    void showObjectAndFace(final DataObject object) throws InterruptedException {
         final ObjectShowerFragment objectShowerFragment = new ObjectShowerFragment();
         objectShowerFragment.setObject(object);
         runOnUiThread(() -> postFragment(objectShowerFragment, "shower"));

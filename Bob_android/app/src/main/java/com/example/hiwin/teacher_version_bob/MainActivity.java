@@ -23,14 +23,13 @@ import android.widget.Toast;
 import com.example.hiwin.teacher_version_bob.communication.SerialListener;
 import com.example.hiwin.teacher_version_bob.communication.SerialService;
 import com.example.hiwin.teacher_version_bob.communication.SerialSocket;
-import com.example.hiwin.teacher_version_bob.object.JObject;
+import com.example.hiwin.teacher_version_bob.object.DataObject;
 import com.example.hiwin.teacher_version_bob.object.ObjectSpeaker;
 import com.example.hiwin.teacher_version_bob.view.FaceController;
 import com.example.hiwin.teacher_version_bob.view.FaceFragment;
 import com.example.hiwin.teacher_version_bob.view.FaceFragmentListener;
 import com.example.hiwin.teacher_version_bob.view.ObjectShowerFragment;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -221,7 +220,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         }
     }
 
-    void showObjectAndFace(final JObject object) {
+    void showObjectAndFace(final DataObject object) {
         final ObjectShowerFragment objectShowerFragment = new ObjectShowerFragment();
         objectShowerFragment.setObject(object);
         runOnUiThread(()->postFragment(objectShowerFragment, "shower"));
@@ -255,9 +254,8 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
     private void OnMessageReceived(String str) throws JSONException {
         BTLog('d', str);
-        JSONArray array = new JSONArray(str);
-        final JSONObject object = array.getJSONObject(0);
-        showObjectAndFace((new JObject.JSONParser()).parse(object,"zhTW"));
+        final JSONObject object = new JSONObject(str);
+        showObjectAndFace((new DataObject.JSONParser()).parse(object,"zhTW"));
     }
 
     private void send_msg(String msg) {
@@ -333,7 +331,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                             @Override
                             public void run() {
                                 try {
-                                    byte[] raw_bytes = Base64.decode(recv_data.getBytes(StandardCharsets.UTF_8), Base64.URL_SAFE);
+                                    byte[] raw_bytes = Base64.decode(recv_data.getBytes(StandardCharsets.UTF_8), Base64.DEFAULT);
 
                                     String msg = new String(raw_bytes, StandardCharsets.UTF_8);
                                     OnMessageReceived(msg);
