@@ -1,4 +1,4 @@
-package com.example.hiwin.teacher_version_bob.communication.bluetooth;
+package com.example.hiwin.teacher_version_bob.communication.bluetooth.concrete;
 
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -6,6 +6,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import com.example.hiwin.teacher_version_bob.Constants;
+import com.example.hiwin.teacher_version_bob.communication.bluetooth.framework.SerialListener;
+import com.example.hiwin.teacher_version_bob.communication.bluetooth.framework.SerialReadStrategy;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -47,13 +50,13 @@ public class SerialSocket implements Runnable {
     /**
      * connect-success and most connect-errors are returned asynchronously to listener
      */
-    void connect(SerialListener listener) throws IOException {
+    public void connect(SerialListener listener) throws IOException {
         this.listener = listener;
         context.registerReceiver(disconnectBroadcastReceiver, new IntentFilter(Constants.INTENT_ACTION_DISCONNECT));
         Executors.newSingleThreadExecutor().submit(this);
     }
 
-    void disconnect() {
+    public void disconnect() {
         listener = null; // ignore remaining data and errors
         // connected = false; // run loop will reset connected
         if (socket != null) {
@@ -69,7 +72,7 @@ public class SerialSocket implements Runnable {
         }
     }
 
-    void write(byte[] data) throws IOException {
+    public void write(byte[] data) throws IOException {
         if (!connected)
             throw new IOException("not connected");
         socket.getOutputStream().write(data);

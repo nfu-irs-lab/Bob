@@ -1,4 +1,4 @@
-package com.example.hiwin.teacher_version_bob;
+package com.example.hiwin.teacher_version_bob.activity;
 
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
@@ -19,7 +19,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.example.hiwin.teacher_version_bob.communication.bluetooth.*;
+import com.example.hiwin.teacher_version_bob.R;
+import com.example.hiwin.teacher_version_bob.communication.bluetooth.concrete.ReadLineStrategy;
+import com.example.hiwin.teacher_version_bob.communication.bluetooth.concrete.SerialDataListener;
+import com.example.hiwin.teacher_version_bob.communication.service.SerialService;
+import com.example.hiwin.teacher_version_bob.communication.bluetooth.concrete.SerialSocket;
+import com.example.hiwin.teacher_version_bob.communication.bluetooth.framework.ConnectStatus;
 import com.example.hiwin.teacher_version_bob.object.DataObject;
 import com.example.hiwin.teacher_version_bob.object.ObjectSpeaker;
 import com.example.hiwin.teacher_version_bob.view.FaceController;

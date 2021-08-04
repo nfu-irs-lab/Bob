@@ -1,4 +1,4 @@
-package com.example.hiwin.teacher_version_bob;
+package com.example.hiwin.teacher_version_bob.activity;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
+import com.example.hiwin.teacher_version_bob.R;
 import com.example.hiwin.teacher_version_bob.object.DataObject;
 import com.example.hiwin.teacher_version_bob.object.ObjectSpeaker;
 import com.example.hiwin.teacher_version_bob.view.FaceController;

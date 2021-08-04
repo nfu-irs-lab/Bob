@@ -1,4 +1,4 @@
-package com.example.hiwin.teacher_version_bob.communication.bluetooth;
+package com.example.hiwin.teacher_version_bob.communication.service;
 
 import android.app.Service;
 import android.content.Intent;
@@ -7,6 +7,8 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.support.annotation.Nullable;
+import com.example.hiwin.teacher_version_bob.communication.bluetooth.concrete.SerialSocket;
+import com.example.hiwin.teacher_version_bob.communication.bluetooth.framework.SerialListener;
 
 
 import java.io.IOException;

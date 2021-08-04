@@ -1,4 +1,6 @@
-package com.example.hiwin.teacher_version_bob.communication.bluetooth;
+package com.example.hiwin.teacher_version_bob.communication.bluetooth.concrete;
+
+import com.example.hiwin.teacher_version_bob.communication.bluetooth.framework.SerialReadStrategy;
 
 import java.util.LinkedList;
 import java.util.Queue;

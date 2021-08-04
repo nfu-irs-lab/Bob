@@ -1,6 +1,8 @@
-package com.example.hiwin.teacher_version_bob.communication.bluetooth;
+package com.example.hiwin.teacher_version_bob.communication.bluetooth.concrete;
 
 import android.util.Base64;
+import com.example.hiwin.teacher_version_bob.communication.bluetooth.framework.ConnectStatus;
+import com.example.hiwin.teacher_version_bob.communication.bluetooth.framework.SerialListener;
 
 import java.nio.charset.StandardCharsets;
 

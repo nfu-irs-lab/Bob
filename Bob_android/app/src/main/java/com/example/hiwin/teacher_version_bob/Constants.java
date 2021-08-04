@@ -1,4 +1,4 @@
-package com.example.hiwin.teacher_version_bob.communication.bluetooth;
+package com.example.hiwin.teacher_version_bob;
 
 import com.example.hiwin.teacher_version_bob.BuildConfig;
 
