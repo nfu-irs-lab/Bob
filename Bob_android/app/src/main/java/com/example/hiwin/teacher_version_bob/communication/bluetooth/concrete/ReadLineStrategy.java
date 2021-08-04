@@ -10,6 +10,7 @@ public class ReadLineStrategy implements SerialReadStrategy {
     private final Queue<Byte> buffer = new LinkedList<>();
     private long delay_timer;
     private boolean isIntegralPackage;
+    private byte[] package_data;
 
     @Override
     public void warp(byte[] data) {
@@ -21,13 +22,16 @@ public class ReadLineStrategy implements SerialReadStrategy {
 
         int indexOfEOL = -1;
         for (int i = 0; i < data.length; i++) {
-            if (data[i] == '\n')
+            if (data[i] == '\n') {
                 indexOfEOL = i;
+                break;
+            }
         }
 
         isIntegralPackage = indexOfEOL != -1;
 
         if (!isIntegralPackage) {
+            package_data = null;
             for (byte datum : data) {
                 buffer.offer(datum);
             }
@@ -36,6 +40,21 @@ public class ReadLineStrategy implements SerialReadStrategy {
         } else {
             for (int i = 0; i < indexOfEOL; i++) {
                 buffer.offer(data[i]);
+            }
+
+            package_data = new byte[buffer.size()];
+            for (int i = 0; i < package_data.length; i++) {
+                Byte b = buffer.poll();
+                if (b == null)
+                    throw new RuntimeException();
+                package_data[i] = b;
+            }
+
+            if (indexOfEOL + 1 < data.length) {
+                for (int i = indexOfEOL + 1; i < data.length; i++) {
+                    buffer.offer(data[i]);
+                }
+                delay_timer = current_time + 1500;
             }
         }
     }
@@ -48,13 +67,6 @@ public class ReadLineStrategy implements SerialReadStrategy {
     @Override
     public byte[] getPackage() {
         if (isIntegralPackage) {
-            byte[] package_data = new byte[buffer.size()];
-            for (int i = 0; i < package_data.length; i++) {
-                Byte b = buffer.poll();
-                if (b == null)
-                    throw new RuntimeException();
-                package_data[i] = b;
-            }
             return package_data;
         } else {
             return null;
