@@ -287,7 +287,4 @@ public class SerialService extends Service implements SerialListener {
         }
     }
 
-    public boolean isConnected() {
-        return connected;
-    }
 }

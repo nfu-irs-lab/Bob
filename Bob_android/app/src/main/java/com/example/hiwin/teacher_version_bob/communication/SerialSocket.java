@@ -1,6 +1,5 @@
 package com.example.hiwin.teacher_version_bob.communication;
 
-import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
@@ -9,8 +8,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 
 import java.io.IOException;
-import java.security.InvalidParameterException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.UUID;
 import java.util.concurrent.Executors;
@@ -21,9 +18,9 @@ public class SerialSocket implements Runnable {
     private static final int READ_DELAY=100;
     private final BroadcastReceiver disconnectBroadcastReceiver;
 
-    private Context context;
+    private final Context context;
     private SerialListener listener;
-    private BluetoothDevice device;
+    private final BluetoothDevice device;
     private BluetoothSocket socket;
     private boolean connected;
 

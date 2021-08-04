@@ -19,9 +19,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.example.hiwin.teacher_version_bob.communication.SerialListener;
-import com.example.hiwin.teacher_version_bob.communication.SerialService;
-import com.example.hiwin.teacher_version_bob.communication.SerialSocket;
+import com.example.hiwin.teacher_version_bob.communication.*;
 import com.example.hiwin.teacher_version_bob.object.DataObject;
 import com.example.hiwin.teacher_version_bob.object.ObjectSpeaker;
 import com.example.hiwin.teacher_version_bob.view.FaceController;
@@ -33,37 +31,18 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.LinkedList;
-import java.util.Queue;
 
-public class MainActivity extends AppCompatActivity implements ServiceConnection {
+public class MainActivity extends AppCompatActivity {
 
-    /*
-        reference:
-            https://developer.android.com/guide/topics/connectivity/bluetooth.html
-            https://xnfood.com.tw/activity-life-cycle/
-            https://zh.wikipedia.org/wiki/%E8%97%8D%E7%89%99%E8%A6%8F%E7%AF%84#%E5%BA%8F%E5%88%97%E5%9F%A0%E8%A6%8F%E7%AF%84_%EF%BC%88SPP%EF%BC%89
-            https://developer.android.com/guide/components/activities/activity-lifecycle
-            https://developer.android.com/guide/components/fragments
-            https://developer.android.com/guide/components/services
-            https://www.tutorialspoint.com/android/android_text_to_speech.htm
-            https://medium.com/verybuy-dev/android-%E8%A3%A1%E7%9A%84%E7%B4%84%E6%9D%9F%E6%80%96%E5%B1%80-constraintlayout-6225227945ab
-            https://materialdesignicons.com/
-     */
-
-    private enum Connected {False, Pending, True}
-
+    private static final String BT_LOG_TAG = "BluetoothInfo";
+    private static final String THIS_LOG_TAG = "MainActivity";
 
     private MenuItem connection;
 
     private Context context;
 
     private String deviceAddress;
-    private SerialService service;
-
-    private boolean initialStart = true;
-    private Connected connected = Connected.False;
+    private SerialService serialService;
 
     private ObjectSpeaker speaker;
     private FragmentManager fragmentManager;
@@ -78,10 +57,8 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         fragmentManager = getSupportFragmentManager();
         speaker = new ObjectSpeaker(this);
 
-//        OnAttach
-        boolean sus = bindService(new Intent(context, SerialService.class), this, Context.BIND_AUTO_CREATE);
+        boolean sus = bindService(new Intent(context, SerialService.class), serviceConnection, Context.BIND_AUTO_CREATE);
         Log.d("BindService", sus + "");
-//        OnCreate
         Intent it = getIntent();
         deviceAddress = it.getStringExtra("address");
     }
@@ -99,65 +76,37 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_main_connection) {
-            if (connected == Connected.False)
+            if (serialDataListener.getConnectStatus() == ConnectStatus.Disconnected)
                 connect();
-            else if (connected == Connected.True)
-                disconnect();
+            else if (serialDataListener.getConnectStatus() == ConnectStatus.Connected)
+                serialDataListener.disconnect();
         }
+
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        if (service != null)
-            service.attach(serialListener);
+        if (serialService != null)
+            serialService.attach(serialDataListener);
         else
             startService(new Intent(context, SerialService.class));
     }
 
 
     @Override
-    public void onServiceConnected(ComponentName name, IBinder binder) {
-        service = ((SerialService.SerialBinder) binder).getService();
-        service.attach(serialListener);
-        if (initialStart) {
-            initialStart = false;
-//            runOnUiThread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    setMenuConnectionStatus(connected);
-//                }
-//            });
-        }
-    }
-
-    @Override
-    public void onServiceDisconnected(ComponentName name) {
-        service = null;
-    }
-
-
-    @Override
     public void onResume() {
         super.onResume();
-        if (initialStart && service != null) {
-            initialStart = false;
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                }
-            });
-        }
-
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
 
-        if (connected != Connected.False)
-            disconnect();
+        if (serialDataListener.getConnectStatus() == ConnectStatus.Connected)
+            serialDataListener.disconnect();
+
         stopService(new Intent(context, SerialService.class));
 
     }
@@ -166,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     protected void onStop() {
         super.onStop();
         try {
-            unbindService(this);
+            unbindService(serviceConnection);
         } catch (Exception ignored) {
 
         }
@@ -176,51 +125,18 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         try {
             BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
             BluetoothDevice device = bluetoothAdapter.getRemoteDevice(deviceAddress);
-            BTLog('d', "connecting...");
-            connected = Connected.Pending;
+            Log.d(THIS_LOG_TAG, "connecting...");
             SerialSocket socket = new SerialSocket(context, device);
-            service.connect(socket);
+            serialService.connect(socket);
 
         } catch (Exception e) {
-            serialListener.onSerialConnectError(e);
-        }
-    }
-
-    private void disconnect() {
-        BTLog('d', "disconnected");
-        connected = Connected.False;
-        setMenuConnectionStatus(connected);
-        service.disconnect();
-    }
-
-
-    void setMenuConnectionStatus(Connected connected) {
-        if (connected == Connected.False) {
-            connection.setIcon(R.drawable.link);
-            connection.setTitle("Connected");
-        } else if (connected == Connected.True) {
-            connection.setIcon(R.drawable.link_off);
-            connection.setTitle("Disconnected");
-        }
-    }
-
-    void BTLog(char tag, String str) {
-        switch (tag) {
-            case 'v':
-                Log.v("BluetoothLog", str);
-                break;
-            case 'd':
-                Log.d("BluetoothLog", str);
-                break;
-            case 'e':
-                Log.e("BluetoothLog", str);
-                break;
-            default:
-                break;
+            serialDataListener.onSerialConnectError(e);
         }
     }
 
     void showObjectAndFace(final DataObject object) {
+        Log.d(THIS_LOG_TAG, "object:");
+        Log.d(THIS_LOG_TAG, object.toString());
         final ObjectShowerFragment objectShowerFragment = new ObjectShowerFragment();
         objectShowerFragment.setObject(object);
         runOnUiThread(() -> postFragment(objectShowerFragment, "shower"));
@@ -253,118 +169,84 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         fragmentTransaction.commit();
     }
 
-
-    private void onBytesDataReceive(byte[] bytes) {
-        try {
-            String content = new String(Base64.decode(bytes, Base64.DEFAULT), StandardCharsets.UTF_8);
-            onStringDataReceived(content);
-        }catch (IllegalArgumentException e){
-            BTLog('e',e.getMessage());
-        }
-    }
-
-    private void onStringDataReceived(String str) {
-        BTLog('d', str);
-        final JSONObject object;
-        try {
-            object = new JSONObject(str);
-            showObjectAndFace((new DataObject.JSONParser()).parse(object, "zh_TW"));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
     private void send_msg(String msg) {
-        byte[] raw = Base64.encode(msg.getBytes(), Base64.URL_SAFE);
+        byte[] raw = Base64.encode(msg.getBytes(), Base64.DEFAULT);
         byte[] line = new byte[raw.length + 1];
         System.arraycopy(raw, 0, line, 0, raw.length);
 //        line[line.length-1]='\n';
 
         try {
-            service.write(line);
+            serialService.write(line);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static String dumpArray(byte[] array) {
-        StringBuffer sb = new StringBuffer();
-        sb.append("[");
-        sb.append(array[0]);
-        for (int i = 1; i < array.length; i++) {
-            sb.append(",");
-            sb.append(array[i]);
-        }
-        sb.append("]");
-        return sb.toString();
-    }
-
-
-    final SerialListener serialListener = new SerialListener() {
+    private final ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
-        public void onSerialConnect() {
-            BTLog('d', "connected");
-            send_msg("hello");
-            connected = Connected.True;
-            setMenuConnectionStatus(connected);
+        public void onServiceConnected(ComponentName name, IBinder binder) {
+            serialService = ((SerialService.SerialBinder) binder).getService();
+            serialService.attach(serialDataListener);
         }
 
         @Override
-        public void onSerialConnectError(Exception e) {
-            BTLog('e', "connection failed: " + e.getMessage());
-            e.printStackTrace();
-            connection.setIcon(R.drawable.link_off);
-            disconnect();
+        public void onServiceDisconnected(ComponentName name) {
+            serialService = null;
         }
-
-
-        final Queue<Byte> buffer = new LinkedList<>();
-        long delay_timer;
-
-        @Override
-        public void onSerialRead(byte[] data) {
-            BTLog('v', dumpArray(data));
-            long current_time = System.currentTimeMillis();
-
-            if(current_time>=delay_timer){
-                buffer.clear();
-            }
-
-            int indexOfEOL = -1;
-            for (int i = 0; i < data.length; i++) {
-                if (data[i] == '\n')
-                    indexOfEOL = i;
-            }
-
-            if (indexOfEOL == -1) {
-                for (byte datum : data) {
-                    buffer.offer(datum);
-                }
-                delay_timer = current_time + 1500;
-
-            } else {
-                for (int i = 0; i < indexOfEOL; i++) {
-                    buffer.offer(data[i]);
-                }
-
-                byte[] bytes = new byte[buffer.size()];
-                for (int i = 0; i < bytes.length; i++) {
-                    Byte b = buffer.poll();
-                    if (b == null)
-                        throw new RuntimeException();
-                    bytes[i] = b;
-                }
-                onBytesDataReceive(bytes);
-            }
-
-        }
-
-        @Override
-        public void onSerialIoError(Exception e) {
-            BTLog('e', "connection lost: " + e.getMessage());
-            disconnect();
-        }
-
     };
 
+    private final SerialDataListener serialDataListener = new SerialDataListener() {
+        @Override
+        protected void onStringDataReceived(String content) {
+            Log.d(BT_LOG_TAG, "received string:");
+            Log.d(BT_LOG_TAG, content);
+
+            final JSONObject object;
+            try {
+                object = new JSONObject(content);
+                showObjectAndFace((new DataObject.JSONParser()).parse(object, "zh_TW"));
+            } catch (JSONException e) {
+                Log.e(THIS_LOG_TAG, e.getMessage());
+            }
+        }
+
+        @Override
+        protected void onConnected() {
+            Log.d(BT_LOG_TAG, "Bluetooth device connected");
+            connection.setIcon(R.drawable.link_off);
+            connection.setTitle("Disconnect");
+        }
+
+        @Override
+        protected void onDisconnected() {
+            Log.d(BT_LOG_TAG, "Bluetooth device disconnected");
+            connection.setIcon(R.drawable.link);
+            connection.setTitle("Connected");
+        }
+
+        @Override
+        protected void onBase64DecodeError(IllegalArgumentException e) {
+            Log.e(BT_LOG_TAG, "Base64 decode error:");
+            Log.e(BT_LOG_TAG, e.getMessage());
+        }
+
+        @Override
+        protected void onIOError(Exception e) {
+            Log.e(BT_LOG_TAG, "IO Error");
+            Log.e(BT_LOG_TAG, e.getMessage());
+        }
+
+        @Override
+        protected void onConnectionError(Exception e) {
+            Log.e(BT_LOG_TAG, "Connection Error");
+            Log.e(BT_LOG_TAG, e.getMessage());
+        }
+
+        @Override
+        public void disconnect() {
+            onDisconnected();
+            if (serialService != null)
+                serialService.disconnect();
+        }
+    };
 }
