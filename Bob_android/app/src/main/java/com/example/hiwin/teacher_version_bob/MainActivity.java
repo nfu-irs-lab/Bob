@@ -19,7 +19,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.example.hiwin.teacher_version_bob.communication.*;
+import com.example.hiwin.teacher_version_bob.communication.bluetooth.*;
 import com.example.hiwin.teacher_version_bob.object.DataObject;
 import com.example.hiwin.teacher_version_bob.object.ObjectSpeaker;
 import com.example.hiwin.teacher_version_bob.view.FaceController;
@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
             BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
             BluetoothDevice device = bluetoothAdapter.getRemoteDevice(deviceAddress);
             Log.d(THIS_LOG_TAG, "connecting...");
-            SerialSocket socket = new SerialSocket(context, device);
+            SerialSocket socket = new SerialSocket(context, device, new ReadLineStrategy());
             serialService.connect(socket);
 
         } catch (Exception e) {

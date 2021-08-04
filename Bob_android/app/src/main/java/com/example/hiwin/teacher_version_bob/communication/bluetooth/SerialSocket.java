@@ -1,4 +1,4 @@
-package com.example.hiwin.teacher_version_bob.communication;
+package com.example.hiwin.teacher_version_bob.communication.bluetooth;
 
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -15,21 +15,21 @@ import java.util.concurrent.Executors;
 public class SerialSocket implements Runnable {
 
     private static final UUID BLUETOOTH_SPP = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
-    private static final int READ_DELAY=100;
     private final BroadcastReceiver disconnectBroadcastReceiver;
-
+    private final SerialReadStrategy strategy;
     private final Context context;
     private SerialListener listener;
     private final BluetoothDevice device;
     private BluetoothSocket socket;
     private boolean connected;
 
-    public SerialSocket(Context context, BluetoothDevice device) {
+    public SerialSocket(Context context, BluetoothDevice device, SerialReadStrategy strategy) {
 //        if(context instanceof Activity)
 //            throw new InvalidParameterException("expected non UI context");
 
         this.context = context;
         this.device = device;
+        this.strategy = strategy;
         disconnectBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -80,10 +80,10 @@ public class SerialSocket implements Runnable {
         try {
             socket = device.createRfcommSocketToServiceRecord(BLUETOOTH_SPP);
             socket.connect();
-            if (listener != null)
+            if(listener != null)
                 listener.onSerialConnect();
         } catch (Exception e) {
-            if (listener != null)
+            if(listener != null)
                 listener.onSerialConnectError(e);
             try {
                 socket.close();
@@ -97,23 +97,16 @@ public class SerialSocket implements Runnable {
             byte[] buffer = new byte[1024];
             int len;
             //noinspection InfiniteLoopStatement
-
-            int last_availableBytes = 0;
             while (true) {
-                int current_availableBytes = socket.getInputStream().available();
-                getClass();
-                if (current_availableBytes - last_availableBytes> 0) {
-                     last_availableBytes = current_availableBytes;
-                     Thread.sleep(READ_DELAY);
-                    continue;
-                }
-                if(current_availableBytes==0)continue;
-
                 len = socket.getInputStream().read(buffer);
                 byte[] data = Arrays.copyOf(buffer, len);
-                if (listener != null)
-                    listener.onSerialRead(data);
-                last_availableBytes=0;
+
+                strategy.warp(data);
+
+                if(strategy.isIntegralPackage()){
+                    if(listener != null)
+                        listener.onSerialRead(strategy.getPackage());
+                }
             }
         } catch (Exception e) {
             connected = false;

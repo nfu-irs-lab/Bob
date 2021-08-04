@@ -1,4 +1,4 @@
-package com.example.hiwin.teacher_version_bob.communication;
+package com.example.hiwin.teacher_version_bob.communication.bluetooth;
 
 public interface SerialListener {
     void onSerialConnect();

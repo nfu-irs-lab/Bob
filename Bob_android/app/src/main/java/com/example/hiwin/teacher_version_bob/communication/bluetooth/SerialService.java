@@ -1,22 +1,13 @@
-package com.example.hiwin.teacher_version_bob.communication;
+package com.example.hiwin.teacher_version_bob.communication.bluetooth;
 
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
-import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.support.annotation.Nullable;
-import android.support.v4.app.NotificationCompat;
 
-
-import com.example.hiwin.teacher_version_bob.R;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -69,7 +60,6 @@ public class SerialService extends Service implements SerialListener {
 
     @Override
     public void onDestroy() {
-        cancelNotification();
         disconnect();
         super.onDestroy();
     }
@@ -91,7 +81,6 @@ public class SerialService extends Service implements SerialListener {
 
     public void disconnect() {
         connected = false; // ignore data,errors while disconnecting
-        cancelNotification();
         if (socket != null) {
             socket.disconnect();
             socket = null;
@@ -107,7 +96,6 @@ public class SerialService extends Service implements SerialListener {
     public void attach(SerialListener listener) {
         if (Looper.getMainLooper().getThread() != Thread.currentThread())
             throw new IllegalArgumentException("not in main thread");
-        cancelNotification();
         // use synchronized() to prevent new items in queue2
         // new items will not be added to queue1 because mainLooper.post and attach() run in main thread
         synchronized (this) {
@@ -150,8 +138,6 @@ public class SerialService extends Service implements SerialListener {
     }
 
     public void detach() {
-        if (connected)
-            createNotification();
 
         // items already in event queue (posted before detach() to mainLooper) will end up in queue1
         // items occurring later, will be moved directly to queue2
@@ -159,38 +145,6 @@ public class SerialService extends Service implements SerialListener {
         listener = null;
     }
 
-    private void createNotification() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel nc = new NotificationChannel(Constants.NOTIFICATION_CHANNEL, "Background service", NotificationManager.IMPORTANCE_LOW);
-            nc.setShowBadge(false);
-            NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            nm.createNotificationChannel(nc);
-        }
-        Intent disconnectIntent = new Intent()
-                .setAction(Constants.INTENT_ACTION_DISCONNECT);
-        Intent restartIntent = new Intent()
-                .setClassName(this, Constants.INTENT_CLASS_MAIN_ACTIVITY)
-                .setAction(Intent.ACTION_MAIN)
-                .addCategory(Intent.CATEGORY_LAUNCHER);
-        PendingIntent disconnectPendingIntent = PendingIntent.getBroadcast(this, 1, disconnectIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        PendingIntent restartPendingIntent = PendingIntent.getActivity(this, 1, restartIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANNEL)
-                .setSmallIcon(R.drawable.ic_notification)
-                .setColor(getResources().getColor(R.color.colorPrimary))
-                .setContentTitle(getResources().getString(R.string.app_name))
-                .setContentText(socket != null ? "Connected to " + socket.getName() : "Background Service")
-                .setContentIntent(restartPendingIntent)
-                .setOngoing(true)
-                .addAction(new NotificationCompat.Action(R.drawable.ic_clear_white_24dp, "Disconnect", disconnectPendingIntent));
-        // @drawable/ic_notification created with Android Studio -> New -> Image Asset using @color/colorPrimaryDark as background color
-        // Android < API 21 does not support vectorDrawables in notifications, so both drawables used here, are created as .png instead of .xml
-        Notification notification = builder.build();
-        startForeground(Constants.NOTIFY_MANAGER_START_FOREGROUND_SERVICE, notification);
-    }
-
-    private void cancelNotification() {
-        stopForeground(true);
-    }
 
     /**
      * SerialListener
@@ -227,14 +181,12 @@ public class SerialService extends Service implements SerialListener {
                                 listener.onSerialConnectError(e);
                             } else {
                                 queue1.add(new QueueItem(QueueType.ConnectError, null, e));
-                                SerialService.this.cancelNotification();
                                 SerialService.this.disconnect();
                             }
                         }
                     });
                 } else {
                     queue2.add(new QueueItem(QueueType.ConnectError, null, e));
-                    cancelNotification();
                     disconnect();
                 }
             }
@@ -273,14 +225,12 @@ public class SerialService extends Service implements SerialListener {
                                 listener.onSerialIoError(e);
                             } else {
                                 queue1.add(new QueueItem(QueueType.IoError, null, e));
-                                SerialService.this.cancelNotification();
                                 SerialService.this.disconnect();
                             }
                         }
                     });
                 } else {
                     queue2.add(new QueueItem(QueueType.IoError, null, e));
-                    cancelNotification();
                     disconnect();
                 }
             }

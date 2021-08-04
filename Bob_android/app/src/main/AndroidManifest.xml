@@ -38,9 +38,8 @@
             <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
             <!-- </intent-filter> -->
         </activity>
-        <activity android:name=".BluetoothTerminalActivity"/>
 
-        <service android:name=".communication.SerialService"/>
+        <service android:name=".communication.bluetooth.SerialService"/>
     </application>
 
 </manifest>
