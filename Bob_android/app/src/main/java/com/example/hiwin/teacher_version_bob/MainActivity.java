@@ -18,7 +18,6 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.example.hiwin.teacher_version_bob.communication.SerialListener;
 import com.example.hiwin.teacher_version_bob.communication.SerialService;
@@ -36,6 +35,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
+import java.util.Queue;
 
 public class MainActivity extends AppCompatActivity implements ServiceConnection {
 
@@ -223,16 +223,17 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     void showObjectAndFace(final DataObject object) {
         final ObjectShowerFragment objectShowerFragment = new ObjectShowerFragment();
         objectShowerFragment.setObject(object);
-        runOnUiThread(()->postFragment(objectShowerFragment, "shower"));
+        runOnUiThread(() -> postFragment(objectShowerFragment, "shower"));
         try {
             Thread.sleep(5000);
-        } catch (InterruptedException e) { }
+        } catch (InterruptedException e) {
+        }
         final FaceFragment faceFragment = new FaceFragment();
         faceFragment.setObject(object);
         faceFragment.setListener(new FaceFragmentListener() {
             @Override
             public void start(FaceController controller) {
-                speaker.setSpeakerListener(()->runOnUiThread(controller::hind));
+                speaker.setSpeakerListener(() -> runOnUiThread(controller::hind));
                 speaker.speak(object);
             }
 
@@ -241,7 +242,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
             }
         });
-        runOnUiThread(()->postFragment(faceFragment, "face2"));
+        runOnUiThread(() -> postFragment(faceFragment, "face2"));
 
     }
 
@@ -252,10 +253,25 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         fragmentTransaction.commit();
     }
 
-    private void OnMessageReceived(String str) throws JSONException {
+
+    private void onBytesDataReceive(byte[] bytes) {
+        try {
+            String content = new String(Base64.decode(bytes, Base64.DEFAULT), StandardCharsets.UTF_8);
+            onStringDataReceived(content);
+        }catch (IllegalArgumentException e){
+            BTLog('e',e.getMessage());
+        }
+    }
+
+    private void onStringDataReceived(String str) {
         BTLog('d', str);
-        final JSONObject object = new JSONObject(str);
-        showObjectAndFace((new DataObject.JSONParser()).parse(object,"zh_TW"));
+        final JSONObject object;
+        try {
+            object = new JSONObject(str);
+            showObjectAndFace((new DataObject.JSONParser()).parse(object, "zh_TW"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private void send_msg(String msg) {
@@ -284,7 +300,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     }
 
 
-    SerialListener serialListener = new SerialListener() {
+    final SerialListener serialListener = new SerialListener() {
         @Override
         public void onSerialConnect() {
             BTLog('d', "connected");
@@ -301,54 +317,45 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             disconnect();
         }
 
-        LinkedList<Byte> pre_data = new LinkedList<>();
+
+        final Queue<Byte> buffer = new LinkedList<>();
+        long delay_timer;
 
         @Override
         public void onSerialRead(byte[] data) {
             BTLog('v', dumpArray(data));
+            long current_time = System.currentTimeMillis();
 
-            for (byte datum : data) {
-                pre_data.add(datum);
+            if(current_time>=delay_timer){
+                buffer.clear();
             }
 
-            LinkedList<Byte> buffer = new LinkedList<>(pre_data);
-//            for (int i = 0; i < pre_data.size(); i++) {
-//                buffer.add(i, pre_data.get(i));
-//            }
+            int indexOfEOL = -1;
+            for (int i = 0; i < data.length; i++) {
+                if (data[i] == '\n')
+                    indexOfEOL = i;
+            }
 
-            StringBuffer sb;
-            do {
-                sb = new StringBuffer();
-                int original_size = buffer.size();
-                for (int i = 0; i < original_size; i++) {
-                    char chr = (char) (byte) buffer.pollFirst();
-                    if (chr == 0xa) {
-                        pre_data = buffer;
-                        final String recv_data = sb.toString();
-                        BTLog('v', recv_data);
-                        sb = null;
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    byte[] raw_bytes = Base64.decode(recv_data.getBytes(StandardCharsets.UTF_8), Base64.DEFAULT);
-
-                                    String msg = new String(raw_bytes, StandardCharsets.UTF_8);
-                                    OnMessageReceived(msg);
-                                } catch (Exception e) {
-                                    Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
-                                    e.printStackTrace();
-                                }
-
-                            }
-                        });
-                        break;
-
-                    } else {
-                        sb.append(chr);
-                    }
+            if (indexOfEOL == -1) {
+                for (byte datum : data) {
+                    buffer.offer(datum);
                 }
-            } while (sb == null);
+                delay_timer = current_time + 1500;
+
+            } else {
+                for (int i = 0; i < indexOfEOL; i++) {
+                    buffer.offer(data[i]);
+                }
+
+                byte[] bytes = new byte[buffer.size()];
+                for (int i = 0; i < bytes.length; i++) {
+                    Byte b = buffer.poll();
+                    if (b == null)
+                        throw new RuntimeException();
+                    bytes[i] = b;
+                }
+                onBytesDataReceive(bytes);
+            }
 
         }
 
