@@ -21,10 +21,9 @@ import android.view.MenuItem;
 
 import com.example.hiwin.teacher_version_bob.R;
 import com.example.hiwin.teacher_version_bob.communication.bluetooth.concrete.ReadLineStrategy;
-import com.example.hiwin.teacher_version_bob.communication.bluetooth.concrete.SerialDataListener;
+import com.example.hiwin.teacher_version_bob.communication.bluetooth.framework.SerialListener;
 import com.example.hiwin.teacher_version_bob.communication.service.SerialService;
 import com.example.hiwin.teacher_version_bob.communication.bluetooth.concrete.SerialSocket;
-import com.example.hiwin.teacher_version_bob.communication.bluetooth.framework.ConnectStatus;
 import com.example.hiwin.teacher_version_bob.object.DataObject;
 import com.example.hiwin.teacher_version_bob.object.ObjectSpeaker;
 import com.example.hiwin.teacher_version_bob.view.FaceController;
@@ -36,11 +35,16 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 public class MainActivity extends AppCompatActivity {
-
     private static final String BT_LOG_TAG = "BluetoothInfo";
     private static final String THIS_LOG_TAG = "MainActivity";
+
+    private enum Connected {False, Pending, True}
+
+    private Connected connected = Connected.False;
+
 
     private MenuItem connection;
 
@@ -81,50 +85,52 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_main_connection) {
-            if (serialDataListener.getConnectStatus() == ConnectStatus.Disconnected)
+            if (connected == Connected.False)
                 connect();
-            else if (serialDataListener.getConnectStatus() == ConnectStatus.Connected)
-                serialDataListener.disconnect();
+            else if (connected == Connected.True)
+                disconnect();
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+
     @Override
-    protected void onStart() {
+    public void onDestroy() {
+        if (connected == Connected.True)
+            disconnect();
+        stopService(new Intent(this, SerialService.class));
+        super.onDestroy();
+    }
+
+    @Override
+    public void onStart() {
         super.onStart();
         if (serialService != null)
             serialService.attach(serialDataListener);
         else
-            startService(new Intent(context, SerialService.class));
-    }
-
-
-    @Override
-    public void onResume() {
-        super.onResume();
+            startService(new Intent(this, SerialService.class)); // prevents service destroy on unbind from recreated activity caused by orientation change
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        if (serialDataListener.getConnectStatus() == ConnectStatus.Connected)
-            serialDataListener.disconnect();
-
-        stopService(new Intent(context, SerialService.class));
-
-    }
-
-    @Override
-    protected void onStop() {
+    public void onStop() {
+        if (serialService != null && !this.isChangingConfigurations())
+            serialService.detach();
         super.onStop();
-        try {
-            unbindService(serviceConnection);
-        } catch (Exception ignored) {
-
-        }
     }
+
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//
+//        if (!initialStart && serialService != null) {
+//            runOnUiThread(this::connect);
+//        }
+//
+//        if (initialStart)
+//            initialStart = false;
+//    }
+
 
     private void connect() {
         try {
@@ -133,13 +139,31 @@ public class MainActivity extends AppCompatActivity {
             Log.d(THIS_LOG_TAG, "connecting...");
             SerialSocket socket = new SerialSocket(context, device, new ReadLineStrategy());
             serialService.connect(socket);
+            connected = Connected.Pending;
 
         } catch (Exception e) {
             serialDataListener.onSerialConnectError(e);
         }
     }
 
-    void showObjectAndFace(final DataObject object) {
+    private void disconnect() {
+        Log.d(THIS_LOG_TAG, "disconnect");
+        connected = Connected.False;
+        serialService.disconnect();
+        setConnectionMenuItem(false);
+    }
+
+    private void setConnectionMenuItem(boolean connected) {
+        if (connected) {
+            connection.setIcon(R.drawable.link_off);
+            connection.setTitle("Disconnect");
+        } else {
+            connection.setIcon(R.drawable.link);
+            connection.setTitle("Connected");
+        }
+    }
+
+    private void showObjectAndFace(final DataObject object) {
         Log.d(THIS_LOG_TAG, "object:");
         Log.d(THIS_LOG_TAG, object.toString());
         final ObjectShowerFragment objectShowerFragment = new ObjectShowerFragment();
@@ -174,7 +198,7 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.commit();
     }
 
-    private void send_msg(String msg) {
+    private void send(String msg) {
         byte[] raw = Base64.encode(msg.getBytes(), Base64.DEFAULT);
         byte[] line = new byte[raw.length + 1];
         System.arraycopy(raw, 0, line, 0, raw.length);
@@ -185,6 +209,26 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void receive(byte[] data) {
+        try {
+            String content = new String(Base64.decode(data, Base64.DEFAULT), StandardCharsets.UTF_8);
+            Log.d(BT_LOG_TAG, "received string:");
+            Log.d(BT_LOG_TAG, content);
+
+            final JSONObject object;
+            try {
+                object = new JSONObject(content);
+                showObjectAndFace((new DataObject.JSONParser()).parse(object, "zh_TW"));
+            } catch (JSONException e) {
+                Log.e(THIS_LOG_TAG, e.getMessage());
+            }
+        } catch (IllegalArgumentException e) {
+            Log.d(BT_LOG_TAG, "base64 decode error:");
+            Log.d(BT_LOG_TAG, e.getMessage());
+        }
+
     }
 
     private final ServiceConnection serviceConnection = new ServiceConnection() {
@@ -200,58 +244,86 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private final SerialDataListener serialDataListener = new SerialDataListener() {
+    private final SerialListener serialDataListener = new SerialListener() {
         @Override
-        protected void onStringDataReceived(String content) {
-            Log.d(BT_LOG_TAG, "received string:");
-            Log.d(BT_LOG_TAG, content);
-
-            final JSONObject object;
-            try {
-                object = new JSONObject(content);
-                showObjectAndFace((new DataObject.JSONParser()).parse(object, "zh_TW"));
-            } catch (JSONException e) {
-                Log.e(THIS_LOG_TAG, e.getMessage());
-            }
-        }
-
-        @Override
-        protected void onConnected() {
+        public void onSerialConnect() {
+            connected = Connected.True;
             Log.d(BT_LOG_TAG, "Bluetooth device connected");
-            connection.setIcon(R.drawable.link_off);
-            connection.setTitle("Disconnect");
+            setConnectionMenuItem(true);
         }
 
         @Override
-        protected void onDisconnected() {
-            Log.d(BT_LOG_TAG, "Bluetooth device disconnected");
-            connection.setIcon(R.drawable.link);
-            connection.setTitle("Connected");
-        }
-
-        @Override
-        protected void onBase64DecodeError(IllegalArgumentException e) {
-            Log.e(BT_LOG_TAG, "Base64 decode error:");
-            Log.e(BT_LOG_TAG, e.getMessage());
-        }
-
-        @Override
-        protected void onIOError(Exception e) {
-            Log.e(BT_LOG_TAG, "IO Error");
-            Log.e(BT_LOG_TAG, e.getMessage());
-        }
-
-        @Override
-        protected void onConnectionError(Exception e) {
+        public void onSerialConnectError(Exception e) {
             Log.e(BT_LOG_TAG, "Connection Error");
             Log.e(BT_LOG_TAG, e.getMessage());
+            disconnect();
         }
 
         @Override
-        public void disconnect() {
-            onDisconnected();
-            if (serialService != null)
-                serialService.disconnect();
+        public void onSerialRead(byte[] data) {
+            receive(data);
+        }
+
+        @Override
+        public void onSerialIoError(Exception e) {
+            Log.e(BT_LOG_TAG, "IO Error");
+            Log.e(BT_LOG_TAG, e.getMessage());
+            disconnect();
         }
     };
+
+//    private final SerialDataListener serialDataListener = new SerialDataListener() {
+//        @Override
+//        protected void onStringDataReceived(String content) {
+//            Log.d(BT_LOG_TAG, "received string:");
+//            Log.d(BT_LOG_TAG, content);
+//
+//            final JSONObject object;
+//            try {
+//                object = new JSONObject(content);
+//                showObjectAndFace((new DataObject.JSONParser()).parse(object, "zh_TW"));
+//            } catch (JSONException e) {
+//                Log.e(THIS_LOG_TAG, e.getMessage());
+//            }
+//        }
+//
+//        @Override
+//        protected void onConnected() {
+//            Log.d(BT_LOG_TAG, "Bluetooth device connected");
+//            connection.setIcon(R.drawable.link_off);
+//            connection.setTitle("Disconnect");
+//        }
+//
+//        @Override
+//        protected void onDisconnected() {
+//            Log.d(BT_LOG_TAG, "Bluetooth device disconnected");
+//            connection.setIcon(R.drawable.link);
+//            connection.setTitle("Connected");
+//        }
+//
+//        @Override
+//        protected void onBase64DecodeError(IllegalArgumentException e) {
+//            Log.e(BT_LOG_TAG, "Base64 decode error:");
+//            Log.e(BT_LOG_TAG, e.getMessage());
+//        }
+//
+//        @Override
+//        protected void onIOError(Exception e) {
+//            Log.e(BT_LOG_TAG, "IO Error");
+//            Log.e(BT_LOG_TAG, e.getMessage());
+//        }
+//
+//        @Override
+//        protected void onConnectionError(Exception e) {
+//            Log.e(BT_LOG_TAG, "Connection Error");
+//            Log.e(BT_LOG_TAG, e.getMessage());
+//        }
+//
+//        @Override
+//        public void disconnect() {
+//            onDisconnected();
+//            if (serialService != null)
+//                serialService.disconnect();
+//        }
+//    };
 }
