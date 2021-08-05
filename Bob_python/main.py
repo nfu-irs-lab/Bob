@@ -8,6 +8,7 @@ import argparse
 import json
 import re
 import sys
+import threading
 import time
 from pathlib import Path
 from typing import List
@@ -20,6 +21,7 @@ from serial.tools.list_ports_linux import comports
 
 from bluetooth.concrete.device import SerialBluetoothDevice
 from bluetooth.concrete.package import StringPackage, Base64LinePackage
+from bluetooth.framework.package import Package
 from dbctrl.concrete import queryJsonFromName
 from dbctrl.concrete.database import JSONDatabase
 from robotics.concrete.command import RoboticsCommandFactory
@@ -75,28 +77,57 @@ if not bt.isOpen():
     bt.open()
 
 robot = RoboticsRobot(getRobotCom('COM1'))
+
 if not robot.isOpen():
     robot.open()
 
+robot.doAction(getActionFromName("reset"))
+
+robot_done = True
+bt_done = True
+
+
+def pushActionToRobot(action: Action):
+    global robot_done
+    if robot.isOpen():
+        try:
+            robot.doAction(action)
+        except SerialTimeoutException:
+            print("robot serial timeout")
+        robot_done = True
+
+
+def pushDataToBluetooth(package: Package):
+    global bt_done
+    if bt.isOpen():
+        try:
+            bt.write(package)
+        except SerialTimeoutException:
+            print("bt serial timeout")
+        bt_done = True
+
 
 def onDetected(objectList: List[DetectedObject]):
+    global robot_done
+    global bt_done
+
+    if not robot_done or not bt_done:
+        return
+
     for dobj in objectList:
         obj = db.queryForName(dobj.name)
         if obj is not None:
             js = queryJsonFromName(obj.name, open(db_location, encoding=db_charset))
             jsonString = json.dumps(js, ensure_ascii=False)
             print(jsonString)
-            if bt.isOpen():
-                try:
-                    bt.write(Base64LinePackage(StringPackage(jsonString, "UTF-8")))
-                except SerialTimeoutException:
-                    print("bt serial timeout")
 
-            if robot.isOpen():
-                try:
-                    robot.doAction(getActionFromName(obj.action))
-                except SerialTimeoutException:
-                    print("robot serial timeout")
+            robot_done = False
+            bt_done = True
+            bt_thread = threading.Thread(target=pushDataToBluetooth,
+                                         args=(Base64LinePackage(StringPackage(jsonString, "UTF-8")),))
+            bt_thread.start()
+            robot_thread = threading.Thread(target=pushActionToRobot, args=(getActionFromName(obj.action),))
+            robot_thread.start()
 
             break
 
