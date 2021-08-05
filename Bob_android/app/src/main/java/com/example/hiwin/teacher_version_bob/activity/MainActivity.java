@@ -163,15 +163,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void showObjectAndFace(final DataObject object) {
-        Log.d(THIS_LOG_TAG, "object:");
-        Log.d(THIS_LOG_TAG, object.toString());
+    void showObjectAndFace(final DataObject object) {
         final ObjectShowerFragment objectShowerFragment = new ObjectShowerFragment();
         objectShowerFragment.setObject(object);
         runOnUiThread(() -> postFragment(objectShowerFragment, "shower"));
         try {
             Thread.sleep(5000);
-        } catch (InterruptedException e) {
+        } catch (InterruptedException ignored) {
         }
         final FaceFragment faceFragment = new FaceFragment();
         faceFragment.setObject(object);
