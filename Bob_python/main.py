@@ -8,6 +8,7 @@ import argparse
 import json
 import re
 import sys
+import threading
 import time
 from pathlib import Path
 from typing import List
@@ -20,6 +21,7 @@ from serial.tools.list_ports_linux import comports
 
 from bluetooth.concrete.device import SerialBluetoothDevice
 from bluetooth.concrete.package import StringPackage, Base64LinePackage
+from bluetooth.framework.package import Package
 from dbctrl.concrete import queryJsonFromName
 from dbctrl.concrete.database import JSONDatabase
 from robotics.concrete.command import RoboticsCommandFactory
@@ -81,6 +83,23 @@ if not robot.isOpen():
 
 robot.doAction(getActionFromName("reset"))
 
+
+def pushActionToRobot(action: Action):
+    if robot.isOpen():
+        try:
+            robot.doAction(action)
+        except SerialTimeoutException:
+            print("robot serial timeout")
+
+
+def pushDataToBluetooth(package: Package):
+    if bt.isOpen():
+        try:
+            bt.write(package)
+        except SerialTimeoutException:
+            print("bt serial timeout")
+
+
 def onDetected(objectList: List[DetectedObject]):
     for dobj in objectList:
         obj = db.queryForName(dobj.name)
@@ -88,17 +107,12 @@ def onDetected(objectList: List[DetectedObject]):
             js = queryJsonFromName(obj.name, open(db_location, encoding=db_charset))
             jsonString = json.dumps(js, ensure_ascii=False)
             print(jsonString)
-            if bt.isOpen():
-                try:
-                    bt.write(Base64LinePackage(StringPackage(jsonString, "UTF-8")))
-                except SerialTimeoutException:
-                    print("bt serial timeout")
 
-            if robot.isOpen():
-                try:
-                    robot.doAction(getActionFromName(obj.action))
-                except SerialTimeoutException:
-                    print("robot serial timeout")
+            bt_thread = threading.Thread(target=pushDataToBluetooth,
+                                         args=(Base64LinePackage(StringPackage(jsonString, "UTF-8")),))
+            bt_thread.start()
+            robot_thread = threading.Thread(target=pushActionToRobot, args=(getActionFromName(obj.action),))
+            robot_thread.start()
 
             break
 
