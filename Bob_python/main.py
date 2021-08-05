@@ -83,24 +83,37 @@ if not robot.isOpen():
 
 robot.doAction(getActionFromName("reset"))
 
+robot_done = True
+bt_done = True
+
 
 def pushActionToRobot(action: Action):
+    global robot_done
     if robot.isOpen():
         try:
             robot.doAction(action)
         except SerialTimeoutException:
             print("robot serial timeout")
+        robot_done = True
 
 
 def pushDataToBluetooth(package: Package):
+    global bt_done
     if bt.isOpen():
         try:
             bt.write(package)
         except SerialTimeoutException:
             print("bt serial timeout")
+        bt_done = True
 
 
 def onDetected(objectList: List[DetectedObject]):
+    global robot_done
+    global bt_done
+
+    if not robot_done or not bt_done:
+        return
+
     for dobj in objectList:
         obj = db.queryForName(dobj.name)
         if obj is not None:
@@ -108,6 +121,8 @@ def onDetected(objectList: List[DetectedObject]):
             jsonString = json.dumps(js, ensure_ascii=False)
             print(jsonString)
 
+            robot_done = False
+            bt_done = True
             bt_thread = threading.Thread(target=pushDataToBluetooth,
                                          args=(Base64LinePackage(StringPackage(jsonString, "UTF-8")),))
             bt_thread.start()
