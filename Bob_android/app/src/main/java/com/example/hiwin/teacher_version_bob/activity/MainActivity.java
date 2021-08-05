@@ -26,7 +26,6 @@ import com.example.hiwin.teacher_version_bob.communication.service.SerialService
 import com.example.hiwin.teacher_version_bob.communication.bluetooth.concrete.SerialSocket;
 import com.example.hiwin.teacher_version_bob.data.concrete.pack.Base64Package;
 import com.example.hiwin.teacher_version_bob.data.concrete.pack.LinePackage;
-import com.example.hiwin.teacher_version_bob.data.concrete.pack.StringContent;
 import com.example.hiwin.teacher_version_bob.data.framework.object.DataObject;
 import com.example.hiwin.teacher_version_bob.data.ObjectSpeaker;
 import com.example.hiwin.teacher_version_bob.data.concrete.object.parser.JSONObjectParser;
@@ -201,9 +200,9 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.commit();
     }
 
-    private void send(String msg) {
-        Package pack = new LinePackage(new Base64Package(new StringContent(msg, StandardCharsets.UTF_8), Base64.DEFAULT));
-
+    private void sendMessage(String msg) {
+//        Package pack = new LinePackage(new Base64Package(msg.getBytes(StandardCharsets.UTF_8), Base64.DEFAULT));
+        Package pack = new LinePackage((msg.getBytes(StandardCharsets.UTF_8)));
         try {
             serialService.write(pack.getEncoded());
         } catch (IOException e) {
@@ -213,10 +212,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void receive(byte[] data) {
         try {
-//            Base64LinePackage base64LinePackage=new Base64LinePackage(data);
-            StringContent stringPackage = new StringContent(new Base64Package(data, Base64.DEFAULT), StandardCharsets.UTF_8);
-            String content = stringPackage.get();
-//            String content = new String(Base64.decode(data, Base64.DEFAULT), StandardCharsets.UTF_8);
+            String content= new String(new Base64Package(data, Base64.DEFAULT).getDecoded(), StandardCharsets.UTF_8);
             Log.d(BT_LOG_TAG, "received string:");
             Log.d(BT_LOG_TAG, content);
 
@@ -250,7 +246,7 @@ public class MainActivity extends AppCompatActivity {
         public void onSerialConnect() {
             connected = Connected.True;
             Log.d(BT_LOG_TAG, "Bluetooth device connected");
-            send("Hello Package");
+            sendMessage("Hello Package");
             setConnectionMenuItem(true);
         }
 

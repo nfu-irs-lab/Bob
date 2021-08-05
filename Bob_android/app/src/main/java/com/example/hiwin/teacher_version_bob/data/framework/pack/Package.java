@@ -1,21 +1,38 @@
 package com.example.hiwin.teacher_version_bob.data.framework.pack;
 
-public abstract class Package{
+public abstract class Package {
 
-    protected final byte[] content;
+    private Package pack;
+    private byte[] content;
 
-    public Package(Content<?> content) {
-        this(content.getRaw());
-    }
+    protected abstract byte[] encode(byte[] encoded);
+
+    protected abstract byte[] decode(byte[] decoded);
 
     public Package(Package pack) {
-        this(pack.getEncoded());
+        this.pack = pack;
     }
 
-    protected Package(byte[] content) {
-        this.content = content;
+    public Package(byte[] bytes) {
+        content = bytes;
     }
 
-    public abstract byte[] getEncoded();
-    public abstract byte[] getDecoded();
+    public final byte[] getEncoded() {
+        if (pack != null)
+            return encode(pack.getEncoded());
+        else if (content != null)
+            return encode(content);
+        else
+            return null;
+    }
+
+    public final byte[] getDecoded() {
+        if (pack != null)
+            return decode(pack.getDecoded());
+        else if (content != null) {
+            return decode(content);
+        }else
+            return null;
+    }
+
 }
