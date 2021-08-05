@@ -1,6 +1,5 @@
 package com.example.hiwin.teacher_version_bob.view;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -12,9 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.ImageView;
-import com.example.hiwin.teacher_version_bob.object.ObjectSpeaker;
 import com.example.hiwin.teacher_version_bob.R;
-import com.example.hiwin.teacher_version_bob.object.DataObject;
+import com.example.hiwin.teacher_version_bob.data.framework.object.DataObject;
 
 import java.io.IOException;
 

@@ -1,10 +1,11 @@
-package com.example.hiwin.teacher_version_bob.object;
+package com.example.hiwin.teacher_version_bob.data;
 
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.hiwin.teacher_version_bob.R;
+import com.example.hiwin.teacher_version_bob.data.framework.object.DataObject;
 
 public class ObjectShower {
     private final ImageView img;

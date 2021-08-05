@@ -11,8 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.hiwin.teacher_version_bob.R;
-import com.example.hiwin.teacher_version_bob.object.DataObject;
-import com.example.hiwin.teacher_version_bob.object.ObjectShower;
+import com.example.hiwin.teacher_version_bob.data.framework.object.DataObject;
+import com.example.hiwin.teacher_version_bob.data.ObjectShower;
 
 public class ObjectShowerFragment extends Fragment {
     private Handler mHandler = new Handler(Looper.getMainLooper());

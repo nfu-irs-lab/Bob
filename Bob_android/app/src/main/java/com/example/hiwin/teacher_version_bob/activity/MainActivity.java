@@ -24,8 +24,13 @@ import com.example.hiwin.teacher_version_bob.communication.bluetooth.concrete.Re
 import com.example.hiwin.teacher_version_bob.communication.bluetooth.framework.SerialListener;
 import com.example.hiwin.teacher_version_bob.communication.service.SerialService;
 import com.example.hiwin.teacher_version_bob.communication.bluetooth.concrete.SerialSocket;
-import com.example.hiwin.teacher_version_bob.object.DataObject;
-import com.example.hiwin.teacher_version_bob.object.ObjectSpeaker;
+import com.example.hiwin.teacher_version_bob.data.concrete.pack.Base64Package;
+import com.example.hiwin.teacher_version_bob.data.concrete.pack.LinePackage;
+import com.example.hiwin.teacher_version_bob.data.concrete.pack.StringContent;
+import com.example.hiwin.teacher_version_bob.data.framework.object.DataObject;
+import com.example.hiwin.teacher_version_bob.data.ObjectSpeaker;
+import com.example.hiwin.teacher_version_bob.data.concrete.object.parser.JSONObjectParser;
+import com.example.hiwin.teacher_version_bob.data.framework.pack.Package;
 import com.example.hiwin.teacher_version_bob.view.FaceController;
 import com.example.hiwin.teacher_version_bob.view.FaceFragment;
 import com.example.hiwin.teacher_version_bob.view.FaceFragmentListener;
@@ -197,13 +202,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void send(String msg) {
-        byte[] raw = Base64.encode(msg.getBytes(), Base64.DEFAULT);
-        byte[] line = new byte[raw.length + 1];
-        System.arraycopy(raw, 0, line, 0, raw.length);
-//        line[line.length-1]='\n';
+        Package pack = new LinePackage(new Base64Package(new StringContent(msg, StandardCharsets.UTF_8), Base64.DEFAULT));
 
         try {
-            serialService.write(line);
+            serialService.write(pack.getEncoded());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -211,14 +213,15 @@ public class MainActivity extends AppCompatActivity {
 
     private void receive(byte[] data) {
         try {
-            String content = new String(Base64.decode(data, Base64.DEFAULT), StandardCharsets.UTF_8);
+//            Base64LinePackage base64LinePackage=new Base64LinePackage(data);
+            StringContent stringPackage = new StringContent(new Base64Package(data, Base64.DEFAULT), StandardCharsets.UTF_8);
+            String content = stringPackage.get();
+//            String content = new String(Base64.decode(data, Base64.DEFAULT), StandardCharsets.UTF_8);
             Log.d(BT_LOG_TAG, "received string:");
             Log.d(BT_LOG_TAG, content);
 
-            final JSONObject object;
             try {
-                object = new JSONObject(content);
-                showObjectAndFace((new DataObject.JSONParser()).parse(object, "zh_TW"));
+                showObjectAndFace((new JSONObjectParser("zh_TW")).parse(new JSONObject(content)));
             } catch (JSONException e) {
                 Log.e(THIS_LOG_TAG, e.getMessage());
             }
@@ -247,6 +250,7 @@ public class MainActivity extends AppCompatActivity {
         public void onSerialConnect() {
             connected = Connected.True;
             Log.d(BT_LOG_TAG, "Bluetooth device connected");
+            send("Hello Package");
             setConnectionMenuItem(true);
         }
 
