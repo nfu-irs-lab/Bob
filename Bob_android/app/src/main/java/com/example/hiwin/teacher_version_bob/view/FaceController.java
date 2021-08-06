@@ -10,7 +10,7 @@ import java.io.IOException;
 
 public class FaceController {
     public enum FaceType {
-        car(R.raw.face_happy), cake(R.raw.git_cake), knife(R.raw.gif_knife),
+        car(R.raw.face_happy), cake(R.raw.face_happy), knife(R.raw.face_happy),
         bowl(R.raw.face_happy),person(R.raw.face_happy),bird(R.raw.face_happy),
         cat(R.raw.face_happy),bottle(R.raw.face_happy);
         private final int id;
