@@ -168,28 +168,31 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void showObjectAndFace(final DataObject object) {
-        final ObjectShowerFragment objectShowerFragment = new ObjectShowerFragment();
-        objectShowerFragment.setObject(object);
-        runOnUiThread(() -> postFragment(objectShowerFragment, "shower"));
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException ignored) {
-        }
-        final FaceFragment faceFragment = new FaceFragment();
-        faceFragment.setObject(object);
-        faceFragment.setListener(new FaceFragmentListener() {
-            @Override
-            public void start(FaceController controller) {
-                speaker.setSpeakerListener(() -> runOnUiThread(controller::hind));
-                speaker.speak(object);
+        new Thread(() -> {
+            final ObjectShowerFragment objectShowerFragment = new ObjectShowerFragment();
+            objectShowerFragment.setObject(object);
+            runOnUiThread(() -> postFragment(objectShowerFragment, "shower"));
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
+            final FaceFragment faceFragment = new FaceFragment();
+            faceFragment.setObject(object);
+            faceFragment.setListener(new FaceFragmentListener() {
+                @Override
+                public void start(FaceController controller) {
+                    speaker.setSpeakerListener(controller::hind);
+                    speaker.speak(object);
+                }
 
-            @Override
-            public void complete(FaceController controller) {
+                @Override
+                public void complete(FaceController controller) {
 
-            }
-        });
-        runOnUiThread(() -> postFragment(faceFragment, "face2"));
+                }
+            });
+            runOnUiThread(() -> postFragment(faceFragment, "face2"));
+        }).start();
 
     }
 
@@ -212,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void receive(byte[] data) {
         try {
-            String content= new String(new Base64Package(data, Base64.DEFAULT).getDecoded(), StandardCharsets.UTF_8);
+            String content = new String(new Base64Package(data, Base64.DEFAULT).getDecoded(), StandardCharsets.UTF_8);
             Log.d(BT_LOG_TAG, "received string:");
             Log.d(BT_LOG_TAG, content);
 
