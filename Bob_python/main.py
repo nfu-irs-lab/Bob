@@ -6,6 +6,7 @@ Usage:
 
 import argparse
 import json
+import platform
 import re
 import sys
 import threading
@@ -16,7 +17,7 @@ from typing import List
 import cv2
 import torch
 import torch.backends.cudnn as cudnn
-from serial import SerialTimeoutException
+from serial import SerialTimeoutException, SerialException
 from serial.tools.list_ports_linux import comports
 
 from bluetooth.concrete.device import SerialBluetoothDevice
@@ -63,25 +64,45 @@ def getRobotCom(default_robot_com: str):
     return default_robot_com
 
 
-def getActionFromName(name: str) -> Action:
-    return CSVAction('actions/{name}.csv'.format(name=name), RoboticsCommandFactory())
+def getActionFromName(name: str, file_separator: str) -> Action:
+    return CSVAction(f'actions{file_separator}{name}.csv', RoboticsCommandFactory())
 
 
-db_location = "db\\objects.json"
+print("System:", platform.system())
+bt_default = ""
+robot_default = ""
+separator = ""
+if platform.system() == "Windows":
+    separator = "\\"
+    bt_default = "COM3"
+    robot_default = "COM1"
+elif platform.system() == "Linux":
+    separator = "/"
+    bt_default = "/dev/ttyUSB0"
+    robot_default = "/dev/ttyUSB1"
+
+db_location = f"db{separator}objects.json"
 db_charset = 'UTF-8'
 
 db = JSONDatabase(open(db_location, encoding=db_charset))
 
-bt = SerialBluetoothDevice(getBluetoothCom("COM3"))
-if not bt.isOpen():
-    bt.open()
+try:
+    bt = SerialBluetoothDevice(getBluetoothCom(bt_default))
+    if not bt.isOpen():
+        bt.open()
+except SerialException as e:
+    print(e)
+    exit(1)
 
-robot = RoboticsRobot(getRobotCom('COM1'))
+try:
+    robot = RoboticsRobot(getRobotCom(robot_default))
+    if not robot.isOpen():
+        robot.open()
 
-if not robot.isOpen():
-    robot.open()
-
-robot.doAction(getActionFromName("reset"))
+    robot.doAction(getActionFromName("reset", separator))
+except SerialException as e:
+    print(e)
+    exit(2)
 
 robot_done = True
 bt_done = True
@@ -126,7 +147,7 @@ def onDetected(objectList: List[DetectedObject]):
             bt_thread = threading.Thread(target=pushDataToBluetooth,
                                          args=(Base64LinePackage(StringPackage(jsonString, "UTF-8")),))
             bt_thread.start()
-            robot_thread = threading.Thread(target=pushActionToRobot, args=(getActionFromName(obj.action),))
+            robot_thread = threading.Thread(target=pushActionToRobot, args=(getActionFromName(obj.action, separator),))
             robot_thread.start()
 
             break
