@@ -173,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
             objectShowerFragment.setObject(object);
             runOnUiThread(() -> postFragment(objectShowerFragment, "shower"));
             try {
-                Thread.sleep(5000);
+                Thread.sleep(10000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
