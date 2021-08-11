@@ -189,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void start(FaceController controller) {
                     speaker.setSpeakerListener(() -> {
-                        controller.hind();
+                        runOnUiThread(controller::hind);
                         synchronized (this){
                             isOperating=false;
                         }
