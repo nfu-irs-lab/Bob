@@ -30,9 +30,9 @@ import com.example.hiwin.teacher_version_bob.data.framework.object.DataObject;
 import com.example.hiwin.teacher_version_bob.data.ObjectSpeaker;
 import com.example.hiwin.teacher_version_bob.data.concrete.object.parser.JSONObjectParser;
 import com.example.hiwin.teacher_version_bob.data.framework.pack.Package;
-import com.example.hiwin.teacher_version_bob.view.FaceController;
 import com.example.hiwin.teacher_version_bob.view.FaceFragment;
 import com.example.hiwin.teacher_version_bob.view.FaceFragmentListener;
+import com.example.hiwin.teacher_version_bob.view.GifController;
 import com.example.hiwin.teacher_version_bob.view.ObjectShowerFragment;
 
 import org.json.JSONException;
@@ -169,8 +169,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    void showObjectAndFace(final DataObject object) {
-        if(isOperating)
+    private void showObjectAndFace(final DataObject object) {
+        if (isOperating)
             return;
         new Thread(() -> {
             synchronized (this) {
@@ -185,24 +185,31 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
             final FaceFragment faceFragment = new FaceFragment();
-            faceFragment.setObject(object);
+            try {
+                faceFragment.warp(this,FaceFragment.FaceType.valueOf(object.getName()));
+            } catch (IOException e) {
+                e.printStackTrace();
+                return;
+            }
+
             faceFragment.setListener(new FaceFragmentListener() {
                 @Override
-                public void start(FaceController controller) {
+                public void start(GifController gifController) {
                     speaker.setSpeakerListener(() -> {
-                        runOnUiThread(controller::hind);
-                        synchronized (this){
-                            isOperating=false;
+                        runOnUiThread(gifController::hind);
+                        synchronized (this) {
+                            isOperating = false;
                         }
                     });
                     speaker.speak(object);
                 }
 
                 @Override
-                public void complete(FaceController controller) {
+                public void complete(GifController gifController) {
 
                 }
             });
+
             runOnUiThread(() -> postFragment(faceFragment, "face2"));
         }).start();
 
@@ -284,59 +291,4 @@ public class MainActivity extends AppCompatActivity {
             disconnect();
         }
     };
-
-//    private final SerialDataListener serialDataListener = new SerialDataListener() {
-//        @Override
-//        protected void onStringDataReceived(String content) {
-//            Log.d(BT_LOG_TAG, "received string:");
-//            Log.d(BT_LOG_TAG, content);
-//
-//            final JSONObject object;
-//            try {
-//                object = new JSONObject(content);
-//                showObjectAndFace((new DataObject.JSONParser()).parse(object, "zh_TW"));
-//            } catch (JSONException e) {
-//                Log.e(THIS_LOG_TAG, e.getMessage());
-//            }
-//        }
-//
-//        @Override
-//        protected void onConnected() {
-//            Log.d(BT_LOG_TAG, "Bluetooth device connected");
-//            connection.setIcon(R.drawable.link_off);
-//            connection.setTitle("Disconnect");
-//        }
-//
-//        @Override
-//        protected void onDisconnected() {
-//            Log.d(BT_LOG_TAG, "Bluetooth device disconnected");
-//            connection.setIcon(R.drawable.link);
-//            connection.setTitle("Connected");
-//        }
-//
-//        @Override
-//        protected void onBase64DecodeError(IllegalArgumentException e) {
-//            Log.e(BT_LOG_TAG, "Base64 decode error:");
-//            Log.e(BT_LOG_TAG, e.getMessage());
-//        }
-//
-//        @Override
-//        protected void onIOError(Exception e) {
-//            Log.e(BT_LOG_TAG, "IO Error");
-//            Log.e(BT_LOG_TAG, e.getMessage());
-//        }
-//
-//        @Override
-//        protected void onConnectionError(Exception e) {
-//            Log.e(BT_LOG_TAG, "Connection Error");
-//            Log.e(BT_LOG_TAG, e.getMessage());
-//        }
-//
-//        @Override
-//        public void disconnect() {
-//            onDisconnected();
-//            if (serialService != null)
-//                serialService.disconnect();
-//        }
-//    };
 }

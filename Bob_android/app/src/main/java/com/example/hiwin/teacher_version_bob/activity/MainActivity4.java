@@ -10,7 +10,6 @@ import android.view.Menu;
 import com.example.hiwin.teacher_version_bob.R;
 import com.example.hiwin.teacher_version_bob.data.framework.object.DataObject;
 import com.example.hiwin.teacher_version_bob.data.ObjectSpeaker;
-import com.example.hiwin.teacher_version_bob.view.FaceController;
 import com.example.hiwin.teacher_version_bob.view.FaceFragment;
 import com.example.hiwin.teacher_version_bob.view.FaceFragmentListener;
 import com.example.hiwin.teacher_version_bob.view.ObjectShowerFragment;
@@ -49,25 +48,25 @@ public class MainActivity4 extends AppCompatActivity {
     }
 
     void showObjectAndFace(final DataObject object) throws InterruptedException {
-        final ObjectShowerFragment objectShowerFragment = new ObjectShowerFragment();
-        objectShowerFragment.setObject(object);
-        runOnUiThread(() -> postFragment(objectShowerFragment, "shower"));
-        Thread.sleep(5000);
-        final FaceFragment faceFragment = new FaceFragment();
-        faceFragment.setObject(object);
-        faceFragment.setListener(new FaceFragmentListener() {
-            @Override
-            public void start(FaceController controller) {
-                speaker.setSpeakerListener(controller::hind);
-                speaker.speak(object);
-            }
-
-            @Override
-            public void complete(FaceController controller) {
-
-            }
-        });
-        runOnUiThread(() -> postFragment(faceFragment, "face2"));
+//        final ObjectShowerFragment objectShowerFragment = new ObjectShowerFragment();
+//        objectShowerFragment.setObject(object);
+//        runOnUiThread(() -> postFragment(objectShowerFragment, "shower"));
+//        Thread.sleep(5000);
+//        final FaceFragment faceFragment = new FaceFragment();
+//        faceFragment.setObject(object);
+//        faceFragment.setListener(new FaceFragmentListener() {
+//            @Override
+//            public void start(FaceController controller) {
+//                speaker.setSpeakerListener(controller::hind);
+//                speaker.speak(object);
+//            }
+//
+//            @Override
+//            public void complete(FaceController controller) {
+//
+//            }
+//        });
+//        runOnUiThread(() -> postFragment(faceFragment, "face2"));
 
     }
 

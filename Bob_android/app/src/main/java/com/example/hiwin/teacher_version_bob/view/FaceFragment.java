@@ -1,8 +1,8 @@
 package com.example.hiwin.teacher_version_bob.view;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -12,27 +12,37 @@ import android.view.ViewGroup;
 
 import android.widget.ImageView;
 import com.example.hiwin.teacher_version_bob.R;
-import com.example.hiwin.teacher_version_bob.data.framework.object.DataObject;
+import pl.droidsonroids.gif.GifDrawable;
 
 import java.io.IOException;
 
 public class FaceFragment extends Fragment {
-    FaceController faceController;
-    private Handler mHandler = new Handler(Looper.getMainLooper());
+
+    public enum FaceType {
+        car(R.raw.face_happy), cake(R.raw.face_happy), knife(R.raw.face_happy),
+        bowl(R.raw.face_happy), person(R.raw.face_happy), bird(R.raw.face_happy),
+        cat(R.raw.face_happy), bottle(R.raw.face_happy);
+        private final int id;
+
+        FaceType(int id) {
+            this.id = id;
+        }
+
+        public int getId() {
+            return id;
+        }
+    }
+
+    private GifDrawable drawable;
+    private GifController gifController;
     private FaceFragmentListener listener;
 
-    private DataObject object;
-
-    public void setListener(FaceFragmentListener listener) {
-        this.listener = listener;
-    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_face, container, false);
-        ImageView imgFace = (ImageView) root.findViewById(R.id.face_gif);
-        faceController = new FaceController(imgFace, getResources());
+        gifController = new GifController((ImageView) root.findViewById(R.id.face_gif));
 
         return root;
     }
@@ -40,37 +50,27 @@ public class FaceFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-//        Context context=getContext();
-//        final ObjectSpeaker speaker = new ObjectSpeaker(context);
-//        speaker.setSpeakerListener(() -> getActivity().runOnUiThread(()->faceController.hind()));
+        start();
+    }
 
-        faceController.setListener(new FaceController.FaceListener() {
-            @Override
-            public void onFaceMotionStarted(FaceController controller) {
-                if(listener!=null)
-                    listener.start(faceController);
-            }
-
-            @Override
-            public void onFaceMotionComplete(FaceController controller) {
-                if(listener!=null)
-                    listener.complete(faceController);
-            }
+    public void warp(Context context,FaceType faceType) throws IOException {
+        drawable = new GifDrawable(context.getResources(), faceType.getId());
+        drawable.setLoopCount(10);
+        drawable.addAnimationListener(i -> {
+            if (listener != null)
+                listener.complete(gifController);
         });
-
-        try {
-            faceController.warp(FaceController.FaceType.valueOf(object.getName()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        faceController.show();
-        faceController.start();
     }
 
-
-
-    public void setObject(DataObject object) {
-        this.object = object;
+    private void start(){
+        gifController.warpDrawable(drawable);
+        gifController.start(gifController);
+        if (listener != null)
+            listener.start(gifController);
     }
+
+    public void setListener(FaceFragmentListener listener) {
+        this.listener = listener;
+    }
+
 }
