@@ -10,9 +10,6 @@ import android.view.Menu;
 import com.example.hiwin.teacher_version_bob.R;
 import com.example.hiwin.teacher_version_bob.data.framework.object.DataObject;
 import com.example.hiwin.teacher_version_bob.data.ObjectSpeaker;
-import com.example.hiwin.teacher_version_bob.view.FaceFragment;
-import com.example.hiwin.teacher_version_bob.view.FaceFragmentListener;
-import com.example.hiwin.teacher_version_bob.view.ObjectShowerFragment;
 
 public class MainActivity4 extends AppCompatActivity {
 

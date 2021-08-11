@@ -30,10 +30,10 @@ import com.example.hiwin.teacher_version_bob.data.framework.object.DataObject;
 import com.example.hiwin.teacher_version_bob.data.ObjectSpeaker;
 import com.example.hiwin.teacher_version_bob.data.concrete.object.parser.JSONObjectParser;
 import com.example.hiwin.teacher_version_bob.data.framework.pack.Package;
-import com.example.hiwin.teacher_version_bob.view.FaceFragment;
+import com.example.hiwin.teacher_version_bob.fragment.FaceFragment;
 import com.example.hiwin.teacher_version_bob.view.FaceFragmentListener;
 import com.example.hiwin.teacher_version_bob.view.GifController;
-import com.example.hiwin.teacher_version_bob.view.ObjectShowerFragment;
+import com.example.hiwin.teacher_version_bob.fragment.ObjectShowerFragment;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -177,8 +177,9 @@ public class MainActivity extends AppCompatActivity {
                 isOperating = true;
             }
             final ObjectShowerFragment objectShowerFragment = new ObjectShowerFragment();
-            objectShowerFragment.setObject(object);
+            objectShowerFragment.warp(this, object);
             runOnUiThread(() -> postFragment(objectShowerFragment, "shower"));
+
             try {
                 Thread.sleep(10000);
             } catch (InterruptedException e) {
@@ -186,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
             }
             final FaceFragment faceFragment = new FaceFragment();
             try {
-                faceFragment.warp(this,FaceFragment.FaceType.valueOf(object.getName()));
+                faceFragment.warp(this, FaceFragment.FaceType.valueOf(object.getName()));
             } catch (IOException e) {
                 e.printStackTrace();
                 return;

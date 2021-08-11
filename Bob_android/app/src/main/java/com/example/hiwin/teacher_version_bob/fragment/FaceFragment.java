@@ -1,4 +1,4 @@
-package com.example.hiwin.teacher_version_bob.view;
+package com.example.hiwin.teacher_version_bob.fragment;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -12,6 +12,8 @@ import android.view.ViewGroup;
 
 import android.widget.ImageView;
 import com.example.hiwin.teacher_version_bob.R;
+import com.example.hiwin.teacher_version_bob.view.FaceFragmentListener;
+import com.example.hiwin.teacher_version_bob.view.GifController;
 import pl.droidsonroids.gif.GifDrawable;
 
 import java.io.IOException;
