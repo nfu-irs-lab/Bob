@@ -42,6 +42,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 public class MainActivity extends AppCompatActivity {
+    private boolean isOperating = false;
     private static final String BT_LOG_TAG = "BluetoothInfo";
     private static final String THIS_LOG_TAG = "MainActivity";
 
@@ -168,7 +169,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void showObjectAndFace(final DataObject object) {
+        if(isOperating)
+            return;
         new Thread(() -> {
+            synchronized (this) {
+                isOperating = true;
+            }
             final ObjectShowerFragment objectShowerFragment = new ObjectShowerFragment();
             objectShowerFragment.setObject(object);
             runOnUiThread(() -> postFragment(objectShowerFragment, "shower"));
@@ -182,7 +188,12 @@ public class MainActivity extends AppCompatActivity {
             faceFragment.setListener(new FaceFragmentListener() {
                 @Override
                 public void start(FaceController controller) {
-                    speaker.setSpeakerListener(controller::hind);
+                    speaker.setSpeakerListener(() -> {
+                        controller.hind();
+                        synchronized (this){
+                            isOperating=false;
+                        }
+                    });
                     speaker.speak(object);
                 }
 
