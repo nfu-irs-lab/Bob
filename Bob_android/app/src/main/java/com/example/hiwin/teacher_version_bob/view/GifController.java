@@ -1,11 +1,7 @@
 package com.example.hiwin.teacher_version_bob.view;
 
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-
-
-import pl.droidsonroids.gif.AnimationListener;
 import pl.droidsonroids.gif.GifDrawable;
 
 public class GifController {
@@ -20,7 +16,7 @@ public class GifController {
         imageView.setImageDrawable(drawable);
     }
 
-    public void start(){
+    public void start(GifController gifController){
         drawable.start();
     }
 

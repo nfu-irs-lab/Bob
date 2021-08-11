@@ -14,16 +14,13 @@ import com.example.hiwin.teacher_version_bob.DeviceAdapter;
 import com.example.hiwin.teacher_version_bob.R;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 public class BluetoothConnectionActivity extends AppCompatActivity {
     /*
         reference:
             http://tw.gitbook.net/android/android_bluetooth.html
-
      */
-
-    private final ArrayList<BluetoothDevice> bondedDevices = new ArrayList<>();
-    private ListView deviceList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,38 +28,27 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
         setContentView(R.layout.activity_bluetooth_connection);
         Toolbar myToolbar = (Toolbar) findViewById(R.id.devs_toolbar);
         setSupportActionBar(myToolbar);
-        deviceList = (ListView) findViewById(R.id.devicesList);
-//        Request For opening bluetooth
+
+        ListView deviceList = (ListView) findViewById(R.id.devicesList);
+
         Intent turnOn = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
         startActivityForResult(turnOn, 0);
-        updateView();
-    }
 
-    private void updateView() {
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        bondedDevices.addAll(bluetoothAdapter.getBondedDevices());
-        DeviceAdapter da = new DeviceAdapter(this, bondedDevices);
-        deviceList.setAdapter(da);
+        deviceList.setAdapter(getDeviceAdaptor(bluetoothAdapter.getBondedDevices()));
         deviceList.setOnItemClickListener(onClickListView);
     }
 
-    private AdapterView.OnItemClickListener onClickListView = new AdapterView.OnItemClickListener() {
-
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            BluetoothDevice selected_device = (BluetoothDevice) parent.getItemAtPosition(position);
-            Toast.makeText(BluetoothConnectionActivity.this, selected_device.getName(), Toast.LENGTH_SHORT).show();
-
-//            Intent it = new Intent(BluetoothConnectionActivity.this, BluetoothTerminalActivity.class);
-            Intent it = new Intent(BluetoothConnectionActivity.this, MainActivity.class);
-            it.putExtra("address", selected_device.getAddress());
-            startActivity(it);
-        }
-    };
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        updateView();
+    private DeviceAdapter getDeviceAdaptor(Set<BluetoothDevice> bondedDevices) {
+        return new DeviceAdapter(this, new ArrayList<>(bondedDevices));
     }
+
+    private final AdapterView.OnItemClickListener onClickListView = (parent, view, position, id) -> {
+        BluetoothDevice selected_device = (BluetoothDevice) parent.getItemAtPosition(position);
+        Toast.makeText(BluetoothConnectionActivity.this, selected_device.getName(), Toast.LENGTH_SHORT).show();
+
+        Intent it = new Intent(BluetoothConnectionActivity.this, MainActivity.class);
+        it.putExtra("address", selected_device.getAddress());
+        startActivity(it);
+    };
 }

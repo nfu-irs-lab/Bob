@@ -9,6 +9,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /*
     reference:
@@ -17,10 +18,10 @@ import java.util.ArrayList;
  */
 public class DeviceAdapter extends BaseAdapter {
     private final Context context;
-    private final ArrayList<BluetoothDevice> devices;
+    private final List<BluetoothDevice> devices;
     private static LayoutInflater inflater = null;
 
-    public DeviceAdapter(Context context, ArrayList<BluetoothDevice> devices) {
+    public DeviceAdapter(Context context, List<BluetoothDevice> devices) {
         this.context = context;
         this.devices = devices;
 
