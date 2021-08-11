@@ -83,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
         // 設置要用哪個menu檔做為選單
         getMenuInflater().inflate(R.menu.menu_main, menu);
         connection = menu.getItem(0);
+        setConnectionMenuItem(false);
         return true;
     }
 
@@ -164,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
             connection.setTitle("Disconnect");
         } else {
             connection.setIcon(R.drawable.link);
-            connection.setTitle("Connected");
+            connection.setTitle("Connect");
         }
     }
 
