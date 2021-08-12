@@ -7,20 +7,14 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.IBinder;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import android.os.*;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import android.view.View;
-import android.widget.ImageView;
 import com.example.hiwin.teacher_version_bob.R;
 import com.example.hiwin.teacher_version_bob.communication.bluetooth.concrete.ReadLineStrategy;
 import com.example.hiwin.teacher_version_bob.communication.bluetooth.framework.SerialListener;
@@ -29,16 +23,12 @@ import com.example.hiwin.teacher_version_bob.communication.bluetooth.concrete.Se
 import com.example.hiwin.teacher_version_bob.data.concrete.pack.Base64Package;
 import com.example.hiwin.teacher_version_bob.data.concrete.pack.LinePackage;
 import com.example.hiwin.teacher_version_bob.data.framework.object.DataObject;
-import com.example.hiwin.teacher_version_bob.data.ObjectSpeaker;
 import com.example.hiwin.teacher_version_bob.data.concrete.object.parser.JSONObjectParser;
 import com.example.hiwin.teacher_version_bob.data.framework.pack.Package;
-import com.example.hiwin.teacher_version_bob.fragment.FaceFragment;
-import com.example.hiwin.teacher_version_bob.fragment.FaceFragmentListener;
-import com.example.hiwin.teacher_version_bob.fragment.ObjectShowerFragment;
 
+import com.example.hiwin.teacher_version_bob.handler.ReceiveFragmentHandler;
 import org.json.JSONException;
 import org.json.JSONObject;
-import pl.droidsonroids.gif.GifDrawable;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -60,8 +50,7 @@ public class MainActivity extends AppCompatActivity {
     private String deviceAddress;
     private SerialService serialService;
 
-    private ObjectSpeaker speaker;
-    private FragmentManager fragmentManager;
+    private ReceiveFragmentHandler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,8 +59,8 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
         context = this;
-        fragmentManager = getSupportFragmentManager();
-        speaker = new ObjectSpeaker(this);
+        handler = new ReceiveFragmentHandler(context, Looper.getMainLooper(), getSupportFragmentManager());
+//        fragmentManager = getSupportFragmentManager();
 
         boolean sus = bindService(new Intent(context, SerialService.class), serviceConnection, Context.BIND_AUTO_CREATE);
         Log.d("BindService", sus + "");
@@ -127,18 +116,6 @@ public class MainActivity extends AppCompatActivity {
         super.onStop();
     }
 
-//    @Override
-//    public void onResume() {
-//        super.onResume();
-//
-//        if (!initialStart && serialService != null) {
-//            runOnUiThread(this::connect);
-//        }
-//
-//        if (initialStart)
-//            initialStart = false;
-//    }
-
 
     private void connect() {
         try {
@@ -172,58 +149,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showObjectAndFace(final DataObject object) {
-        if (isOperating)
-            return;
-        new Thread(() -> {
-            synchronized (this) {
-                isOperating = true;
-            }
-            final ObjectShowerFragment objectShowerFragment = new ObjectShowerFragment();
-            objectShowerFragment.warp(this, object);
-            runOnUiThread(() -> postFragment(objectShowerFragment, "shower"));
 
-            try {
-                Thread.sleep(10000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            final FaceFragment faceFragment = new FaceFragment();
-            try {
-                faceFragment.warp(this, FaceFragment.FaceType.valueOf(object.getName()));
-            } catch (IOException e) {
-                e.printStackTrace();
-                return;
-            }
+        if (handler.isOperating()) return;
+        Message face_msg = ReceiveFragmentHandler.MSG_FACE;
+        face_msg.obj = object;
 
-            faceFragment.setListener(new FaceFragmentListener() {
-                @Override
-                public void start(GifDrawable drawable, ImageView imageView) {
-                    speaker.setSpeakerListener(() -> {
-                        runOnUiThread(()->imageView.setVisibility(View.INVISIBLE));
-                        synchronized (this) {
-                            isOperating = false;
-                        }
-                    });
-                    speaker.speak(object);
-                }
+        Message object_msg = ReceiveFragmentHandler.MSG_OBJECT;
+        object_msg.obj = object;
 
-                @Override
-                public void complete(GifDrawable drawable, ImageView imageView) {
+        handler.sendMessage(object_msg);
+        handler.sendMessageDelayed(face_msg, 10000);
 
-                }
-
-            });
-
-            runOnUiThread(() -> postFragment(faceFragment, "face2"));
-        }).start();
-
-    }
-
-    public void postFragment(Fragment fragment, String id) {
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.setReorderingAllowed(true);
-        fragmentTransaction.replace(R.id.frame, fragment, id);
-        fragmentTransaction.commit();
     }
 
     private void sendMessage(String msg) {
