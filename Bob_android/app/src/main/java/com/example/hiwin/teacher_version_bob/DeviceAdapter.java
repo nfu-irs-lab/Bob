@@ -17,12 +17,10 @@ import java.util.List;
         https://xnfood.com.tw/android-listview-baseadapter/
  */
 public class DeviceAdapter extends BaseAdapter {
-    private final Context context;
     private final List<BluetoothDevice> devices;
     private static LayoutInflater inflater = null;
 
     public DeviceAdapter(Context context, List<BluetoothDevice> devices) {
-        this.context = context;
         this.devices = devices;
 
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

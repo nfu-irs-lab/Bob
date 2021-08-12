@@ -1,7 +1,6 @@
 package com.example.hiwin.teacher_version_bob.fragment;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,8 +11,6 @@ import android.view.ViewGroup;
 
 import android.widget.ImageView;
 import com.example.hiwin.teacher_version_bob.R;
-import com.example.hiwin.teacher_version_bob.view.FaceFragmentListener;
-import com.example.hiwin.teacher_version_bob.view.GifController;
 import pl.droidsonroids.gif.GifDrawable;
 
 import java.io.IOException;
@@ -36,16 +33,16 @@ public class FaceFragment extends Fragment {
     }
 
     private GifDrawable drawable;
-    private GifController gifController;
+    //    private GifController gifController;
     private FaceFragmentListener listener;
+    private ImageView imageView;
 
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_face, container, false);
-        gifController = new GifController((ImageView) root.findViewById(R.id.face_gif));
-
+        imageView = (ImageView) root.findViewById(R.id.face_gif);
         return root;
     }
 
@@ -55,20 +52,20 @@ public class FaceFragment extends Fragment {
         start();
     }
 
-    public void warp(Context context,FaceType faceType) throws IOException {
+    public void warp(Context context, FaceType faceType) throws IOException {
         drawable = new GifDrawable(context.getResources(), faceType.getId());
         drawable.setLoopCount(10);
         drawable.addAnimationListener(i -> {
             if (listener != null)
-                listener.complete(gifController);
+                listener.complete(drawable,imageView);
         });
     }
 
-    private void start(){
-        gifController.warpDrawable(drawable);
-        gifController.start(gifController);
+    private void start() {
+        imageView.setImageDrawable(drawable);
+        drawable.start();
         if (listener != null)
-            listener.start(gifController);
+            listener.start(drawable,imageView);
     }
 
     public void setListener(FaceFragmentListener listener) {

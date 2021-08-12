@@ -19,6 +19,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import android.view.View;
+import android.widget.ImageView;
 import com.example.hiwin.teacher_version_bob.R;
 import com.example.hiwin.teacher_version_bob.communication.bluetooth.concrete.ReadLineStrategy;
 import com.example.hiwin.teacher_version_bob.communication.bluetooth.framework.SerialListener;
@@ -31,12 +33,12 @@ import com.example.hiwin.teacher_version_bob.data.ObjectSpeaker;
 import com.example.hiwin.teacher_version_bob.data.concrete.object.parser.JSONObjectParser;
 import com.example.hiwin.teacher_version_bob.data.framework.pack.Package;
 import com.example.hiwin.teacher_version_bob.fragment.FaceFragment;
-import com.example.hiwin.teacher_version_bob.view.FaceFragmentListener;
-import com.example.hiwin.teacher_version_bob.view.GifController;
+import com.example.hiwin.teacher_version_bob.fragment.FaceFragmentListener;
 import com.example.hiwin.teacher_version_bob.fragment.ObjectShowerFragment;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import pl.droidsonroids.gif.GifDrawable;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -195,9 +197,9 @@ public class MainActivity extends AppCompatActivity {
 
             faceFragment.setListener(new FaceFragmentListener() {
                 @Override
-                public void start(GifController gifController) {
+                public void start(GifDrawable drawable, ImageView imageView) {
                     speaker.setSpeakerListener(() -> {
-                        runOnUiThread(gifController::hind);
+                        runOnUiThread(()->imageView.setVisibility(View.INVISIBLE));
                         synchronized (this) {
                             isOperating = false;
                         }
@@ -206,9 +208,10 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public void complete(GifController gifController) {
+                public void complete(GifDrawable drawable, ImageView imageView) {
 
                 }
+
             });
 
             runOnUiThread(() -> postFragment(faceFragment, "face2"));
