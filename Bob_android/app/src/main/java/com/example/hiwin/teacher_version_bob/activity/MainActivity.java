@@ -7,12 +7,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.IBinder;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import android.os.*;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.util.Log;
@@ -27,14 +23,10 @@ import com.example.hiwin.teacher_version_bob.communication.bluetooth.concrete.Se
 import com.example.hiwin.teacher_version_bob.data.concrete.pack.Base64Package;
 import com.example.hiwin.teacher_version_bob.data.concrete.pack.LinePackage;
 import com.example.hiwin.teacher_version_bob.data.framework.object.DataObject;
-import com.example.hiwin.teacher_version_bob.data.ObjectSpeaker;
 import com.example.hiwin.teacher_version_bob.data.concrete.object.parser.JSONObjectParser;
 import com.example.hiwin.teacher_version_bob.data.framework.pack.Package;
-import com.example.hiwin.teacher_version_bob.view.FaceController;
-import com.example.hiwin.teacher_version_bob.view.FaceFragment;
-import com.example.hiwin.teacher_version_bob.view.FaceFragmentListener;
-import com.example.hiwin.teacher_version_bob.view.ObjectShowerFragment;
 
+import com.example.hiwin.teacher_version_bob.handler.ReceiveFragmentHandler;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -42,6 +34,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 public class MainActivity extends AppCompatActivity {
+    private boolean isOperating = false;
     private static final String BT_LOG_TAG = "BluetoothInfo";
     private static final String THIS_LOG_TAG = "MainActivity";
 
@@ -57,8 +50,7 @@ public class MainActivity extends AppCompatActivity {
     private String deviceAddress;
     private SerialService serialService;
 
-    private ObjectSpeaker speaker;
-    private FragmentManager fragmentManager;
+    private ReceiveFragmentHandler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,8 +59,8 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
         context = this;
-        fragmentManager = getSupportFragmentManager();
-        speaker = new ObjectSpeaker(this);
+        handler = new ReceiveFragmentHandler(context, Looper.getMainLooper(), getSupportFragmentManager());
+//        fragmentManager = getSupportFragmentManager();
 
         boolean sus = bindService(new Intent(context, SerialService.class), serviceConnection, Context.BIND_AUTO_CREATE);
         Log.d("BindService", sus + "");
@@ -82,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
         // 設置要用哪個menu檔做為選單
         getMenuInflater().inflate(R.menu.menu_main, menu);
         connection = menu.getItem(0);
+        setConnectionMenuItem(false);
         return true;
     }
 
@@ -123,18 +116,6 @@ public class MainActivity extends AppCompatActivity {
         super.onStop();
     }
 
-//    @Override
-//    public void onResume() {
-//        super.onResume();
-//
-//        if (!initialStart && serialService != null) {
-//            runOnUiThread(this::connect);
-//        }
-//
-//        if (initialStart)
-//            initialStart = false;
-//    }
-
 
     private void connect() {
         try {
@@ -163,44 +144,22 @@ public class MainActivity extends AppCompatActivity {
             connection.setTitle("Disconnect");
         } else {
             connection.setIcon(R.drawable.link);
-            connection.setTitle("Connected");
+            connection.setTitle("Connect");
         }
     }
 
-    void showObjectAndFace(final DataObject object) {
-        new Thread(() -> {
-            final ObjectShowerFragment objectShowerFragment = new ObjectShowerFragment();
-            objectShowerFragment.setObject(object);
-            runOnUiThread(() -> postFragment(objectShowerFragment, "shower"));
-            try {
-                Thread.sleep(10000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            final FaceFragment faceFragment = new FaceFragment();
-            faceFragment.setObject(object);
-            faceFragment.setListener(new FaceFragmentListener() {
-                @Override
-                public void start(FaceController controller) {
-                    speaker.setSpeakerListener(controller::hind);
-                    speaker.speak(object);
-                }
+    private void showObjectAndFace(final DataObject object) {
 
-                @Override
-                public void complete(FaceController controller) {
+        if (handler.isOperating()) return;
+        Message face_msg = ReceiveFragmentHandler.MSG_FACE;
+        face_msg.obj = object;
 
-                }
-            });
-            runOnUiThread(() -> postFragment(faceFragment, "face2"));
-        }).start();
+        Message object_msg = ReceiveFragmentHandler.MSG_OBJECT;
+        object_msg.obj = object;
 
-    }
+        handler.sendMessage(object_msg);
+        handler.sendMessageDelayed(face_msg, 10000);
 
-    public void postFragment(Fragment fragment, String id) {
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.setReorderingAllowed(true);
-        fragmentTransaction.replace(R.id.frame, fragment, id);
-        fragmentTransaction.commit();
     }
 
     private void sendMessage(String msg) {
@@ -272,59 +231,4 @@ public class MainActivity extends AppCompatActivity {
             disconnect();
         }
     };
-
-//    private final SerialDataListener serialDataListener = new SerialDataListener() {
-//        @Override
-//        protected void onStringDataReceived(String content) {
-//            Log.d(BT_LOG_TAG, "received string:");
-//            Log.d(BT_LOG_TAG, content);
-//
-//            final JSONObject object;
-//            try {
-//                object = new JSONObject(content);
-//                showObjectAndFace((new DataObject.JSONParser()).parse(object, "zh_TW"));
-//            } catch (JSONException e) {
-//                Log.e(THIS_LOG_TAG, e.getMessage());
-//            }
-//        }
-//
-//        @Override
-//        protected void onConnected() {
-//            Log.d(BT_LOG_TAG, "Bluetooth device connected");
-//            connection.setIcon(R.drawable.link_off);
-//            connection.setTitle("Disconnect");
-//        }
-//
-//        @Override
-//        protected void onDisconnected() {
-//            Log.d(BT_LOG_TAG, "Bluetooth device disconnected");
-//            connection.setIcon(R.drawable.link);
-//            connection.setTitle("Connected");
-//        }
-//
-//        @Override
-//        protected void onBase64DecodeError(IllegalArgumentException e) {
-//            Log.e(BT_LOG_TAG, "Base64 decode error:");
-//            Log.e(BT_LOG_TAG, e.getMessage());
-//        }
-//
-//        @Override
-//        protected void onIOError(Exception e) {
-//            Log.e(BT_LOG_TAG, "IO Error");
-//            Log.e(BT_LOG_TAG, e.getMessage());
-//        }
-//
-//        @Override
-//        protected void onConnectionError(Exception e) {
-//            Log.e(BT_LOG_TAG, "Connection Error");
-//            Log.e(BT_LOG_TAG, e.getMessage());
-//        }
-//
-//        @Override
-//        public void disconnect() {
-//            onDisconnected();
-//            if (serialService != null)
-//                serialService.disconnect();
-//        }
-//    };
 }
