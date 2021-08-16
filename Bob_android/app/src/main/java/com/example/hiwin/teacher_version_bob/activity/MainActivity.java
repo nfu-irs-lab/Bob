@@ -149,16 +149,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showObjectAndFace(final DataObject object) {
-
         if (handler.isOperating()) return;
-        Message face_msg = ReceiveFragmentHandler.MSG_FACE;
-        face_msg.obj = object;
-
-        Message object_msg = ReceiveFragmentHandler.MSG_OBJECT;
-        object_msg.obj = object;
-
-        handler.sendMessage(object_msg);
-        handler.sendMessageDelayed(face_msg, 10000);
+        Message msg = ReceiveFragmentHandler.MSG_RECEIVE;
+        msg.obj = object;
+        handler.sendMessage(msg);
 
     }
 
