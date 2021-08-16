@@ -7,16 +7,10 @@ import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.view.View;
-import android.widget.ImageView;
 import com.example.hiwin.teacher_version_bob.R;
 import com.example.hiwin.teacher_version_bob.data.ObjectSpeaker;
 import com.example.hiwin.teacher_version_bob.data.framework.object.DataObject;
-import com.example.hiwin.teacher_version_bob.fragment.ExampleShowerFragment;
-import com.example.hiwin.teacher_version_bob.fragment.FaceFragment;
-import com.example.hiwin.teacher_version_bob.fragment.FaceFragmentListener;
-import com.example.hiwin.teacher_version_bob.fragment.ObjectShowerFragment;
-import pl.droidsonroids.gif.GifDrawable;
+import com.example.hiwin.teacher_version_bob.fragment.*;
 
 import java.io.IOException;
 
@@ -61,80 +55,53 @@ public class ReceiveFragmentHandler extends Handler {
 
     @Override
     public void handleMessage(Message msg) {
-        DataObject object = (DataObject) msg.obj;
         switch (msg.what) {
             case CODE_RECEIVE:
                 synchronized (this) {
                     isOperating = true;
                 }
-                Message face_msg = ReceiveFragmentHandler.MSG_FACE;
-                face_msg.obj = object;
-
-                Message object_msg = ReceiveFragmentHandler.MSG_OBJECT;
-                object_msg.obj = object;
-
-                sendMessage(object_msg);
-                sendMessageDelayed(face_msg, 10000);
+                receive((DataObject) msg.obj);
                 break;
-            case CODE_FACE:
-                postFragment(getFaceFragment(object), "face");
-                break;
-            case CODE_OBJECT:
-                postFragment(getObjectFragment(object), "object");
-                break;
-            case CODE_EXAMPLE:
-                postFragment(getExampleFragment(object),"example");
         }
 
         super.handleMessage(msg);
     }
 
-    private Fragment getFaceFragment(DataObject object) {
+    private void receive(DataObject object) {
+        Fragment finalFaceFragment = getFaceFragment(object, null, "null",false);
+        Fragment exampleFragment = getExampleFragment(object, finalFaceFragment, "face2");
+        Fragment faceFragment = getFaceFragment(object, exampleFragment, "example", true);
+        Fragment objectFragment = getObjectFragment(object, faceFragment, "face");
+
+        postFragment(objectFragment, "object");
+    }
+
+    private Fragment getFaceFragment(DataObject object, Fragment next, String nextId, boolean speak) {
         final FaceFragment faceFragment = new FaceFragment();
         try {
-            faceFragment.warp(context, FaceFragment.FaceType.valueOf(object.getName()));
+            faceFragment.warp(context, object, speak);
         } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
-        faceFragment.setListener(new FaceFragmentListener() {
-            @Override
-            public void start(GifDrawable drawable, ImageView imageView) {
-                speaker.setSpeakerListener(() -> {
-                    post(() ->
-                    {
-                        imageView.setVisibility(View.INVISIBLE);
-                        Message msg=MSG_EXAMPLE;
-                        msg.obj=object;
-                        sendMessage(msg);
-                    });
-                    synchronized (this) {
-                        isOperating = false;
-                    }
-                });
-                speaker.speakFully(object);
-            }
 
-            @Override
-            public void complete(GifDrawable drawable, ImageView imageView) {
-
-            }
-
-        });
+        faceFragment.setListener(new FragmentFlowListener(next, nextId));
 
         return faceFragment;
     }
 
-    public Fragment getObjectFragment(DataObject object) {
+    public Fragment getObjectFragment(DataObject object, Fragment next, String nextId) {
         final ObjectShowerFragment objectShowerFragment = new ObjectShowerFragment();
         objectShowerFragment.warp(context, object);
+        objectShowerFragment.setListener(new FragmentFlowListener(next, nextId));
 
         return objectShowerFragment;
     }
 
-    private Fragment getExampleFragment(DataObject object) {
+    private Fragment getExampleFragment(DataObject object, Fragment next, String nextId) {
         final ExampleShowerFragment fragment = new ExampleShowerFragment();
         fragment.warp(object);
+        fragment.setListener(new FragmentFlowListener(next, nextId));
         return fragment;
 
     }
@@ -148,5 +115,28 @@ public class ReceiveFragmentHandler extends Handler {
 
     public boolean isOperating() {
         return isOperating;
+    }
+
+
+    private class FragmentFlowListener implements FragmentListener {
+
+        private final Fragment next;
+        private final String nextId;
+
+        private FragmentFlowListener(Fragment next, String nextId) {
+            this.next = next;
+            this.nextId = nextId;
+        }
+
+        @Override
+        public void start() {
+
+        }
+
+        @Override
+        public void end() {
+            if (next != null)
+                post(() -> postFragment(next, nextId));
+        }
     }
 }

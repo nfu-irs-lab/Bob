@@ -21,14 +21,15 @@ public class ObjectShowerFragment extends Fragment {
     private TextView tr_name;
     private ImageView img;
     private TextView name;
+    private FragmentListener listener;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_object, container, false);
-        View layout=root.findViewById(R.id.object_layout);
+        View layout = root.findViewById(R.id.object_layout);
 
-        this.img =(ImageView) layout.findViewById(R.id.object_img);
+        this.img = (ImageView) layout.findViewById(R.id.object_img);
         this.name = (TextView) layout.findViewById(R.id.object_name);
         this.tr_name = (TextView) layout.findViewById(R.id.object_tr_name);
 
@@ -38,14 +39,28 @@ public class ObjectShowerFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        if (listener != null)
+            listener.start();
+
+        new Thread(() -> {
+            try {
+                Thread.sleep(10000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            if (listener != null)
+                listener.end();
+        }).start();
+
         this.img.setImageDrawable(drawable);
         this.name.setText(object.getName());
         this.tr_name.setText(object.getTranslatedName());
     }
 
-    public void warp(Context context,DataObject object) {
-        this.object=object;
-        drawable=context.getDrawable(getDrawableId(object));
+    public void warp(Context context, DataObject object) {
+        this.object = object;
+        drawable = context.getDrawable(getDrawableId(object));
     }
 
     private int getDrawableId(DataObject object) {
@@ -67,6 +82,10 @@ public class ObjectShowerFragment extends Fragment {
             case "bottle":
                 return R.drawable.object_bottle;
         }
-        throw  new RuntimeException("Drawable not found");
+        throw new RuntimeException("Drawable not found");
+    }
+
+    public void setListener(FragmentListener listener) {
+        this.listener = listener;
     }
 }

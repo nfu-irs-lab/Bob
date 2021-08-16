@@ -11,11 +11,16 @@ import android.view.ViewGroup;
 
 import android.widget.ImageView;
 import com.example.hiwin.teacher_version_bob.R;
+import com.example.hiwin.teacher_version_bob.data.ObjectSpeaker;
+import com.example.hiwin.teacher_version_bob.data.framework.object.DataObject;
 import pl.droidsonroids.gif.GifDrawable;
 
 import java.io.IOException;
 
 public class FaceFragment extends Fragment {
+
+    private DataObject object;
+    private boolean speak;
 
     public enum FaceType {
         car(R.raw.face_happy), cake(R.raw.face_happy), knife(R.raw.face_happy),
@@ -33,8 +38,8 @@ public class FaceFragment extends Fragment {
     }
 
     private GifDrawable drawable;
-    //    private GifController gifController;
-    private FaceFragmentListener listener;
+    private ObjectSpeaker speaker;
+    private FragmentListener listener;
     private ImageView imageView;
 
 
@@ -42,6 +47,7 @@ public class FaceFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_face, container, false);
+        speaker = new ObjectSpeaker(getContext());
         imageView = (ImageView) root.findViewById(R.id.face_gif);
         return root;
     }
@@ -52,23 +58,35 @@ public class FaceFragment extends Fragment {
         start();
     }
 
-    public void warp(Context context, FaceType faceType) throws IOException {
-        drawable = new GifDrawable(context.getResources(), faceType.getId());
+    public void warp(Context context, DataObject object,boolean speak) throws IOException {
+        this.object=object;
+        this.speak = speak;
+        drawable = new GifDrawable(context.getResources(), FaceType.valueOf(object.getName()).getId());
         drawable.setLoopCount(10);
         drawable.addAnimationListener(i -> {
-            if (listener != null)
-                listener.complete(drawable,imageView);
+            if(!speak){
+                if(listener!=null)
+                    listener.end();
+            }
         });
     }
 
     private void start() {
         imageView.setImageDrawable(drawable);
         drawable.start();
+        if(speak) {
+            speaker.setSpeakerListener(() -> {
+                if (listener != null)
+                    listener.end();
+            });
+            speaker.speakFully(object);
+        }
+
         if (listener != null)
-            listener.start(drawable,imageView);
+            listener.start();
     }
 
-    public void setListener(FaceFragmentListener listener) {
+    public void setListener(FragmentListener listener) {
         this.listener = listener;
     }
 

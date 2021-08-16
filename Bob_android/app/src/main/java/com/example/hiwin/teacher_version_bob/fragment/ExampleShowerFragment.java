@@ -18,12 +18,14 @@ public class ExampleShowerFragment extends Fragment {
     private TextView sentence;
     private ObjectSpeaker speaker;
 
+    private FragmentListener listener;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_example, container, false);
         View layout = root.findViewById(R.id.example_layout);
-        speaker=new ObjectSpeaker(getContext());
+        speaker = new ObjectSpeaker(getContext());
         this.sentence = (TextView) layout.findViewById(R.id.example_sentence);
         this.tr_sentence = (TextView) layout.findViewById(R.id.example_tr_sentence);
 
@@ -33,14 +35,22 @@ public class ExampleShowerFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        if(listener!=null)
+            listener.start();
         sentence.setText(object.getSentence());
         tr_sentence.setText(object.getTranslatedSentence());
         speaker.speakExample(object);
+        speaker.setSpeakerListener(() -> {
+            if(listener!=null)
+                listener.end();
+        });
     }
 
     public void warp(DataObject object) {
         this.object = object;
     }
 
-
+    public void setListener(FragmentListener listener) {
+        this.listener = listener;
+    }
 }
