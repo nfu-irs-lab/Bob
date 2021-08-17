@@ -8,7 +8,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import com.example.hiwin.teacher_version_bob.R;
-import com.example.hiwin.teacher_version_bob.data.ObjectSpeaker;
 import com.example.hiwin.teacher_version_bob.data.framework.object.DataObject;
 import com.example.hiwin.teacher_version_bob.fragment.*;
 
@@ -17,58 +16,39 @@ import java.io.IOException;
 public class ReceiveFragmentHandler extends Handler {
 
 
-    public static final int CODE_FACE = 1;
-    public static final int CODE_OBJECT = 2;
     public static final int CODE_RECEIVE = 3;
-    public static final int CODE_EXAMPLE = 4;
 
-    public static final Message MSG_FACE;
-    public static final Message MSG_OBJECT;
     public static final Message MSG_RECEIVE;
-    public static final Message MSG_EXAMPLE;
 
     static {
-        MSG_FACE = new Message();
-        MSG_FACE.what = CODE_FACE;
-
-        MSG_OBJECT = new Message();
-        MSG_OBJECT.what = CODE_OBJECT;
-
         MSG_RECEIVE = new Message();
         MSG_RECEIVE.what = CODE_RECEIVE;
-
-        MSG_EXAMPLE = new Message();
-        MSG_EXAMPLE.what = CODE_EXAMPLE;
     }
 
     private final FragmentManager fragmentManager;
     private final Context context;
-    private final ObjectSpeaker speaker;
     private boolean isOperating = false;
 
     public ReceiveFragmentHandler(Context context, Looper looper, FragmentManager fragmentManager) {
         super(looper);
-        speaker = new ObjectSpeaker(context);
         this.fragmentManager = fragmentManager;
         this.context = context;
     }
 
     @Override
     public void handleMessage(Message msg) {
-        switch (msg.what) {
-            case CODE_RECEIVE:
-                synchronized (this) {
-                    isOperating = true;
-                }
-                receive((DataObject) msg.obj);
-                break;
+        if (msg.what == CODE_RECEIVE) {
+            synchronized (this) {
+                isOperating = true;
+            }
+            receive((DataObject) msg.obj);
         }
 
         super.handleMessage(msg);
     }
 
     private void receive(DataObject object) {
-        Fragment finalFaceFragment = getFaceFragment(object, null, "null",false);
+        Fragment finalFaceFragment = getFaceFragment(object, null, "null", false);
         Fragment exampleFragment = getExampleFragment(object, finalFaceFragment, "face2");
         Fragment faceFragment = getFaceFragment(object, exampleFragment, "example", true);
         Fragment objectFragment = getObjectFragment(object, faceFragment, "face");
@@ -85,7 +65,22 @@ public class ReceiveFragmentHandler extends Handler {
             return null;
         }
 
-        faceFragment.setListener(new FragmentFlowListener(next, nextId));
+        faceFragment.setListener(new FragmentFlowListener(next, nextId) {
+            @Override
+            public void start() {
+                super.start();
+            }
+
+            @Override
+            public void end() {
+                super.end();
+                if (!speak)
+                    synchronized (this) {
+                        isOperating = false;
+                    }
+
+            }
+        });
 
         return faceFragment;
     }

@@ -150,7 +150,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void showObjectAndFace(final DataObject object) {
         if (handler.isOperating()) return;
-        Message msg = ReceiveFragmentHandler.MSG_RECEIVE;
+        Message msg = new Message();
+        msg.what = ReceiveFragmentHandler.CODE_RECEIVE;
         msg.obj = object;
         handler.sendMessage(msg);
 

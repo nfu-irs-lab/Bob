@@ -58,23 +58,25 @@ public class FaceFragment extends Fragment {
         start();
     }
 
-    public void warp(Context context, DataObject object,boolean speak) throws IOException {
-        this.object=object;
+    public void warp(Context context, DataObject object, boolean speak) throws IOException {
+        this.object = object;
         this.speak = speak;
         drawable = new GifDrawable(context.getResources(), FaceType.valueOf(object.getName()).getId());
         drawable.setLoopCount(10);
-        drawable.addAnimationListener(i -> {
-            if(!speak){
-                if(listener!=null)
+
+        if (!speak) {
+            drawable.addAnimationListener(i -> {
+                if (listener != null)
                     listener.end();
-            }
-        });
+
+            });
+        }
     }
 
     private void start() {
         imageView.setImageDrawable(drawable);
         drawable.start();
-        if(speak) {
+        if (speak) {
             speaker.setSpeakerListener(() -> {
                 if (listener != null)
                     listener.end();
