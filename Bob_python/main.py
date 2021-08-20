@@ -21,6 +21,7 @@ from serial import SerialTimeoutException, SerialException
 from serial.tools.list_ports_linux import comports
 
 from bluetooth.concrete.device import SerialBluetoothDevice
+from bluetooth.concrete.monitor import PrintedSerialListener
 from bluetooth.concrete.package import StringPackage, Base64LinePackage
 from bluetooth.framework.package import Package
 from dbctrl.concrete import queryJsonFromName
@@ -87,7 +88,7 @@ db_charset = 'UTF-8'
 db = JSONDatabase(open(db_location, encoding=db_charset))
 
 try:
-    bt = SerialBluetoothDevice(getBluetoothCom(bt_default))
+    bt = SerialBluetoothDevice(getBluetoothCom(bt_default), PrintedSerialListener())
     if not bt.isOpen():
         bt.open()
 except SerialException as e:
@@ -242,7 +243,7 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
             visualize = increment_path(save_dir / Path(path).stem, mkdir=True) if visualize else False
             pred = model(img, augment=augment, visualize=visualize)[0]
         elif onnx:
-            pred = torch.tensor(session.run([session.get_outputs()[0].name], {session.get_inputs()[0].name: img}))
+            pred = torch.tensor(session.running([session.get_outputs()[0].name], {session.get_inputs()[0].name: img}))
 
         # NMS
         pred = non_max_suppression(pred, conf_thres, iou_thres, classes, agnostic_nms, max_det=max_det)
@@ -332,6 +333,10 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
 
 
 if __name__ == "__main__":
-    # opt = parse_opt()
-    # main(opt)
-    run(source='0', weights='yolov5s.pt')
+    try:
+        # opt = parse_opt()
+        # main(opt)
+        run(source='0', weights='yolov5s.pt')
+    except KeyboardInterrupt as e:
+        bt.interrupt()
+        print("Interrupted")
