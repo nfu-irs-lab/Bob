@@ -21,6 +21,7 @@ public class FaceFragment extends Fragment {
 
     private DataObject object;
     private boolean speak;
+    private boolean endByAnimation;
 
     public enum FaceType {
         car(R.raw.face_happy), cake(R.raw.face_happy), knife(R.raw.face_happy),
@@ -58,15 +59,16 @@ public class FaceFragment extends Fragment {
         start();
     }
 
-    public void warp(Context context, DataObject object, boolean speak) throws IOException {
+    public void warp(Context context, DataObject object, boolean speak, boolean endByAnimation) throws IOException {
         this.object = object;
         this.speak = speak;
+        this.endByAnimation=endByAnimation;
         drawable = new GifDrawable(context.getResources(), FaceType.valueOf(object.getName()).getId());
         drawable.setLoopCount(10);
 
-        if (!speak) {
+        if (endByAnimation) {
             drawable.addAnimationListener(i -> {
-                if (listener != null)
+                if (listener != null && i + 1 == drawable.getLoopCount())
                     listener.end();
 
             });
@@ -76,7 +78,7 @@ public class FaceFragment extends Fragment {
     private void start() {
         imageView.setImageDrawable(drawable);
         drawable.start();
-        if (speak) {
+        if (speak &&!endByAnimation) {
             speaker.setSpeakerListener(() -> {
                 if (listener != null)
                     listener.end();
