@@ -13,8 +13,7 @@ import com.example.hiwin.teacher_version_bob.fragment.*;
 
 import java.io.IOException;
 
-public class ReceiveFragmentHandler extends Handler {
-
+public abstract class ReceiveFragmentHandler extends Handler {
 
     public static final int CODE_RECEIVE = 3;
 
@@ -27,7 +26,8 @@ public class ReceiveFragmentHandler extends Handler {
 
     private final FragmentManager fragmentManager;
     private final Context context;
-    private boolean isOperating = false;
+
+    protected abstract void onComplete();
 
     public ReceiveFragmentHandler(Context context, Looper looper, FragmentManager fragmentManager) {
         super(looper);
@@ -38,9 +38,6 @@ public class ReceiveFragmentHandler extends Handler {
     @Override
     public void handleMessage(Message msg) {
         if (msg.what == CODE_RECEIVE) {
-            synchronized (this) {
-                isOperating = true;
-            }
             receive((DataObject) msg.obj);
         }
 
@@ -48,18 +45,19 @@ public class ReceiveFragmentHandler extends Handler {
     }
 
     private void receive(DataObject object) {
-        Fragment finalFaceFragment = getFaceFragment(object, null, "null", false);
+        Fragment finalFaceFragment = getFinalFaceFragment(object,null,"null");
         Fragment exampleFragment = getExampleFragment(object, finalFaceFragment, "face2");
-        Fragment faceFragment = getFaceFragment(object, exampleFragment, "example", true);
+        Fragment faceFragment = getFaceFragment(object, exampleFragment, "example");
         Fragment objectFragment = getObjectFragment(object, faceFragment, "face");
 
         postFragment(objectFragment, "object");
     }
 
-    private Fragment getFaceFragment(DataObject object, Fragment next, String nextId, boolean speak) {
+
+    private Fragment getFinalFaceFragment(DataObject object, Fragment next, String nextId) {
         final FaceFragment faceFragment = new FaceFragment();
         try {
-            faceFragment.warp(context, object, speak);
+            faceFragment.warp(context, object, false,true);
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -74,11 +72,31 @@ public class ReceiveFragmentHandler extends Handler {
             @Override
             public void end() {
                 super.end();
-                if (!speak)
-                    synchronized (this) {
-                        isOperating = false;
-                    }
+                onComplete();
+            }
+        });
 
+        return faceFragment;
+    }
+
+    private Fragment getFaceFragment(DataObject object, Fragment next, String nextId) {
+        final FaceFragment faceFragment = new FaceFragment();
+        try {
+            faceFragment.warp(context, object, true,false);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        faceFragment.setListener(new FragmentFlowListener(next, nextId) {
+            @Override
+            public void start() {
+                super.start();
+            }
+
+            @Override
+            public void end() {
+                super.end();
             }
         });
 
@@ -107,11 +125,6 @@ public class ReceiveFragmentHandler extends Handler {
         fragmentTransaction.replace(R.id.frame, fragment, id);
         fragmentTransaction.commit();
     }
-
-    public boolean isOperating() {
-        return isOperating;
-    }
-
 
     private class FragmentFlowListener implements FragmentListener {
 
