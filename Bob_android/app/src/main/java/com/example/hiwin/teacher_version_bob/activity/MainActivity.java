@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.*;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
@@ -15,6 +17,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import android.widget.Toast;
 import com.example.hiwin.teacher_version_bob.R;
 import com.example.hiwin.teacher_version_bob.communication.bluetooth.concrete.ReadLineStrategy;
 import com.example.hiwin.teacher_version_bob.communication.bluetooth.framework.SerialListener;
@@ -26,6 +29,8 @@ import com.example.hiwin.teacher_version_bob.data.framework.object.DataObject;
 import com.example.hiwin.teacher_version_bob.data.concrete.object.parser.JSONObjectParser;
 import com.example.hiwin.teacher_version_bob.data.framework.pack.Package;
 
+import com.example.hiwin.teacher_version_bob.fragment.DefaultFragment;
+import com.example.hiwin.teacher_version_bob.fragment.FragmentListener;
 import com.example.hiwin.teacher_version_bob.handler.ReceiveFragmentHandler;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,16 +39,16 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 public class MainActivity extends AppCompatActivity {
-    private boolean isOperating = false;
     private static final String BT_LOG_TAG = "BluetoothInfo";
     private static final String THIS_LOG_TAG = "MainActivity";
+    private boolean isDetecting;
 
     private enum Connected {False, Pending, True}
 
     private Connected connected = Connected.False;
 
 
-    private MenuItem connection;
+    private MenuItem connection, detect;
 
     private Context context;
 
@@ -59,13 +64,19 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
         context = this;
-        handler = new ReceiveFragmentHandler(context, Looper.getMainLooper(), getSupportFragmentManager());
-//        fragmentManager = getSupportFragmentManager();
+        handler = new ReceiveFragmentHandler(context, Looper.getMainLooper(), getSupportFragmentManager()) {
+            @Override
+            protected void onComplete() {
+                detect_pause();
+                showDefault();
+            }
+        };
 
         boolean sus = bindService(new Intent(context, SerialService.class), serviceConnection, Context.BIND_AUTO_CREATE);
         Log.d("BindService", sus + "");
         Intent it = getIntent();
         deviceAddress = it.getStringExtra("address");
+        showDefault();
     }
 
 
@@ -74,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
         // 設置要用哪個menu檔做為選單
         getMenuInflater().inflate(R.menu.menu_main, menu);
         connection = menu.getItem(0);
+        detect=menu.getItem(1);
         setConnectionMenuItem(false);
         return true;
     }
@@ -86,9 +98,31 @@ public class MainActivity extends AppCompatActivity {
                 connect();
             else if (connected == Connected.True)
                 disconnect();
+        }else if(item.getItemId()==R.id.menu_main_detect){
+            if(connected==Connected.True){
+                if(isDetecting) {
+                    detect_pause();
+                    isDetecting=false;
+                }else{
+                    detect_start();
+                    isDetecting=true;
+                }
+            }else {
+                Toast.makeText(this,"Not connected",Toast.LENGTH_LONG).show();
+            }
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void detect_pause() {
+        setDetectMenuItem(false);
+        sendMessage("PAUSE_DETECT");
+    }
+
+    private void detect_start() {
+        setDetectMenuItem(true);
+        sendMessage("START_DETECT");
     }
 
 
@@ -134,6 +168,7 @@ public class MainActivity extends AppCompatActivity {
     private void disconnect() {
         Log.d(THIS_LOG_TAG, "disconnect");
         connected = Connected.False;
+        detect_pause();
         serialService.disconnect();
         setConnectionMenuItem(false);
     }
@@ -148,8 +183,15 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void setDetectMenuItem(boolean isDetecting) {
+        if (isDetecting) {
+            detect.setTitle("Pause");
+        } else {
+            detect.setTitle("Start");
+        }
+    }
+
     private void showObjectAndFace(final DataObject object) {
-        if (handler.isOperating()) return;
         Message msg = new Message();
         msg.what = ReceiveFragmentHandler.CODE_RECEIVE;
         msg.obj = object;
@@ -158,8 +200,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void sendMessage(String msg) {
-//        Package pack = new LinePackage(new Base64Package(msg.getBytes(StandardCharsets.UTF_8), Base64.DEFAULT));
-        Package pack = new LinePackage((msg.getBytes(StandardCharsets.UTF_8)));
+        Package pack = new LinePackage(new Base64Package(msg.getBytes(StandardCharsets.UTF_8), Base64.DEFAULT));
+//        Package pack = new LinePackage((msg.getBytes(StandardCharsets.UTF_8)));
         try {
             serialService.write(pack.getEncoded());
         } catch (IOException e) {
@@ -174,6 +216,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d(BT_LOG_TAG, content);
 
             try {
+                detect_pause();
                 showObjectAndFace((new JSONObjectParser("zh_TW")).parse(new JSONObject(content)));
             } catch (JSONException e) {
                 Log.e(THIS_LOG_TAG, e.getMessage());
@@ -205,6 +248,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d(BT_LOG_TAG, "Bluetooth device connected");
             sendMessage("Hello Package");
             setConnectionMenuItem(true);
+            detect_pause();
         }
 
         @Override
@@ -226,4 +270,23 @@ public class MainActivity extends AppCompatActivity {
             disconnect();
         }
     };
+
+    private void showDefault(){
+        final DefaultFragment fragment=new DefaultFragment();
+        fragment.setListener(new FragmentListener() {
+            @Override
+            public void start() {
+            }
+
+            @Override
+            public void end() {
+                detect_start();
+            }
+        });
+
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.setReorderingAllowed(true);
+        fragmentTransaction.replace(R.id.frame, fragment, "default");
+        fragmentTransaction.commit();
+    }
 }
