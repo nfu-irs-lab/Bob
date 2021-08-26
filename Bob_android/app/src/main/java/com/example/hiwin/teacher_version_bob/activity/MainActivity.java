@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.*;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
@@ -27,6 +29,8 @@ import com.example.hiwin.teacher_version_bob.data.framework.object.DataObject;
 import com.example.hiwin.teacher_version_bob.data.concrete.object.parser.JSONObjectParser;
 import com.example.hiwin.teacher_version_bob.data.framework.pack.Package;
 
+import com.example.hiwin.teacher_version_bob.fragment.DefaultFragment;
+import com.example.hiwin.teacher_version_bob.fragment.FragmentListener;
 import com.example.hiwin.teacher_version_bob.handler.ReceiveFragmentHandler;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -63,15 +67,16 @@ public class MainActivity extends AppCompatActivity {
         handler = new ReceiveFragmentHandler(context, Looper.getMainLooper(), getSupportFragmentManager()) {
             @Override
             protected void onComplete() {
-                detect_start();
+                detect_pause();
+                showDefault();
             }
         };
-//        fragmentManager = getSupportFragmentManager();
 
         boolean sus = bindService(new Intent(context, SerialService.class), serviceConnection, Context.BIND_AUTO_CREATE);
         Log.d("BindService", sus + "");
         Intent it = getIntent();
         deviceAddress = it.getStringExtra("address");
+        showDefault();
     }
 
 
@@ -265,4 +270,23 @@ public class MainActivity extends AppCompatActivity {
             disconnect();
         }
     };
+
+    private void showDefault(){
+        final DefaultFragment fragment=new DefaultFragment();
+        fragment.setListener(new FragmentListener() {
+            @Override
+            public void start() {
+            }
+
+            @Override
+            public void end() {
+                detect_start();
+            }
+        });
+
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.setReorderingAllowed(true);
+        fragmentTransaction.replace(R.id.frame, fragment, "default");
+        fragmentTransaction.commit();
+    }
 }
