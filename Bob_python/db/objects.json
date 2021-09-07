@@ -2,13 +2,13 @@
   {
     "name": "car",
     "group": "transportation",
-    "sentence": "This new car is very beautiful",
+    "sentence": "My new car is broken.",
     "action": "car",
     "languages": [
       {
         "code": "zh_TW",
         "tr_name": "車子",
-        "tr_sentence": "這台新車非常的漂亮。"
+        "tr_sentence": "我的新車壞掉了。"
       }
     ]
   },

@@ -24,7 +24,7 @@ public class FaceFragment extends Fragment {
     private boolean endByAnimation;
 
     public enum FaceType {
-        car(R.raw.face_happy), cake(R.raw.face_happy), knife(R.raw.face_happy),
+        car(R.raw.face_cry), cake(R.raw.face_happy), knife(R.raw.face_happy),
         bowl(R.raw.face_happy), person(R.raw.face_happy), bird(R.raw.face_happy),
         cat(R.raw.face_happy), bottle(R.raw.face_happy);
         private final int id;

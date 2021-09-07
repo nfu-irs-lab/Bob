@@ -1,6 +1,7 @@
 package com.example.hiwin.teacher_version_bob.activity;
 
 import android.annotation.SuppressLint;
+import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.ComponentName;
@@ -280,6 +281,8 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void end() {
+                Vibrator myVibrator = (Vibrator) getApplication().getSystemService(Service.VIBRATOR_SERVICE);
+                myVibrator.vibrate(100);
                 detect_start();
             }
         });
