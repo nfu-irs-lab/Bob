@@ -29,9 +29,17 @@ class RoboticsCommand(Command):
 class RoboticsCommandFactory(CommandFactory):
 
     def create(self, id: int = None, pos: int = None, speed: int = None, sleep_duration: float = None) -> Command:
-        if sleep_duration:
+        if isNotNone(sleep_duration):
             return RoboticsCommand(sleep_duration=sleep_duration)
-        elif id and pos and speed:
+        elif isNotNone(id) & isNotNone(pos) & isNotNone(speed):
             return RoboticsCommand(id=id, pos=pos, speed=speed)
         else:
-            raise Exception
+            raise Exception("format error")
+
+
+def isNone(data):
+    return data is None
+
+
+def isNotNone(data):
+    return data is not None
