@@ -88,17 +88,7 @@ public abstract class ReceiveFragmentHandler extends Handler {
             return null;
         }
 
-        faceFragment.setListener(new FragmentFlowListener(next, nextId) {
-            @Override
-            public void start() {
-                super.start();
-            }
-
-            @Override
-            public void end() {
-                super.end();
-            }
-        });
+        faceFragment.setListener(new FragmentFlowListener(next,nextId));
 
         return faceFragment;
     }
