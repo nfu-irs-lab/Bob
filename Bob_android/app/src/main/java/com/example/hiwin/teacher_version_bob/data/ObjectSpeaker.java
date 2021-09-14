@@ -26,7 +26,7 @@ public class ObjectSpeaker {
             public void onInit(int status) {
                 if (status != TextToSpeech.ERROR) {
                     tts.setLanguage(Locale.US);
-                    tts.setSpeechRate(0.6f);
+                    tts.setSpeechRate(0.3f);
                     isBounded = true;
                 }
             }

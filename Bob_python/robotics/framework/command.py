@@ -6,15 +6,15 @@ class Command(metaclass=abc.ABCMeta):
 
     def __init__(self, id: int = None, pos: int = None, speed: int = None,
                  sleep_duration: float = None):
-        if sleep_duration:
+        if isNotNone(sleep_duration):
             self.sleep_duration = sleep_duration
-        elif id and pos and speed:
+        elif isNotNone(id) & isNotNone(pos) & isNotNone(speed):
             self.id = id
             self.position = pos
             self.speed = speed
             self.sleep_duration = None
         else:
-            raise Exception
+            raise Exception("format error")
 
     @abc.abstractmethod
     def getBytes(self) -> bytes:
@@ -51,3 +51,11 @@ class PrintedCommandFactory(CommandFactory):
             return PrintedCommand(id=id, pos=pos, speed=speed)
         else:
             raise Exception
+
+
+def isNone(data):
+    return data is None
+
+
+def isNotNone(data):
+    return data is not None
