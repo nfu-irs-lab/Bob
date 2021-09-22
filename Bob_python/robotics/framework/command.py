@@ -47,7 +47,8 @@ class PrintedCommandFactory(CommandFactory):
     def create(self, id: int = None, pos: int = None, speed: int = None, sleep_duration: float = None) -> Command:
         if sleep_duration:
             return PrintedCommand(sleep_duration=sleep_duration)
-        elif id and pos and speed:
+
+        elif isNotNone(id) & isNotNone(pos) & isNotNone(speed):
             return PrintedCommand(id=id, pos=pos, speed=speed)
         else:
             raise Exception

@@ -133,7 +133,6 @@ def pushActionToRobot(action: Action):
     if robot.isOpen():
         try:
             robot.doAction(action)
-            robot.doAction(getActionFromName("reset", separator))
         except SerialTimeoutException:
             print("robot serial timeout")
         robot_done = True
