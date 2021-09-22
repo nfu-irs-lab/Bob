@@ -29,11 +29,8 @@ import com.example.hiwin.teacher_version_bob.data.concrete.pack.LinePackage;
 import com.example.hiwin.teacher_version_bob.data.framework.object.DataObject;
 import com.example.hiwin.teacher_version_bob.data.framework.pack.Package;
 import com.example.hiwin.teacher_version_bob.fragment.DefaultFragment;
-import com.example.hiwin.teacher_version_bob.fragment.FaceFragment;
 import com.example.hiwin.teacher_version_bob.fragment.FragmentListener;
-import com.example.hiwin.teacher_version_bob.handler.ReceiveFragmentHandler;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.example.hiwin.teacher_version_bob.fragment.NoSpeakFaceFragment;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -204,9 +201,22 @@ public class FaceDetectActivity extends AppCompatActivity {
             Log.d(BT_LOG_TAG, "received string:");
             Log.d(BT_LOG_TAG, content);
 
-            FaceFragment faceFragment=new FaceFragment();
+            NoSpeakFaceFragment faceFragment=new NoSpeakFaceFragment();
+            faceFragment.setListener(new FragmentListener() {
+                @Override
+                public void start() {
+
+                }
+
+                @Override
+                public void end() {
+                    showDefault();
+                }
+            });
+            faceFragment.warp(this, NoSpeakFaceFragment.Face.valueOf(content));
+            postFragment(faceFragment,"face");
             detect_pause();
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | IOException e) {
             Log.d(BT_LOG_TAG, "base64 decode error:");
             Log.d(BT_LOG_TAG, e.getMessage());
         }
