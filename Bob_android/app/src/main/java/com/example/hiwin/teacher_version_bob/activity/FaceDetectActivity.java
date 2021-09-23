@@ -23,14 +23,12 @@ import com.example.hiwin.teacher_version_bob.communication.bluetooth.concrete.Re
 import com.example.hiwin.teacher_version_bob.communication.bluetooth.concrete.SerialSocket;
 import com.example.hiwin.teacher_version_bob.communication.bluetooth.framework.SerialListener;
 import com.example.hiwin.teacher_version_bob.communication.service.SerialService;
-import com.example.hiwin.teacher_version_bob.data.concrete.object.parser.JSONObjectParser;
 import com.example.hiwin.teacher_version_bob.data.concrete.pack.Base64Package;
 import com.example.hiwin.teacher_version_bob.data.concrete.pack.LinePackage;
-import com.example.hiwin.teacher_version_bob.data.framework.object.DataObject;
 import com.example.hiwin.teacher_version_bob.data.framework.pack.Package;
 import com.example.hiwin.teacher_version_bob.fragment.DefaultFragment;
 import com.example.hiwin.teacher_version_bob.fragment.FragmentListener;
-import com.example.hiwin.teacher_version_bob.fragment.NoSpeakFaceFragment;
+import com.example.hiwin.teacher_version_bob.fragment.FaceFragment;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -201,7 +199,7 @@ public class FaceDetectActivity extends AppCompatActivity {
             Log.d(BT_LOG_TAG, "received string:");
             Log.d(BT_LOG_TAG, content);
 
-            NoSpeakFaceFragment faceFragment=new NoSpeakFaceFragment();
+            FaceFragment faceFragment=new FaceFragment();
             faceFragment.setListener(new FragmentListener() {
                 @Override
                 public void start() {
@@ -213,7 +211,7 @@ public class FaceDetectActivity extends AppCompatActivity {
                     showDefault();
                 }
             });
-            faceFragment.warp(this, NoSpeakFaceFragment.Face.valueOf(content));
+            faceFragment.warp(this, FaceFragment.Face.valueOf(content),5,true);
             postFragment(faceFragment,"face");
             detect_pause();
         } catch (IllegalArgumentException | IOException e) {

@@ -47,8 +47,8 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
         BluetoothDevice selected_device = (BluetoothDevice) parent.getItemAtPosition(position);
         Toast.makeText(BluetoothConnectionActivity.this, selected_device.getName(), Toast.LENGTH_SHORT).show();
 
-//        Intent it = new Intent(BluetoothConnectionActivity.this, MainActivity.class);
-        Intent it = new Intent(BluetoothConnectionActivity.this, FaceDetectActivity.class);
+        Intent it = new Intent(BluetoothConnectionActivity.this, MainActivity.class);
+//        Intent it = new Intent(BluetoothConnectionActivity.this, FaceDetectActivity.class);
         it.putExtra("address", selected_device.getAddress());
         startActivity(it);
     };
