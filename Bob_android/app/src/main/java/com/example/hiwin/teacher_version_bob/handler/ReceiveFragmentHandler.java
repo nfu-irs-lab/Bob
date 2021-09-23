@@ -54,15 +54,20 @@ public abstract class ReceiveFragmentHandler extends Handler {
         Fragment exampleFragment = getExampleFragment(object, finalFaceFragment, "face2");
         Fragment faceFragment = getFaceFragment(object, exampleFragment, "example");
         Fragment objectFragment = getObjectFragment(object, faceFragment, "face");
-
         postFragment(objectFragment, "object");
     }
 
 
     private Fragment getFinalFaceFragment(FaceFragment.Face face, Fragment next, String nextId) throws IOException {
         FaceFragment faceFragment = new FaceFragment();
-        faceFragment.warp(context, face, 5, false);
-        faceFragment.setListener(new FragmentFlowListener(next, nextId));
+        faceFragment.warp(context, face, 2, true);
+        faceFragment.setListener(new FragmentFlowListener(next, nextId){
+            @Override
+            public void end() {
+                super.end();
+                onComplete();
+            }
+        });
         return faceFragment;
     }
 
