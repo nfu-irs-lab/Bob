@@ -212,6 +212,7 @@ public class FaceDetectActivity extends AppCompatActivity {
                 }
             });
             faceFragment.warp(this, FaceFragment.Face.valueOf(content),5,true);
+            setTitle(content);
             postFragment(faceFragment,"face");
             detect_pause();
         } catch (IllegalArgumentException | IOException e) {
