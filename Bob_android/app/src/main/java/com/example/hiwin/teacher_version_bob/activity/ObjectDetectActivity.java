@@ -39,7 +39,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-public class MainActivity extends AppCompatActivity {
+public class ObjectDetectActivity extends AppCompatActivity {
     private static final String BT_LOG_TAG = "BluetoothInfo";
     private static final String THIS_LOG_TAG = "MainActivity";
     private boolean isDetecting;

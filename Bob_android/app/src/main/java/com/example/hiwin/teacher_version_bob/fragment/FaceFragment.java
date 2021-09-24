@@ -18,7 +18,7 @@ public class FaceFragment extends Fragment {
     private boolean endByAnimation;
 
     public enum Face {
-        sad(R.raw.face_cry), happy(R.raw.face_happy);
+        sad(R.raw.face_cry), happy(R.raw.face_happy),love_eyes(R.raw.face_love_eyes),surprise(R.raw.face_surprise);
         private final int id;
 
         Face(int id) {

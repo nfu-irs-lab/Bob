@@ -143,15 +143,16 @@ public abstract class ReceiveFragmentHandler extends Handler {
         String name = object.getName();
         switch (name) {
             case "car":
+            case "knife":
                 return FaceFragment.Face.sad;
             case "cake":
-            case "knife":
-            case "bowl":
             case "person":
             case "bird":
+                return FaceFragment.Face.happy;
+            case "bowl":
             case "cat":
             case "bottle":
-                return FaceFragment.Face.happy;
+                return FaceFragment.Face.love_eyes;
             default:
                 throw new RuntimeException("unknown face.");
         }
