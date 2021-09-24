@@ -1,7 +1,7 @@
 """Run inference with a YOLOv5 model on images, videos, directories, streams
 
 Usage:
-    $ python path/to/main.py --source path/to/img.jpg --weights yolov5s.pt --img 640
+    $ python path/to/object.py --source path/to/img.jpg --weights yolov5s.pt --img 640
 """
 
 import argparse

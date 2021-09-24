@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import com.example.hiwin.teacher_version_bob.R;
+import com.example.hiwin.teacher_version_bob.data.ObjectSpeaker;
 import com.example.hiwin.teacher_version_bob.data.framework.object.DataObject;
 import com.example.hiwin.teacher_version_bob.fragment.*;
 
@@ -37,58 +38,58 @@ public abstract class ReceiveFragmentHandler extends Handler {
 
     @Override
     public void handleMessage(Message msg) {
-        if (msg.what == CODE_RECEIVE) {
-            receive((DataObject) msg.obj);
+        try {
+            if (msg.what == CODE_RECEIVE) {
+                receive((DataObject) msg.obj);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
 
         super.handleMessage(msg);
     }
 
-    private void receive(DataObject object) {
-        Fragment finalFaceFragment = getFinalFaceFragment(object,null,"null");
+    private void receive(DataObject object) throws Exception {
+        Fragment finalFaceFragment = getFinalFaceFragment(getFace(object), null, "null");
         Fragment exampleFragment = getExampleFragment(object, finalFaceFragment, "face2");
         Fragment faceFragment = getFaceFragment(object, exampleFragment, "example");
         Fragment objectFragment = getObjectFragment(object, faceFragment, "face");
-
         postFragment(objectFragment, "object");
     }
 
 
-    private Fragment getFinalFaceFragment(DataObject object, Fragment next, String nextId) {
-        final FaceFragment faceFragment = new FaceFragment();
-        try {
-            faceFragment.warp(context, object, false,true);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-
-        faceFragment.setListener(new FragmentFlowListener(next, nextId) {
-            @Override
-            public void start() {
-                super.start();
-            }
-
+    private Fragment getFinalFaceFragment(FaceFragment.Face face, Fragment next, String nextId) throws IOException {
+        FaceFragment faceFragment = new FaceFragment();
+        faceFragment.warp(context, face, 2, true);
+        faceFragment.setListener(new FragmentFlowListener(next, nextId){
             @Override
             public void end() {
                 super.end();
                 onComplete();
             }
         });
-
         return faceFragment;
     }
 
-    private Fragment getFaceFragment(DataObject object, Fragment next, String nextId) {
-        final FaceFragment faceFragment = new FaceFragment();
-        try {
-            faceFragment.warp(context, object, true,false);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+    private Fragment getFaceFragment(DataObject object, Fragment next, String nextId) throws IOException {
 
-        faceFragment.setListener(new FragmentFlowListener(next,nextId));
+        ObjectSpeaker speaker = new ObjectSpeaker(context);
+        FaceFragment faceFragment = new FaceFragment();
+        faceFragment.warp(context, getFace(object), 5, false);
+
+        faceFragment.setListener(new FragmentFlowListener(next, nextId) {
+            @Override
+            public void start() {
+                super.start();
+                speaker.setSpeakerListener(this::end);
+                speaker.speakFully(object);
+            }
+
+            @Override
+            public void end() {
+                super.end();
+            }
+        });
 
         return faceFragment;
     }
@@ -135,6 +136,24 @@ public abstract class ReceiveFragmentHandler extends Handler {
         public void end() {
             if (next != null)
                 post(() -> postFragment(next, nextId));
+        }
+    }
+
+    private FaceFragment.Face getFace(DataObject object) {
+        String name = object.getName();
+        switch (name) {
+            case "car":
+                return FaceFragment.Face.sad;
+            case "cake":
+            case "knife":
+            case "bowl":
+            case "person":
+            case "bird":
+            case "cat":
+            case "bottle":
+                return FaceFragment.Face.happy;
+            default:
+                throw new RuntimeException("unknown face.");
         }
     }
 }
