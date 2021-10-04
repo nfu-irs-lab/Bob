@@ -16,3 +16,7 @@ class BluetoothDevice(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def close(self):
         pass
+
+    @abc.abstractmethod
+    def isOpen(self):
+        pass

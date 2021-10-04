@@ -7,6 +7,7 @@ from robotics.framework.command import Command
 
 
 class Robot(metaclass=abc.ABCMeta):
+
     def __init__(self):
         pass
 
@@ -16,6 +17,10 @@ class Robot(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def close(self):
+        pass
+
+    @abc.abstractmethod
+    def isOpen(self):
         pass
 
     def doAction(self, action: Action):
