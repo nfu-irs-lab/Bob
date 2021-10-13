@@ -6,12 +6,12 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 import com.example.hiwin.teacher_version_bob.DeviceAdapter;
 import com.example.hiwin.teacher_version_bob.R;
+import com.example.hiwin.teacher_version_bob.fragment.ModeDialogFragment;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -47,8 +47,22 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
         BluetoothDevice selected_device = (BluetoothDevice) parent.getItemAtPosition(position);
         Toast.makeText(BluetoothConnectionActivity.this, selected_device.getName(), Toast.LENGTH_SHORT).show();
 
-        Intent it = new Intent(BluetoothConnectionActivity.this, MainActivity.class);
-        it.putExtra("address", selected_device.getAddress());
-        startActivity(it);
+        ModeDialogFragment newFragment = new ModeDialogFragment();
+        newFragment.setListener(new ModeDialogFragment.OptionListener() {
+            @Override
+            public void select(ModeDialogFragment.Mode mode) {
+                Intent it=null;
+                if (mode == ModeDialogFragment.Mode.face_detect)
+                    it = new Intent(BluetoothConnectionActivity.this, FaceDetectActivity.class);
+                else if (mode == ModeDialogFragment.Mode.object_detect)
+                    it = new Intent(BluetoothConnectionActivity.this, ObjectDetectActivity.class);
+                else
+                    throw new RuntimeException("unknown mode.");
+                it.putExtra("address", selected_device.getAddress());
+                startActivity(it);
+
+            }
+        });
+        newFragment.show(getSupportFragmentManager(), "missiles");
     };
 }

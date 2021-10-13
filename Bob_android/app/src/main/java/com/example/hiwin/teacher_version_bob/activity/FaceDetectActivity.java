@@ -17,31 +17,25 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-
 import android.widget.Toast;
 import com.example.hiwin.teacher_version_bob.R;
 import com.example.hiwin.teacher_version_bob.communication.bluetooth.concrete.ReadLineStrategy;
+import com.example.hiwin.teacher_version_bob.communication.bluetooth.concrete.SerialSocket;
 import com.example.hiwin.teacher_version_bob.communication.bluetooth.framework.SerialListener;
 import com.example.hiwin.teacher_version_bob.communication.service.SerialService;
-import com.example.hiwin.teacher_version_bob.communication.bluetooth.concrete.SerialSocket;
 import com.example.hiwin.teacher_version_bob.data.concrete.pack.Base64Package;
 import com.example.hiwin.teacher_version_bob.data.concrete.pack.LinePackage;
-import com.example.hiwin.teacher_version_bob.data.framework.object.DataObject;
-import com.example.hiwin.teacher_version_bob.data.concrete.object.parser.JSONObjectParser;
 import com.example.hiwin.teacher_version_bob.data.framework.pack.Package;
-
 import com.example.hiwin.teacher_version_bob.fragment.DefaultFragment;
 import com.example.hiwin.teacher_version_bob.fragment.FragmentListener;
-import com.example.hiwin.teacher_version_bob.handler.ReceiveFragmentHandler;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.example.hiwin.teacher_version_bob.fragment.FaceFragment;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-public class MainActivity extends AppCompatActivity {
+public class FaceDetectActivity extends AppCompatActivity {
     private static final String BT_LOG_TAG = "BluetoothInfo";
-    private static final String THIS_LOG_TAG = "MainActivity";
+    private static final String THIS_LOG_TAG = "FaceDetectActivity";
     private boolean isDetecting;
 
     private enum Connected {False, Pending, True}
@@ -56,23 +50,13 @@ public class MainActivity extends AppCompatActivity {
     private String deviceAddress;
     private SerialService serialService;
 
-    private ReceiveFragmentHandler handler;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        setContentView(R.layout.activity_face_detect);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.face_detect_toolbar);
         setSupportActionBar(toolbar);
         context = this;
-        handler = new ReceiveFragmentHandler(context, Looper.getMainLooper(), getSupportFragmentManager()) {
-            @Override
-            protected void onComplete() {
-                detect_pause();
-                showDefault();
-            }
-        };
-
         boolean sus = bindService(new Intent(context, SerialService.class), serviceConnection, Context.BIND_AUTO_CREATE);
         Log.d("BindService", sus + "");
         Intent it = getIntent();
@@ -84,9 +68,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // 設置要用哪個menu檔做為選單
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_face_detect, menu);
         connection = menu.getItem(0);
-        detect=menu.getItem(1);
+        detect = menu.getItem(1);
         setConnectionMenuItem(false);
         return true;
     }
@@ -94,22 +78,22 @@ public class MainActivity extends AppCompatActivity {
     @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.menu_main_connection) {
+        if (item.getItemId() == R.id.menu_face_detect_connection) {
             if (connected == Connected.False)
                 connect();
             else if (connected == Connected.True)
                 disconnect();
-        }else if(item.getItemId()==R.id.menu_main_detect){
-            if(connected==Connected.True){
-                if(isDetecting) {
+        } else if (item.getItemId() == R.id.menu_face_detect_detect) {
+            if (connected == Connected.True) {
+                if (isDetecting) {
                     detect_pause();
-                    isDetecting=false;
-                }else{
+                    isDetecting = false;
+                } else {
                     detect_start();
-                    isDetecting=true;
+                    isDetecting = true;
                 }
-            }else {
-                Toast.makeText(this,"Not connected",Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(this, "Not connected", Toast.LENGTH_LONG).show();
             }
         }
 
@@ -192,14 +176,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void showObjectAndFace(final DataObject object) {
-        Message msg = new Message();
-        msg.what = ReceiveFragmentHandler.CODE_RECEIVE;
-        msg.obj = object;
-        handler.sendMessage(msg);
-
-    }
-
     private void sendMessage(String msg) {
         Package pack = new LinePackage(new Base64Package(msg.getBytes(StandardCharsets.UTF_8), Base64.DEFAULT));
 //        Package pack = new LinePackage((msg.getBytes(StandardCharsets.UTF_8)));
@@ -210,19 +186,36 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void postFragment(Fragment fragment, String id) {
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.setReorderingAllowed(true);
+        fragmentTransaction.replace(R.id.face_detect_frame, fragment, id);
+        fragmentTransaction.commit();
+    }
+
     private void receive(byte[] data) {
         try {
             String content = new String(new Base64Package(data, Base64.DEFAULT).getDecoded(), StandardCharsets.UTF_8);
             Log.d(BT_LOG_TAG, "received string:");
             Log.d(BT_LOG_TAG, content);
 
-            try {
-                detect_pause();
-                showObjectAndFace((new JSONObjectParser("zh_TW")).parse(new JSONObject(content)));
-            } catch (JSONException e) {
-                Log.e(THIS_LOG_TAG, e.getMessage());
-            }
-        } catch (IllegalArgumentException e) {
+            FaceFragment faceFragment=new FaceFragment();
+            faceFragment.setListener(new FragmentListener() {
+                @Override
+                public void start() {
+
+                }
+
+                @Override
+                public void end() {
+                    showDefault();
+                }
+            });
+            faceFragment.warp(this, FaceFragment.Face.valueOf(content),5,true);
+            setTitle(content);
+            postFragment(faceFragment,"face");
+            detect_pause();
+        } catch (IllegalArgumentException | IOException e) {
             Log.d(BT_LOG_TAG, "base64 decode error:");
             Log.d(BT_LOG_TAG, e.getMessage());
         }
@@ -249,7 +242,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d(BT_LOG_TAG, "Bluetooth device connected");
             sendMessage("Hello Package");
             setConnectionMenuItem(true);
-            detect_pause();
+//            detect_pause();
         }
 
         @Override
@@ -272,8 +265,8 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private void showDefault(){
-        final DefaultFragment fragment=new DefaultFragment();
+    private void showDefault() {
+        final DefaultFragment fragment = new DefaultFragment();
         fragment.setListener(new FragmentListener() {
             @Override
             public void start() {
@@ -289,7 +282,7 @@ public class MainActivity extends AppCompatActivity {
 
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.setReorderingAllowed(true);
-        fragmentTransaction.replace(R.id.frame, fragment, "default");
+        fragmentTransaction.replace(R.id.face_detect_frame, fragment, "default");
         fragmentTransaction.commit();
     }
 }

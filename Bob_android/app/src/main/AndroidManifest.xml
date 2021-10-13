@@ -24,7 +24,7 @@
 <!--            </intent-filter>-->
         </activity>
 
-        <activity android:name=".activity.MainActivity">
+        <activity android:name=".activity.ObjectDetectActivity">
         </activity>
         <activity android:name=".activity.BluetoothConnectionActivity">
              <intent-filter>
@@ -35,7 +35,10 @@
              </intent-filter>
         </activity>
 
+        <activity android:name=".activity.FaceDetectActivity"/>
+
         <service android:name=".communication.service.SerialService"/>
+
     </application>
 
 </manifest>
