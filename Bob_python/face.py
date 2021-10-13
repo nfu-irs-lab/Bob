@@ -1,4 +1,5 @@
 import base64
+import os
 import platform
 import re
 import time
@@ -16,8 +17,7 @@ from robotics.concrete.command import RoboticsCommandFactory
 from robotics.concrete.robot import RoboticsRobot
 from robotics.framework.action import CSVAction, Action
 from serial.tools.list_ports_linux import comports
-
-detect = False
+from serial_utils import getRobot, getBluetooth
 
 
 class RobotSerialListener(SerialListener):
@@ -34,64 +34,9 @@ class RobotSerialListener(SerialListener):
             detect = False
 
 
-def getBluetoothCom(default_bt_com: str):
-    comList = comports()
-    for port in comList:
-        if re.search(".*CP2102.*", port.description):
-            return port.device
-
-    return default_bt_com
-
-
-def getRobotCom(default_robot_com: str):
-    comList = comports()
-    for port in comList:
-        if re.search(".*FT232R.*", port.description):
-            return port.device
-
-    return default_robot_com
-
-
-def getActionFromName(name: str, file_separator: str) -> Action:
-    return CSVAction(f'actions{file_separator}{name}.csv', RoboticsCommandFactory())
-
-
-print("System:", platform.system())
-bt_default = ""
-robot_default = ""
-separator = ""
-if platform.system() == "Windows":
-    separator = "\\"
-    bt_default = "COM3"
-    robot_default = "COM1"
-elif platform.system() == "Linux":
-    separator = "/"
-    bt_default = "/dev/ttyUSB0"
-    robot_default = "/dev/ttyUSB1"
-
-db_location = f"db{separator}objects.json"
-db_charset = 'UTF-8'
-
-db = JSONDatabase(open(db_location, encoding=db_charset))
-
-try:
-    bt = SerialBluetoothDevice(getBluetoothCom(bt_default), RobotSerialListener())
-    if not bt.isOpen():
-        bt.open()
-except SerialException as e:
-    print(e)
-    exit(1)
-
-try:
-    robot = RoboticsRobot(getRobotCom(robot_default))
-    if not robot.isOpen():
-        robot.open()
-
-    robot.doAction(getActionFromName("reset", separator))
-except SerialException as e:
-    print(e)
-    exit(2)
-
+robot = getRobot()
+bt = getBluetooth(RobotSerialListener())
+detect = True
 robot_done = True
 bt_done = True
 
@@ -117,12 +62,15 @@ def pushDataToBluetooth(package: Package):
 
 
 faceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+cap = cv2.VideoCapture(0)
 
 while True:
     while not detect:
         time.sleep(1)
+
     ret, frame = cap.read()
+    cv2.imshow('raw', frame)
+
     try:
         result = DeepFace.analyze(frame, actions=['emotion'])
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -135,13 +83,15 @@ while True:
         font = cv2.FONT_HERSHEY_SIMPLEX
 
         cv2.putText(frame, result['dominant_emotion'], (50, 50), font, 3, (0, 0, 255), 2, cv2.LINE_4)
+
+        cv2.imshow('result', frame)
+
         print("now face emotion: " + result['dominant_emotion'])
         pushDataToBluetooth(Base64LinePackage(StringPackage(result['dominant_emotion'], 'UTF-8')))
     except Exception as e:
         pass
-    cv2.imshow('title', frame)
-
     if cv2.waitKey(2) & 0xFF == ord('q'):
         break
+
 cap.release()
 cv2.destroyWindow()
