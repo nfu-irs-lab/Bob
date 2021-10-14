@@ -66,17 +66,15 @@ public class ObjectSpeaker {
             }
 
             if (!tts.isSpeaking()) {
-                setLanguage(Locale.US);
-                addTextToQueue(object.getName());
-                addDelayToQueue(100);
-                addTextToQueue(object.getName());
-                addDelayToQueue(100);
-                addTextToQueue(object.getName());
-                addDelayToQueue(600);
-                spellVocabulary(object.getName());
-
-                setLanguage(Locale.TAIWAN);
-                addTextToQueue(object.getTranslatedName());
+                for (int i = 0; i < 2; i++) {
+                    setLanguage(Locale.US);
+                    addTextToQueue(object.getName());
+                    addDelayToQueue(600);
+                    spellVocabulary(object.getName());
+                    setLanguage(Locale.TAIWAN);
+                    addTextToQueue(object.getTranslatedName());
+                    addDelayToQueue(600);
+                }
 
                 setLanguage(Locale.US);
                 addTextToQueue(object.getSentence());
