@@ -7,6 +7,7 @@ Usage:
 import argparse
 import base64
 import json
+import os
 import platform
 import re
 import sys
@@ -19,17 +20,12 @@ import cv2
 import torch
 import torch.backends.cudnn as cudnn
 from serial import SerialTimeoutException, SerialException
-from serial.tools.list_ports_linux import comports
-
-from bluetooth.concrete.device import SerialBluetoothDevice
-from bluetooth.concrete.monitor import PrintedSerialListener
 from bluetooth.concrete.package import StringPackage, Base64LinePackage
 from bluetooth.framework.monitor import SerialListener
 from bluetooth.framework.package import Package
 from dbctrl.concrete import queryJsonFromName
 from dbctrl.concrete.database import JSONDatabase
 from robotics.concrete.command import RoboticsCommandFactory
-from robotics.concrete.robot import RoboticsRobot
 from robotics.framework.action import Action, CSVAction
 
 FILE = Path(__file__).absolute()
@@ -41,15 +37,13 @@ from utils.general import check_img_size, check_requirements, check_imshow, colo
     apply_classifier, scale_coords, xyxy2xywh, strip_optimizer, set_logging, increment_path, save_one_box
 from utils.plots import colors, plot_one_box
 from utils.torch_utils import select_device, load_classifier, time_sync
+from serial_utils import getRobot, getBluetooth
 
 
 class DetectedObject:
     def __init__(self, name: str, number: int):
         self.name = name
         self.number = number
-
-
-detect = False
 
 
 class RobotSerialListener(SerialListener):
@@ -66,66 +60,18 @@ class RobotSerialListener(SerialListener):
             detect = False
 
 
-def getBluetoothCom(default_bt_com: str):
-    comList = comports()
-    for port in comList:
-        if re.search(".*CP2102.*", port.description):
-            return port.device
-
-    return default_bt_com
-
-
-def getRobotCom(default_robot_com: str):
-    comList = comports()
-    for port in comList:
-        if re.search(".*FT232R.*", port.description):
-            return port.device
-
-    return default_robot_com
-
-
-def getActionFromName(name: str, file_separator: str) -> Action:
-    return CSVAction(f'actions{file_separator}{name}.csv', RoboticsCommandFactory())
-
-
-print("System:", platform.system())
-bt_default = ""
-robot_default = ""
-separator = ""
-if platform.system() == "Windows":
-    separator = "\\"
-    bt_default = "COM3"
-    robot_default = "COM1"
-elif platform.system() == "Linux":
-    separator = "/"
-    bt_default = "/dev/ttyUSB0"
-    robot_default = "/dev/ttyUSB1"
-
-db_location = f"db{separator}objects.json"
+db_location = f"db{os.path.sep}objects.json"
 db_charset = 'UTF-8'
-
 db = JSONDatabase(open(db_location, encoding=db_charset))
-
-try:
-    bt = SerialBluetoothDevice(getBluetoothCom(bt_default), RobotSerialListener())
-    if not bt.isOpen():
-        bt.open()
-except SerialException as e:
-    print(e)
-    exit(1)
-
-try:
-    robot = RoboticsRobot(getRobotCom(robot_default))
-    if not robot.isOpen():
-        robot.open()
-
-    robot.doAction(getActionFromName("reset", separator))
-except SerialException as e:
-    print(e)
-    exit(2)
-
 robot_done = True
 bt_done = True
+robot = getRobot()
+bt = getBluetooth(RobotSerialListener())
+detect = False
+
+
+def getActionFromName(name: str) -> Action:
+    return CSVAction(f'actions{os.path.sep}{name}.csv', RoboticsCommandFactory())
 
 
 def pushActionToRobot(action: Action):
@@ -133,6 +79,7 @@ def pushActionToRobot(action: Action):
     if robot.isOpen():
         try:
             robot.doAction(action)
+            robot.doAction(getActionFromName("reset"))
         except SerialTimeoutException:
             print("robot serial timeout")
         robot_done = True
@@ -167,7 +114,7 @@ def onDetected(objectList: List[DetectedObject]):
             bt_thread = threading.Thread(target=pushDataToBluetooth,
                                          args=(Base64LinePackage(StringPackage(jsonString, "UTF-8")),))
             bt_thread.start()
-            robot_thread = threading.Thread(target=pushActionToRobot, args=(getActionFromName(obj.action, separator),))
+            robot_thread = threading.Thread(target=pushActionToRobot, args=(getActionFromName(obj.action),))
             robot_thread.start()
 
             break
