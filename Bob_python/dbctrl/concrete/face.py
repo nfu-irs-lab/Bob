@@ -11,12 +11,10 @@ class Language:
         self.code = code
 
 
-class Object(Data):
-    def __init__(self, name: str, group: str, sentence: str, action: str, languages: List[Language]):
+class Face(Data):
+    def __init__(self, name: str, sentence: str, languages: List[Language]):
         self.languages = languages
-        self.action = action
         self.sentence = sentence
-        self.group = group
         self.name = name
 
     def getSpecifyLanguage(self, code: str) -> Language:
@@ -30,13 +28,13 @@ class Object(Data):
         return self.name
 
 
-class JSONObjectParser(DataParser):
+class JSONFaceParser(DataParser):
 
     def __init__(self):
         super().__init__()
 
-    def parse(self, content: TextIO) -> List[Object]:
-        objectList: List[Object] = []
+    def parse(self, content: TextIO) -> List[Face]:
+        objectList: List[Face] = []
         json_array = json.load(content)
 
         for json_object in json_array:
@@ -46,6 +44,6 @@ class JSONObjectParser(DataParser):
                 languages.append(Language(lan['code'], lan['tr_name'], lan['tr_sentence']))
 
             objectList.append(
-                Object(json_object['name'], json_object['group'], json_object['sentence'], json_object['action'],
-                       languages))
+                Face(json_object['name'], json_object['sentence'],
+                     languages))
         return objectList

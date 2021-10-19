@@ -12,7 +12,7 @@ from bluetooth.concrete.device import SerialBluetoothDevice
 from bluetooth.concrete.package import Base64LinePackage, StringPackage
 from bluetooth.framework.monitor import SerialListener
 from bluetooth.framework.package import Package
-from dbctrl.concrete.database import JSONDatabase
+from dbctrl.concrete.database import FileDatabase
 from robotics.concrete.command import RoboticsCommandFactory
 from robotics.concrete.robot import RoboticsRobot
 from robotics.framework.action import CSVAction, Action

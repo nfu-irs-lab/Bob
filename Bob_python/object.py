@@ -14,7 +14,7 @@ import sys
 import threading
 import time
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
 import cv2
 import torch
@@ -24,7 +24,8 @@ from bluetooth.concrete.package import StringPackage, Base64LinePackage
 from bluetooth.framework.monitor import SerialListener
 from bluetooth.framework.package import Package
 from dbctrl.concrete import queryJsonFromName
-from dbctrl.concrete.database import JSONDatabase
+from dbctrl.concrete.database import FileDatabase
+from dbctrl.concrete.object import JSONObjectParser, Object
 from robotics.concrete.command import RoboticsCommandFactory
 from robotics.framework.action import Action, CSVAction
 
@@ -62,7 +63,7 @@ class RobotSerialListener(SerialListener):
 
 db_location = f"db{os.path.sep}objects.json"
 db_charset = 'UTF-8'
-db = JSONDatabase(open(db_location, encoding=db_charset))
+db = FileDatabase(open(db_location, encoding=db_charset), JSONObjectParser())
 robot_done = True
 bt_done = True
 robot = getRobot()
@@ -103,7 +104,7 @@ def onDetected(objectList: List[DetectedObject]):
         return
 
     for dobj in objectList:
-        obj = db.queryForName(dobj.name)
+        obj: Optional[Object] = db.queryForId(dobj.name)
         if obj is not None:
             js = queryJsonFromName(obj.name, open(db_location, encoding=db_charset))
             jsonString = json.dumps(js, ensure_ascii=False)
