@@ -23,12 +23,17 @@ import com.example.hiwin.teacher_version_bob.communication.bluetooth.concrete.Re
 import com.example.hiwin.teacher_version_bob.communication.bluetooth.concrete.SerialSocket;
 import com.example.hiwin.teacher_version_bob.communication.bluetooth.framework.SerialListener;
 import com.example.hiwin.teacher_version_bob.communication.service.SerialService;
+import com.example.hiwin.teacher_version_bob.data.FaceSpeaker;
+import com.example.hiwin.teacher_version_bob.data.concrete.face.parser.JSONFaceParser;
 import com.example.hiwin.teacher_version_bob.data.concrete.pack.Base64Package;
 import com.example.hiwin.teacher_version_bob.data.concrete.pack.LinePackage;
+import com.example.hiwin.teacher_version_bob.data.framework.face.DataFace;
 import com.example.hiwin.teacher_version_bob.data.framework.pack.Package;
 import com.example.hiwin.teacher_version_bob.fragment.DefaultFragment;
 import com.example.hiwin.teacher_version_bob.fragment.FragmentListener;
 import com.example.hiwin.teacher_version_bob.fragment.FaceFragment;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -37,6 +42,7 @@ public class FaceDetectActivity extends AppCompatActivity {
     private static final String BT_LOG_TAG = "BluetoothInfo";
     private static final String THIS_LOG_TAG = "FaceDetectActivity";
     private boolean isDetecting;
+    private FaceSpeaker speaker;
 
     private enum Connected {False, Pending, True}
 
@@ -67,6 +73,7 @@ public class FaceDetectActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        speaker=new FaceSpeaker(this);
         // 設置要用哪個menu檔做為選單
         getMenuInflater().inflate(R.menu.menu_face_detect, menu);
         connection = menu.getItem(0);
@@ -211,11 +218,13 @@ public class FaceDetectActivity extends AppCompatActivity {
                     showDefault();
                 }
             });
-            faceFragment.warp(this, FaceFragment.Face.valueOf(content),5,true);
-            setTitle(content);
+            DataFace face =new JSONFaceParser("zh_TW").parse(new JSONObject(content));
+            faceFragment.warp(this, FaceFragment.Face.valueOf(face.getName()),5,true);
+            speaker.speakFully(face);
+//            setTitle(content);
             postFragment(faceFragment,"face");
             detect_pause();
-        } catch (IllegalArgumentException | IOException e) {
+        } catch (IllegalArgumentException | IOException | JSONException e) {
             Log.d(BT_LOG_TAG, "base64 decode error:");
             Log.d(BT_LOG_TAG, e.getMessage());
         }

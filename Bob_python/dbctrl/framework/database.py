@@ -1,19 +1,14 @@
 import abc
-from typing import Optional, List
+from typing import Optional
+from dbctrl.framework.data import Data
 
-from dbctrl.framework.object import Object
 
-
-class ObjectDatabase(metaclass=abc.ABCMeta):
-
-    def __init__(self):
-        pass
+class Database(abc.ABC):
 
     @abc.abstractmethod
-    def queryForName(self, name: str) -> Optional[Object]:
+    def queryForId(self, name: str) -> Optional[Data]:
         pass
 
-    @abc.abstractmethod
-    def queryForGroup(self, group: str) -> List[Object]:
-        pass
-
+    # @abc.abstractmethod
+    # def queryForGroup(self, group: str) -> List[Data]:
+    #     pass
