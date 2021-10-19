@@ -66,6 +66,8 @@ public class ObjectSpeaker {
             }
 
             if (!tts.isSpeaking()) {
+
+                tts.setSpeechRate(0.3f);
                 for (int i = 0; i < 2; i++) {
                     setLanguage(Locale.US);
                     addTextToQueue(object.getName());
@@ -76,6 +78,7 @@ public class ObjectSpeaker {
                     addDelayToQueue(600);
                 }
 
+                tts.setSpeechRate(0.1f);
                 setLanguage(Locale.US);
                 addTextToQueue(object.getSentence());
                 addDelayToQueue(100);
@@ -105,12 +108,13 @@ public class ObjectSpeaker {
             }
             if (!tts.isSpeaking()) {
                 setLanguage(Locale.US);
+                tts.setSpeechRate(0.1f);
                 addTextToQueue(object.getSentence());
                 addDelayToQueue(100);
-                addTextToQueue(object.getSentence());
-                addDelayToQueue(100);
-                addTextToQueue(object.getSentence());
-                addDelayToQueue(100);
+//                addTextToQueue(object.getSentence());
+//                addDelayToQueue(100);
+//                addTextToQueue(object.getSentence());
+//                addDelayToQueue(100);
 
                 setLanguage(Locale.TAIWAN);
                 addTextToQueue(object.getTranslatedSentence());
