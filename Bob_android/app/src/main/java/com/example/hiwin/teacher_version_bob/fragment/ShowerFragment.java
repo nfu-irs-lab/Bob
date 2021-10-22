@@ -1,7 +1,5 @@
 package com.example.hiwin.teacher_version_bob.fragment;
 
-import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,15 +11,20 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.example.hiwin.teacher_version_bob.R;
-import com.example.hiwin.teacher_version_bob.data.data.Data;
 
 public class ShowerFragment extends Fragment {
-    private Data object;
-    private Drawable drawable;
-    private TextView tr_name;
-    private ImageView img;
-    private TextView name;
+
+    private ShowerListener showerListener;
+
+    public interface ShowerListener{
+        void onShow(ImageView imageView,TextView textView1,TextView textView2);
+    }
+
+    private ImageView imageView;
+    private TextView textView1;
+    private TextView textView2;
     private FragmentListener listener;
+
 
     @Nullable
     @Override
@@ -29,9 +32,9 @@ public class ShowerFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_object, container, false);
         View layout = root.findViewById(R.id.object_layout);
 
-        this.img = (ImageView) layout.findViewById(R.id.object_img);
-        this.name = (TextView) layout.findViewById(R.id.object_name);
-        this.tr_name = (TextView) layout.findViewById(R.id.object_tr_name);
+        this.imageView = (ImageView) layout.findViewById(R.id.shower_imageview);
+        this.textView1 = (TextView) layout.findViewById(R.id.shower_textview1);
+        this.textView2 = (TextView) layout.findViewById(R.id.shower_textview2);
 
         return root;
     }
@@ -53,39 +56,16 @@ public class ShowerFragment extends Fragment {
                 listener.end();
         }).start();
 
-        this.img.setImageDrawable(drawable);
-        this.name.setText(object.getName());
-        this.tr_name.setText(object.getTranslatedName());
+
+        showerListener.onShow(imageView, textView1, textView2);
     }
 
-    public void warp(Context context, Data object) {
-        this.object = object;
-        drawable = context.getDrawable(getDrawableId(object));
-    }
-
-    private int getDrawableId(Data object) {
-        switch (object.getName()) {
-            case "car":
-                return R.drawable.object_car;
-            case "knife":
-                return R.drawable.object_knife;
-            case "cake":
-                return R.drawable.object_cake;
-            case "bird":
-                return R.drawable.object_bird;
-            case "bowl":
-                return R.drawable.object_bowl;
-            case "person":
-                return R.drawable.object_person;
-            case "cat":
-                return R.drawable.object_cat;
-            case "bottle":
-                return R.drawable.object_bottle;
-        }
-        throw new RuntimeException("Drawable not found");
-    }
 
     public void setListener(FragmentListener listener) {
         this.listener = listener;
+    }
+
+    public void setShowerListener(ShowerListener showerListener){
+        this.showerListener =showerListener;
     }
 }

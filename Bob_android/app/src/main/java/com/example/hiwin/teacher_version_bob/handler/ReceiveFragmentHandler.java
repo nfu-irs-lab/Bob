@@ -7,6 +7,8 @@ import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.widget.ImageView;
+import android.widget.TextView;
 import com.example.hiwin.teacher_version_bob.R;
 import com.example.hiwin.teacher_version_bob.data.DataSpeaker;
 import com.example.hiwin.teacher_version_bob.data.data.Data;
@@ -15,7 +17,6 @@ import com.example.hiwin.teacher_version_bob.fragment.*;
 import java.io.IOException;
 
 public abstract class ReceiveFragmentHandler extends Handler {
-
     public static final int CODE_RECEIVE = 3;
 
     public static final Message MSG_RECEIVE;
@@ -61,7 +62,7 @@ public abstract class ReceiveFragmentHandler extends Handler {
     private Fragment getFinalFaceFragment(FaceFragment.Face face, Fragment next, String nextId) throws IOException {
         FaceFragment faceFragment = new FaceFragment();
         faceFragment.warp(context, face, 2, true);
-        faceFragment.setListener(new FragmentFlowListener(next, nextId){
+        faceFragment.setListener(new FragmentFlowListener(next, nextId) {
             @Override
             public void end() {
                 super.end();
@@ -96,7 +97,12 @@ public abstract class ReceiveFragmentHandler extends Handler {
 
     public Fragment getObjectFragment(Data data, Fragment next, String nextId) {
         final ShowerFragment showerFragment = new ShowerFragment();
-        showerFragment.warp(context, data);
+        showerFragment.setShowerListener((imageView, textView1, textView2) -> {
+            imageView.setImageDrawable(context.getDrawable(getDrawableId(data)));
+            textView1.setText(data.getName());
+            textView2.setText(data.getTranslatedName());
+        });
+
         showerFragment.setListener(new FragmentFlowListener(next, nextId));
 
         return showerFragment;
@@ -156,5 +162,27 @@ public abstract class ReceiveFragmentHandler extends Handler {
             default:
                 throw new RuntimeException("unknown face.");
         }
+    }
+
+    private int getDrawableId(Data object) {
+        switch (object.getName()) {
+            case "car":
+                return R.drawable.object_car;
+            case "knife":
+                return R.drawable.object_knife;
+            case "cake":
+                return R.drawable.object_cake;
+            case "bird":
+                return R.drawable.object_bird;
+            case "bowl":
+                return R.drawable.object_bowl;
+            case "person":
+                return R.drawable.object_person;
+            case "cat":
+                return R.drawable.object_cat;
+            case "bottle":
+                return R.drawable.object_bottle;
+        }
+        throw new RuntimeException("Drawable not found");
     }
 }
