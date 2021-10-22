@@ -11,6 +11,7 @@ import com.example.hiwin.teacher_version_bob.data.DataSpeaker;
 import com.example.hiwin.teacher_version_bob.data.concrete.object.parser.JSONDataParser;
 import com.example.hiwin.teacher_version_bob.data.concrete.pack.Base64Package;
 import com.example.hiwin.teacher_version_bob.data.data.Data;
+import com.example.hiwin.teacher_version_bob.data.data.Face;
 import com.example.hiwin.teacher_version_bob.fragment.*;
 import org.json.JSONObject;
 
@@ -79,7 +80,7 @@ public class ObjectDetectActivity extends DetectActivity {
     }
 
 
-    private Fragment getFinalFaceFragment(FaceFragment.Face face, Fragment next, String nextId) throws IOException {
+    private Fragment getFinalFaceFragment(Face face, Fragment next, String nextId) throws IOException {
         FaceFragment faceFragment = new FaceFragment();
         faceFragment.warp(context, face, 2, true);
         faceFragment.setListener(new FragmentFlowListener(next, nextId) {
@@ -156,20 +157,20 @@ public class ObjectDetectActivity extends DetectActivity {
     }
 
 
-    private FaceFragment.Face getFace(Data object) {
+    private Face getFace(Data object) {
         String name = object.getName();
         switch (name) {
             case "car":
             case "knife":
-                return FaceFragment.Face.sad;
+                return Face.sad;
             case "cake":
             case "person":
             case "bird":
-                return FaceFragment.Face.happy;
+                return Face.happy;
             case "bowl":
             case "cat":
             case "bottle":
-                return FaceFragment.Face.love_eyes;
+                return Face.love_eyes;
             default:
                 throw new RuntimeException("unknown face.");
         }
