@@ -36,16 +36,19 @@ import java.nio.charset.StandardCharsets;
 public abstract class DetectActivity extends AppCompatActivity {
     private static final String BT_LOG_TAG = "BluetoothInfo";
 
-    private boolean isDetecting;
+
     private enum Connected {False, Pending, True}
 
     private Connected connected = Connected.False;
-    private MenuItem connection, detect;
+    private boolean isDetecting;
+    private MenuItem item_connection, item_detect;
     private String deviceAddress;
     private SerialService serialService;
 
 
     protected abstract void receive(byte[] data);
+
+    protected abstract void showDefault();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,8 +69,8 @@ public abstract class DetectActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // 設置要用哪個menu檔做為選單
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        connection = menu.getItem(0);
-        detect = menu.getItem(1);
+        item_connection = menu.getItem(0);
+        item_detect = menu.getItem(1);
         setConnectionMenuItem(false);
         return true;
     }
@@ -75,13 +78,16 @@ public abstract class DetectActivity extends AppCompatActivity {
     @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.menu_main_connection) {
-            if (connected == Connected.False)
-                connect();
-            else if (connected == Connected.True)
-                disconnect();
-        } else if (item.getItemId() == R.id.menu_main_detect) {
-            if (connected == Connected.True) {
+        try {
+            if (item.getItemId() == R.id.menu_main_connection) {
+                if (connected == Connected.False)
+                    connect();
+                else if (connected == Connected.True)
+                    disconnect();
+            } else if (item.getItemId() == R.id.menu_main_detect) {
+                if (connected == Connected.False)
+                    throw new RuntimeException("Not Connected.");
+
                 if (isDetecting) {
                     detect_pause();
                     isDetecting = false;
@@ -89,20 +95,25 @@ public abstract class DetectActivity extends AppCompatActivity {
                     detect_start();
                     isDetecting = true;
                 }
-            } else {
-                Toast.makeText(this, "Not connected", Toast.LENGTH_LONG).show();
             }
+        } catch (Exception e) {
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            Log.d(BT_LOG_TAG, e.getMessage());
         }
 
         return super.onOptionsItemSelected(item);
     }
 
     protected void detect_pause() {
+        if (connected == Connected.False)
+            throw new RuntimeException("Not Connected.");
         setDetectMenuItem(false);
         sendMessage("PAUSE_DETECT");
     }
 
     protected void detect_start() {
+        if (connected == Connected.False)
+            throw new RuntimeException("Not Connected.");
         setDetectMenuItem(true);
         sendMessage("START_DETECT");
     }
@@ -133,7 +144,7 @@ public abstract class DetectActivity extends AppCompatActivity {
     }
 
 
-    private void connect() {
+    private void connect() throws IOException {
         try {
             BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
             BluetoothDevice device = bluetoothAdapter.getRemoteDevice(deviceAddress);
@@ -144,38 +155,41 @@ public abstract class DetectActivity extends AppCompatActivity {
 
         } catch (Exception e) {
             serialDataListener.onSerialConnectError(e);
+            throw e;
         }
     }
 
     private void disconnect() {
         Log.d(BT_LOG_TAG, "disconnect");
+        if(connected==Connected.True){
+            detect_pause();
+        }
+
         connected = Connected.False;
-        detect_pause();
         serialService.disconnect();
         setConnectionMenuItem(false);
     }
 
     private void setConnectionMenuItem(boolean connected) {
         if (connected) {
-            connection.setIcon(R.drawable.link_off);
-            connection.setTitle("Disconnect");
+            item_connection.setIcon(R.drawable.link_off);
+            item_connection.setTitle("Disconnect");
         } else {
-            connection.setIcon(R.drawable.link);
-            connection.setTitle("Connect");
+            item_connection.setIcon(R.drawable.link);
+            item_connection.setTitle("Connect");
         }
     }
 
     private void setDetectMenuItem(boolean isDetecting) {
         if (isDetecting) {
-            detect.setTitle("Pause");
+            item_detect.setTitle("Pause");
         } else {
-            detect.setTitle("Start");
+            item_detect.setTitle("Start");
         }
     }
 
     public void sendMessage(String msg) {
         Package pack = new LinePackage(new Base64Package(msg.getBytes(StandardCharsets.UTF_8), Base64.DEFAULT));
-//        Package pack = new LinePackage((msg.getBytes(StandardCharsets.UTF_8)));
         try {
             serialService.write(pack.getEncoded());
         } catch (IOException e) {
@@ -183,7 +197,7 @@ public abstract class DetectActivity extends AppCompatActivity {
         }
     }
 
-    public void postFragment(Fragment fragment, String id) {
+    protected void postFragment(Fragment fragment, String id) {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.setReorderingAllowed(true);
         fragmentTransaction.replace(R.id.detect_frame, fragment, id);
@@ -208,7 +222,6 @@ public abstract class DetectActivity extends AppCompatActivity {
         public void onSerialConnect() {
             connected = Connected.True;
             Log.d(BT_LOG_TAG, "Bluetooth device connected");
-//            sendMessage("Hello Package");
             setConnectionMenuItem(true);
             detect_pause();
         }
@@ -232,24 +245,5 @@ public abstract class DetectActivity extends AppCompatActivity {
             disconnect();
         }
     };
-    public void showDefault() {
-        final DefaultFragment fragment = new DefaultFragment();
-        fragment.setListener(new FragmentListener() {
-            @Override
-            public void start() {
-            }
 
-            @Override
-            public void end() {
-                Vibrator myVibrator = (Vibrator) getApplication().getSystemService(Service.VIBRATOR_SERVICE);
-                myVibrator.vibrate(100);
-                detect_start();
-            }
-        });
-
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.setReorderingAllowed(true);
-        fragmentTransaction.replace(R.id.detect_frame, fragment, "default");
-        fragmentTransaction.commit();
-    }
 }

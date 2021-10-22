@@ -1,5 +1,6 @@
 package com.example.hiwin.teacher_version_bob.activity;
 
+import android.app.Service;
 import android.content.Context;
 import android.os.*;
 import android.support.v4.app.Fragment;
@@ -19,11 +20,13 @@ import java.nio.charset.StandardCharsets;
 public class ObjectDetectActivity extends DetectActivity {
     private static final String THIS_LOG_TAG = "ObjectDetectActivity";
     private Context context;
+    private DataSpeaker speaker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = this;
+        speaker = new DataSpeaker(context);
     }
 
     private void onComplete() {
@@ -53,10 +56,27 @@ public class ObjectDetectActivity extends DetectActivity {
                 Log.e(THIS_LOG_TAG, e.getMessage());
             }
         } catch (IllegalArgumentException e) {
-            Log.d(THIS_LOG_TAG, "base64 decode error:");
             Log.d(THIS_LOG_TAG, e.getMessage());
         }
 
+    }
+
+    @Override
+    protected void showDefault() {
+        final DefaultFragment fragment = new DefaultFragment();
+        fragment.setListener(new FragmentListener() {
+            @Override
+            public void start() {
+            }
+
+            @Override
+            public void end() {
+                Vibrator myVibrator = (Vibrator) getApplication().getSystemService(Service.VIBRATOR_SERVICE);
+                myVibrator.vibrate(100);
+                detect_start();
+            }
+        });
+        postFragment(fragment, "default");
     }
 
 
@@ -80,7 +100,6 @@ public class ObjectDetectActivity extends DetectActivity {
 
     private Fragment getFaceFragment(Data object, Fragment next, String nextId) throws IOException {
 
-        DataSpeaker speaker = new DataSpeaker(context);
         FaceFragment faceFragment = new FaceFragment();
         faceFragment.warp(context, getFace(object), 5, false);
 
