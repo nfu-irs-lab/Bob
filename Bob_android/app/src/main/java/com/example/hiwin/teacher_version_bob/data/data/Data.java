@@ -30,14 +30,4 @@ public class Data {
         return translated_sentence;
     }
 
-
-    @Override
-    public String toString() {
-        return "JObject{" +
-                "name='" + name + '\'' +
-                ", translated_name='" + translated_name + '\'' +
-                ", sentence='" + sentence + '\'' +
-                ", translated_sentence='" + translated_sentence + '\'' +
-                '}';
-    }
 }
