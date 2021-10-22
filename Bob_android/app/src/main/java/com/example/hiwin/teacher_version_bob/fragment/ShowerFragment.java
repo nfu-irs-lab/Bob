@@ -29,7 +29,7 @@ public class ShowerFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_object, container, false);
+        View root = inflater.inflate(R.layout.fragment_shower, container, false);
         View layout = root.findViewById(R.id.object_layout);
 
         this.imageView = (ImageView) layout.findViewById(R.id.shower_imageview);

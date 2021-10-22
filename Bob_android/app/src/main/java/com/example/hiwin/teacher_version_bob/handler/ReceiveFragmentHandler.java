@@ -7,8 +7,6 @@ import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.widget.ImageView;
-import android.widget.TextView;
 import com.example.hiwin.teacher_version_bob.R;
 import com.example.hiwin.teacher_version_bob.data.DataSpeaker;
 import com.example.hiwin.teacher_version_bob.data.data.Data;
@@ -119,7 +117,7 @@ public abstract class ReceiveFragmentHandler extends Handler {
     public void postFragment(Fragment fragment, String id) {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.setReorderingAllowed(true);
-        fragmentTransaction.replace(R.id.frame, fragment, id);
+        fragmentTransaction.replace(R.id.detect_frame, fragment, id);
         fragmentTransaction.commit();
     }
 
