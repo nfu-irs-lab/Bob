@@ -23,11 +23,11 @@ import com.example.hiwin.teacher_version_bob.communication.bluetooth.concrete.Re
 import com.example.hiwin.teacher_version_bob.communication.bluetooth.concrete.SerialSocket;
 import com.example.hiwin.teacher_version_bob.communication.bluetooth.framework.SerialListener;
 import com.example.hiwin.teacher_version_bob.communication.service.SerialService;
-import com.example.hiwin.teacher_version_bob.data.FaceSpeaker;
-import com.example.hiwin.teacher_version_bob.data.concrete.face.parser.JSONFaceParser;
+import com.example.hiwin.teacher_version_bob.data.DataSpeaker;
+import com.example.hiwin.teacher_version_bob.data.concrete.object.parser.JSONDataParser;
 import com.example.hiwin.teacher_version_bob.data.concrete.pack.Base64Package;
 import com.example.hiwin.teacher_version_bob.data.concrete.pack.LinePackage;
-import com.example.hiwin.teacher_version_bob.data.framework.face.DataFace;
+import com.example.hiwin.teacher_version_bob.data.data.Data;
 import com.example.hiwin.teacher_version_bob.data.framework.pack.Package;
 import com.example.hiwin.teacher_version_bob.fragment.DefaultFragment;
 import com.example.hiwin.teacher_version_bob.fragment.FragmentListener;
@@ -42,7 +42,7 @@ public class FaceDetectActivity extends AppCompatActivity {
     private static final String BT_LOG_TAG = "BluetoothInfo";
     private static final String THIS_LOG_TAG = "FaceDetectActivity";
     private boolean isDetecting;
-    private FaceSpeaker speaker;
+    private DataSpeaker speaker;
 
     private enum Connected {False, Pending, True}
 
@@ -73,7 +73,7 @@ public class FaceDetectActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        speaker=new FaceSpeaker(this);
+        speaker=new DataSpeaker(this);
         // 設置要用哪個menu檔做為選單
         getMenuInflater().inflate(R.menu.menu_face_detect, menu);
         connection = menu.getItem(0);
@@ -218,7 +218,7 @@ public class FaceDetectActivity extends AppCompatActivity {
                     showDefault();
                 }
             });
-            DataFace face =new JSONFaceParser("zh_TW").parse(new JSONObject(content));
+            Data face =new JSONDataParser("zh_TW").parse(new JSONObject(content));
             faceFragment.warp(this, FaceFragment.Face.valueOf(face.getName()),5,true);
             speaker.speakFully(face);
 //            setTitle(content);

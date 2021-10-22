@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.*;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -26,8 +25,8 @@ import com.example.hiwin.teacher_version_bob.communication.service.SerialService
 import com.example.hiwin.teacher_version_bob.communication.bluetooth.concrete.SerialSocket;
 import com.example.hiwin.teacher_version_bob.data.concrete.pack.Base64Package;
 import com.example.hiwin.teacher_version_bob.data.concrete.pack.LinePackage;
-import com.example.hiwin.teacher_version_bob.data.framework.object.DataObject;
-import com.example.hiwin.teacher_version_bob.data.concrete.object.parser.JSONObjectParser;
+import com.example.hiwin.teacher_version_bob.data.data.Data;
+import com.example.hiwin.teacher_version_bob.data.concrete.object.parser.JSONDataParser;
 import com.example.hiwin.teacher_version_bob.data.framework.pack.Package;
 
 import com.example.hiwin.teacher_version_bob.fragment.DefaultFragment;
@@ -192,7 +191,7 @@ public class ObjectDetectActivity extends AppCompatActivity {
         }
     }
 
-    private void showObjectAndFace(final DataObject object) {
+    private void showObjectAndFace(final Data object) {
         Message msg = new Message();
         msg.what = ReceiveFragmentHandler.CODE_RECEIVE;
         msg.obj = object;
@@ -218,7 +217,7 @@ public class ObjectDetectActivity extends AppCompatActivity {
 
             try {
                 detect_pause();
-                showObjectAndFace((new JSONObjectParser("zh_TW")).parse(new JSONObject(content)));
+                showObjectAndFace((new JSONDataParser("zh_TW")).parse(new JSONObject(content)));
             } catch (JSONException e) {
                 Log.e(THIS_LOG_TAG, e.getMessage());
             }

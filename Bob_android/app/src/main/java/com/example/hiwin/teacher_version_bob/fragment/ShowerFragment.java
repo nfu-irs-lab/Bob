@@ -13,10 +13,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.example.hiwin.teacher_version_bob.R;
-import com.example.hiwin.teacher_version_bob.data.framework.object.DataObject;
+import com.example.hiwin.teacher_version_bob.data.data.Data;
 
-public class ObjectShowerFragment extends Fragment {
-    private DataObject object;
+public class ShowerFragment extends Fragment {
+    private Data object;
     private Drawable drawable;
     private TextView tr_name;
     private ImageView img;
@@ -58,12 +58,12 @@ public class ObjectShowerFragment extends Fragment {
         this.tr_name.setText(object.getTranslatedName());
     }
 
-    public void warp(Context context, DataObject object) {
+    public void warp(Context context, Data object) {
         this.object = object;
         drawable = context.getDrawable(getDrawableId(object));
     }
 
-    private int getDrawableId(DataObject object) {
+    private int getDrawableId(Data object) {
         switch (object.getName()) {
             case "car":
                 return R.drawable.object_car;

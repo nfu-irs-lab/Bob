@@ -9,14 +9,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import com.example.hiwin.teacher_version_bob.R;
-import com.example.hiwin.teacher_version_bob.data.ObjectSpeaker;
-import com.example.hiwin.teacher_version_bob.data.framework.object.DataObject;
+import com.example.hiwin.teacher_version_bob.data.DataSpeaker;
+import com.example.hiwin.teacher_version_bob.data.data.Data;
 
 public class ExampleShowerFragment extends Fragment {
-    private DataObject object;
+    private Data object;
     private TextView tr_sentence;
     private TextView sentence;
-    private ObjectSpeaker speaker;
+    private DataSpeaker speaker;
 
     private FragmentListener listener;
 
@@ -25,7 +25,7 @@ public class ExampleShowerFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_example, container, false);
         View layout = root.findViewById(R.id.example_layout);
-        speaker = new ObjectSpeaker(getContext());
+        speaker = new DataSpeaker(getContext());
         this.sentence = (TextView) layout.findViewById(R.id.example_sentence);
         this.tr_sentence = (TextView) layout.findViewById(R.id.example_tr_sentence);
 
@@ -46,7 +46,7 @@ public class ExampleShowerFragment extends Fragment {
         });
     }
 
-    public void warp(DataObject object) {
+    public void warp(Data object) {
         this.object = object;
     }
 

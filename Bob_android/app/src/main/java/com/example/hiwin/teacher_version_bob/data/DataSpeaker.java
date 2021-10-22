@@ -3,8 +3,7 @@ package com.example.hiwin.teacher_version_bob.data;
 import android.content.Context;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
-import com.example.hiwin.teacher_version_bob.data.framework.face.DataFace;
-import com.example.hiwin.teacher_version_bob.data.framework.object.DataObject;
+import com.example.hiwin.teacher_version_bob.data.data.Data;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +12,7 @@ import java.util.UUID;
 
 import static android.speech.tts.TextToSpeech.QUEUE_ADD;
 
-public class FaceSpeaker {
+public class DataSpeaker {
     public interface SpeakerListener {
         void onSpeakComplete();
     }
@@ -24,7 +23,7 @@ public class FaceSpeaker {
 
     private boolean isBounded = false;
 
-    public FaceSpeaker(Context context) {
+    public DataSpeaker(Context context) {
         tts = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
@@ -58,7 +57,7 @@ public class FaceSpeaker {
         });
     }
 
-    public void speakFully(DataFace face) {
+    public void speakFully(Data data) {
         new Thread(() -> {
 
             while (!isBounded) {
@@ -72,31 +71,31 @@ public class FaceSpeaker {
             if (!tts.isSpeaking()) {
                 for (int i = 0; i < 2; i++) {
                     setLanguage(Locale.US);
-                    addTextToQueue(face.getName());
+                    addTextToQueue(data.getName());
                     addDelayToQueue(600);
-                    spellVocabulary(face.getName());
+                    spellVocabulary(data.getName());
                     setLanguage(Locale.TAIWAN);
-                    addTextToQueue(face.getTranslatedName());
+                    addTextToQueue(data.getTranslatedName());
                     addDelayToQueue(600);
                 }
 
                 setLanguage(Locale.US);
-                addTextToQueue(face.getSentence());
+                addTextToQueue(data.getSentence());
                 addDelayToQueue(100);
-                addTextToQueue(face.getSentence());
+                addTextToQueue(data.getSentence());
                 addDelayToQueue(100);
-                addTextToQueue(face.getSentence());
+                addTextToQueue(data.getSentence());
                 addDelayToQueue(100);
 
                 setLanguage(Locale.TAIWAN);
-                addTextToQueue(face.getTranslatedSentence());
+                addTextToQueue(data.getTranslatedSentence());
             }
 
         }
         ).start();
     }
 
-    public void speakExample(DataObject object) {
+    public void speakExample(Data data) {
 
         new Thread(() -> {
 
@@ -109,15 +108,15 @@ public class FaceSpeaker {
             }
             if (!tts.isSpeaking()) {
                 setLanguage(Locale.US);
-                addTextToQueue(object.getSentence());
+                addTextToQueue(data.getSentence());
                 addDelayToQueue(100);
-                addTextToQueue(object.getSentence());
+                addTextToQueue(data.getSentence());
                 addDelayToQueue(100);
-                addTextToQueue(object.getSentence());
+                addTextToQueue(data.getSentence());
                 addDelayToQueue(100);
 
                 setLanguage(Locale.TAIWAN);
-                addTextToQueue(object.getTranslatedSentence());
+                addTextToQueue(data.getTranslatedSentence());
             }
         }).start();
 

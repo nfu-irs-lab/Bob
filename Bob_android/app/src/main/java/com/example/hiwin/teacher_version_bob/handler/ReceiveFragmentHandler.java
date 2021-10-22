@@ -8,8 +8,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import com.example.hiwin.teacher_version_bob.R;
-import com.example.hiwin.teacher_version_bob.data.ObjectSpeaker;
-import com.example.hiwin.teacher_version_bob.data.framework.object.DataObject;
+import com.example.hiwin.teacher_version_bob.data.DataSpeaker;
+import com.example.hiwin.teacher_version_bob.data.data.Data;
 import com.example.hiwin.teacher_version_bob.fragment.*;
 
 import java.io.IOException;
@@ -40,7 +40,7 @@ public abstract class ReceiveFragmentHandler extends Handler {
     public void handleMessage(Message msg) {
         try {
             if (msg.what == CODE_RECEIVE) {
-                receive((DataObject) msg.obj);
+                receive((Data) msg.obj);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -49,7 +49,7 @@ public abstract class ReceiveFragmentHandler extends Handler {
         super.handleMessage(msg);
     }
 
-    private void receive(DataObject object) throws Exception {
+    private void receive(Data object) throws Exception {
         Fragment finalFaceFragment = getFinalFaceFragment(getFace(object), null, "null");
         Fragment exampleFragment = getExampleFragment(object, finalFaceFragment, "face2");
         Fragment faceFragment = getFaceFragment(object, exampleFragment, "example");
@@ -71,9 +71,9 @@ public abstract class ReceiveFragmentHandler extends Handler {
         return faceFragment;
     }
 
-    private Fragment getFaceFragment(DataObject object, Fragment next, String nextId) throws IOException {
+    private Fragment getFaceFragment(Data object, Fragment next, String nextId) throws IOException {
 
-        ObjectSpeaker speaker = new ObjectSpeaker(context);
+        DataSpeaker speaker = new DataSpeaker(context);
         FaceFragment faceFragment = new FaceFragment();
         faceFragment.warp(context, getFace(object), 5, false);
 
@@ -94,15 +94,15 @@ public abstract class ReceiveFragmentHandler extends Handler {
         return faceFragment;
     }
 
-    public Fragment getObjectFragment(DataObject object, Fragment next, String nextId) {
-        final ObjectShowerFragment objectShowerFragment = new ObjectShowerFragment();
-        objectShowerFragment.warp(context, object);
-        objectShowerFragment.setListener(new FragmentFlowListener(next, nextId));
+    public Fragment getObjectFragment(Data data, Fragment next, String nextId) {
+        final ShowerFragment showerFragment = new ShowerFragment();
+        showerFragment.warp(context, data);
+        showerFragment.setListener(new FragmentFlowListener(next, nextId));
 
-        return objectShowerFragment;
+        return showerFragment;
     }
 
-    private Fragment getExampleFragment(DataObject object, Fragment next, String nextId) {
+    private Fragment getExampleFragment(Data object, Fragment next, String nextId) {
         final ExampleShowerFragment fragment = new ExampleShowerFragment();
         fragment.warp(object);
         fragment.setListener(new FragmentFlowListener(next, nextId));
@@ -139,7 +139,7 @@ public abstract class ReceiveFragmentHandler extends Handler {
         }
     }
 
-    private FaceFragment.Face getFace(DataObject object) {
+    private FaceFragment.Face getFace(Data object) {
         String name = object.getName();
         switch (name) {
             case "car":
