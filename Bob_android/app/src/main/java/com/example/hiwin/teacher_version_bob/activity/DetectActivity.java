@@ -27,8 +27,6 @@ import com.example.hiwin.teacher_version_bob.communication.service.SerialService
 import com.example.hiwin.teacher_version_bob.data.concrete.pack.Base64Package;
 import com.example.hiwin.teacher_version_bob.data.concrete.pack.LinePackage;
 import com.example.hiwin.teacher_version_bob.data.framework.pack.Package;
-import com.example.hiwin.teacher_version_bob.fragment.DefaultFragment;
-import com.example.hiwin.teacher_version_bob.fragment.FragmentListener;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -161,7 +159,7 @@ public abstract class DetectActivity extends AppCompatActivity {
 
     private void disconnect() {
         Log.d(BT_LOG_TAG, "disconnect");
-        if(connected==Connected.True){
+        if (connected == Connected.True) {
             detect_pause();
         }
 
@@ -222,6 +220,7 @@ public abstract class DetectActivity extends AppCompatActivity {
         public void onSerialConnect() {
             connected = Connected.True;
             Log.d(BT_LOG_TAG, "Bluetooth device connected");
+            Toast.makeText(DetectActivity.this, "Bluetooth device connected", Toast.LENGTH_SHORT).show();
             setConnectionMenuItem(true);
             detect_pause();
         }
@@ -230,6 +229,7 @@ public abstract class DetectActivity extends AppCompatActivity {
         public void onSerialConnectError(Exception e) {
             Log.e(BT_LOG_TAG, "Connection Error");
             Log.e(BT_LOG_TAG, e.getMessage());
+            Toast.makeText(DetectActivity.this, "Connection Error:" + e.getMessage(), Toast.LENGTH_SHORT).show();
             disconnect();
         }
 
@@ -242,6 +242,7 @@ public abstract class DetectActivity extends AppCompatActivity {
         public void onSerialIoError(Exception e) {
             Log.e(BT_LOG_TAG, "IO Error");
             Log.e(BT_LOG_TAG, e.getMessage());
+            Toast.makeText(DetectActivity.this, "IO Error:" + e.getMessage(), Toast.LENGTH_SHORT).show();
             disconnect();
         }
     };

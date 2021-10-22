@@ -26,12 +26,11 @@ public class FaceDetectActivity extends DetectActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         speaker = new DataSpeaker(this);
-        context=this;
+        context = this;
     }
 
 
     private void onComplete() {
-        detect_pause();
         showDefault();
     }
 

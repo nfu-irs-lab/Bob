@@ -30,7 +30,6 @@ public class ObjectDetectActivity extends DetectActivity {
     }
 
     private void onComplete() {
-        detect_pause();
         showDefault();
     }
 
