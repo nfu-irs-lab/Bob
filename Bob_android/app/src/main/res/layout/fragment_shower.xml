@@ -18,13 +18,13 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:id="@+id/object_img"
+            android:id="@+id/shower_imageview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:srcCompat="@drawable/object_cake" />
 
         <TextView
-            android:id="@+id/object_name"
+            android:id="@+id/shower_textview1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -33,7 +33,7 @@
             android:textSize="70sp" />
 
         <TextView
-            android:id="@+id/object_tr_name"
+            android:id="@+id/shower_textview2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"

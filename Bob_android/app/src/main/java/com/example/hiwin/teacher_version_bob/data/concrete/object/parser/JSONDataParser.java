@@ -1,20 +1,20 @@
-package com.example.hiwin.teacher_version_bob.data.concrete.face.parser;
+package com.example.hiwin.teacher_version_bob.data.concrete.object.parser;
 
-import com.example.hiwin.teacher_version_bob.data.framework.face.DataFace;
-import com.example.hiwin.teacher_version_bob.data.framework.face.parser.DataFaceParser;
+import com.example.hiwin.teacher_version_bob.data.data.Data;
+import com.example.hiwin.teacher_version_bob.data.framework.parser.DataParser;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class JSONFaceParser implements DataFaceParser<JSONObject> {
+public class JSONDataParser implements DataParser<JSONObject, Data> {
     private final String language;
 
-    public JSONFaceParser(String language) {
+    public JSONDataParser(String language) {
         this.language = language;
     }
 
     @Override
-    public DataFace parse(JSONObject json) throws JSONException {
+    public Data parse(JSONObject json) throws JSONException {
 
         JSONArray languages = json.getJSONArray("languages");
 
@@ -27,6 +27,6 @@ public class JSONFaceParser implements DataFaceParser<JSONObject> {
         if (translated == null)
             throw new RuntimeException("code not found");
 
-        return new DataFace(json.getString("name"), translated.getString("tr_name"), json.getString("sentence"), translated.getString("tr_sentence"));
+        return new Data(json.getString("name"), translated.getString("tr_name"), json.getString("sentence"), translated.getString("tr_sentence"));
     }
 }

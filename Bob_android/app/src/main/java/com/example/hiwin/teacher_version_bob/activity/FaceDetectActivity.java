@@ -1,280 +1,41 @@
 package com.example.hiwin.teacher_version_bob.activity;
 
-import android.annotation.SuppressLint;
 import android.app.Service;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.*;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.Toast;
 import com.example.hiwin.teacher_version_bob.R;
-import com.example.hiwin.teacher_version_bob.communication.bluetooth.concrete.ReadLineStrategy;
-import com.example.hiwin.teacher_version_bob.communication.bluetooth.concrete.SerialSocket;
-import com.example.hiwin.teacher_version_bob.communication.bluetooth.framework.SerialListener;
-import com.example.hiwin.teacher_version_bob.communication.service.SerialService;
-import com.example.hiwin.teacher_version_bob.data.FaceSpeaker;
-import com.example.hiwin.teacher_version_bob.data.concrete.face.parser.JSONFaceParser;
+import com.example.hiwin.teacher_version_bob.data.DataSpeaker;
+import com.example.hiwin.teacher_version_bob.data.concrete.object.parser.JSONDataParser;
 import com.example.hiwin.teacher_version_bob.data.concrete.pack.Base64Package;
-import com.example.hiwin.teacher_version_bob.data.concrete.pack.LinePackage;
-import com.example.hiwin.teacher_version_bob.data.framework.face.DataFace;
-import com.example.hiwin.teacher_version_bob.data.framework.pack.Package;
-import com.example.hiwin.teacher_version_bob.fragment.DefaultFragment;
-import com.example.hiwin.teacher_version_bob.fragment.FragmentListener;
-import com.example.hiwin.teacher_version_bob.fragment.FaceFragment;
-import org.json.JSONException;
+import com.example.hiwin.teacher_version_bob.data.data.Data;
+import com.example.hiwin.teacher_version_bob.fragment.*;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-public class FaceDetectActivity extends AppCompatActivity {
-    private static final String BT_LOG_TAG = "BluetoothInfo";
+public class FaceDetectActivity extends DetectActivity {
     private static final String THIS_LOG_TAG = "FaceDetectActivity";
-    private boolean isDetecting;
-    private FaceSpeaker speaker;
-
-    private enum Connected {False, Pending, True}
-
-    private Connected connected = Connected.False;
-
-
-    private MenuItem connection, detect;
-
+    private DataSpeaker speaker;
     private Context context;
-
-    private String deviceAddress;
-    private SerialService serialService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_face_detect);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.face_detect_toolbar);
-        setSupportActionBar(toolbar);
+        speaker = new DataSpeaker(this);
         context = this;
-        boolean sus = bindService(new Intent(context, SerialService.class), serviceConnection, Context.BIND_AUTO_CREATE);
-        Log.d("BindService", sus + "");
-        Intent it = getIntent();
-        deviceAddress = it.getStringExtra("address");
+    }
+
+
+    private void onComplete() {
         showDefault();
     }
 
-
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        speaker=new FaceSpeaker(this);
-        // 設置要用哪個menu檔做為選單
-        getMenuInflater().inflate(R.menu.menu_face_detect, menu);
-        connection = menu.getItem(0);
-        detect = menu.getItem(1);
-        setConnectionMenuItem(false);
-        return true;
-    }
-
-    @SuppressLint("NonConstantResourceId")
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.menu_face_detect_connection) {
-            if (connected == Connected.False)
-                connect();
-            else if (connected == Connected.True)
-                disconnect();
-        } else if (item.getItemId() == R.id.menu_face_detect_detect) {
-            if (connected == Connected.True) {
-                if (isDetecting) {
-                    detect_pause();
-                    isDetecting = false;
-                } else {
-                    detect_start();
-                    isDetecting = true;
-                }
-            } else {
-                Toast.makeText(this, "Not connected", Toast.LENGTH_LONG).show();
-            }
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void detect_pause() {
-        setDetectMenuItem(false);
-        sendMessage("PAUSE_DETECT");
-    }
-
-    private void detect_start() {
-        setDetectMenuItem(true);
-        sendMessage("START_DETECT");
-    }
-
-
-    @Override
-    public void onDestroy() {
-        if (connected == Connected.True)
-            disconnect();
-        stopService(new Intent(this, SerialService.class));
-        super.onDestroy();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        if (serialService != null)
-            serialService.attach(serialDataListener);
-        else
-            startService(new Intent(this, SerialService.class)); // prevents service destroy on unbind from recreated activity caused by orientation change
-    }
-
-    @Override
-    public void onStop() {
-        if (serialService != null && !this.isChangingConfigurations())
-            serialService.detach();
-        super.onStop();
-    }
-
-
-    private void connect() {
-        try {
-            BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-            BluetoothDevice device = bluetoothAdapter.getRemoteDevice(deviceAddress);
-            Log.d(THIS_LOG_TAG, "connecting...");
-            SerialSocket socket = new SerialSocket(context, device, new ReadLineStrategy());
-            serialService.connect(socket);
-            connected = Connected.Pending;
-
-        } catch (Exception e) {
-            serialDataListener.onSerialConnectError(e);
-        }
-    }
-
-    private void disconnect() {
-        Log.d(THIS_LOG_TAG, "disconnect");
-        connected = Connected.False;
-        detect_pause();
-        serialService.disconnect();
-        setConnectionMenuItem(false);
-    }
-
-    private void setConnectionMenuItem(boolean connected) {
-        if (connected) {
-            connection.setIcon(R.drawable.link_off);
-            connection.setTitle("Disconnect");
-        } else {
-            connection.setIcon(R.drawable.link);
-            connection.setTitle("Connect");
-        }
-    }
-
-    private void setDetectMenuItem(boolean isDetecting) {
-        if (isDetecting) {
-            detect.setTitle("Pause");
-        } else {
-            detect.setTitle("Start");
-        }
-    }
-
-    private void sendMessage(String msg) {
-        Package pack = new LinePackage(new Base64Package(msg.getBytes(StandardCharsets.UTF_8), Base64.DEFAULT));
-//        Package pack = new LinePackage((msg.getBytes(StandardCharsets.UTF_8)));
-        try {
-            serialService.write(pack.getEncoded());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void postFragment(Fragment fragment, String id) {
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.setReorderingAllowed(true);
-        fragmentTransaction.replace(R.id.face_detect_frame, fragment, id);
-        fragmentTransaction.commit();
-    }
-
-    private void receive(byte[] data) {
-        try {
-            String content = new String(new Base64Package(data, Base64.DEFAULT).getDecoded(), StandardCharsets.UTF_8);
-            Log.d(BT_LOG_TAG, "received string:");
-            Log.d(BT_LOG_TAG, content);
-
-            FaceFragment faceFragment=new FaceFragment();
-            faceFragment.setListener(new FragmentListener() {
-                @Override
-                public void start() {
-
-                }
-
-                @Override
-                public void end() {
-                    showDefault();
-                }
-            });
-            DataFace face =new JSONFaceParser("zh_TW").parse(new JSONObject(content));
-            faceFragment.warp(this, FaceFragment.Face.valueOf(face.getName()),5,true);
-            speaker.speakFully(face);
-//            setTitle(content);
-            postFragment(faceFragment,"face");
-            detect_pause();
-        } catch (IllegalArgumentException | IOException | JSONException e) {
-            Log.d(BT_LOG_TAG, "base64 decode error:");
-            Log.d(BT_LOG_TAG, e.getMessage());
-        }
-
-    }
-
-    private final ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder binder) {
-            serialService = ((SerialService.SerialBinder) binder).getService();
-            serialService.attach(serialDataListener);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            serialService = null;
-        }
-    };
-
-    private final SerialListener serialDataListener = new SerialListener() {
-        @Override
-        public void onSerialConnect() {
-            connected = Connected.True;
-            Log.d(BT_LOG_TAG, "Bluetooth device connected");
-            sendMessage("Hello Package");
-            setConnectionMenuItem(true);
-//            detect_pause();
-        }
-
-        @Override
-        public void onSerialConnectError(Exception e) {
-            Log.e(BT_LOG_TAG, "Connection Error");
-            Log.e(BT_LOG_TAG, e.getMessage());
-            disconnect();
-        }
-
-        @Override
-        public void onSerialRead(byte[] data) {
-            receive(data);
-        }
-
-        @Override
-        public void onSerialIoError(Exception e) {
-            Log.e(BT_LOG_TAG, "IO Error");
-            Log.e(BT_LOG_TAG, e.getMessage());
-            disconnect();
-        }
-    };
-
-    private void showDefault() {
+    protected void showDefault() {
         final DefaultFragment fragment = new DefaultFragment();
         fragment.setListener(new FragmentListener() {
             @Override
@@ -288,10 +49,132 @@ public class FaceDetectActivity extends AppCompatActivity {
                 detect_start();
             }
         });
+        postFragment(fragment, "default");
+    }
 
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.setReorderingAllowed(true);
-        fragmentTransaction.replace(R.id.face_detect_frame, fragment, "default");
-        fragmentTransaction.commit();
+    private void showObjectAndFace(final Data object) throws IOException {
+        Fragment finalFaceFragment = getFinalFaceFragment(getFace(object), null, "null");
+        Fragment exampleFragment = getExampleFragment(object, finalFaceFragment, "face2");
+        Fragment faceFragment = getFaceFragment(object, exampleFragment, "example");
+        Fragment objectFragment = getObjectFragment(object, faceFragment, "face");
+        postFragment(objectFragment, "object");
+    }
+
+    @Override
+    protected void receive(byte[] data) {
+        try {
+            String content = new String(new Base64Package(data, Base64.DEFAULT).getDecoded(), StandardCharsets.UTF_8);
+            Log.d(THIS_LOG_TAG, "received string:");
+            Log.d(THIS_LOG_TAG, content);
+
+            try {
+                detect_pause();
+                showObjectAndFace((new JSONDataParser("zh_TW")).parse(new JSONObject(content)));
+            } catch (Exception e) {
+                Log.e(THIS_LOG_TAG, e.getMessage());
+            }
+        } catch (IllegalArgumentException e) {
+            Log.d(THIS_LOG_TAG, e.getMessage());
+        }
+
+    }
+
+
+    private Fragment getFinalFaceFragment(FaceFragment.Face face, Fragment next, String nextId) throws IOException {
+        FaceFragment faceFragment = new FaceFragment();
+        faceFragment.warp(context, face, 2, true);
+        faceFragment.setListener(new FragmentFlowListener(next, nextId) {
+            @Override
+            protected void postFragment(Fragment next, String nextId) {
+                FaceDetectActivity.this.postFragment(next, nextId);
+            }
+
+            @Override
+            public void end() {
+                super.end();
+                onComplete();
+            }
+        });
+        return faceFragment;
+    }
+
+    private Fragment getFaceFragment(Data object, Fragment next, String nextId) throws IOException {
+        FaceFragment faceFragment = new FaceFragment();
+        faceFragment.warp(context, getFace(object), 5, false);
+
+        faceFragment.setListener(new FragmentFlowListener(next, nextId) {
+            @Override
+            protected void postFragment(Fragment next, String nextId) {
+                FaceDetectActivity.this.postFragment(next, nextId);
+            }
+
+            @Override
+            public void start() {
+                super.start();
+                speaker.setSpeakerListener(this::end);
+                speaker.speakFully(object);
+            }
+
+            @Override
+            public void end() {
+                super.end();
+            }
+        });
+
+        return faceFragment;
+    }
+
+    public Fragment getObjectFragment(Data data, Fragment next, String nextId) {
+        final ShowerFragment showerFragment = new ShowerFragment();
+        showerFragment.setShowerListener((imageView, textView1, textView2) -> {
+            imageView.setImageDrawable(context.getDrawable(getDrawableId(data)));
+            textView1.setText(data.getName());
+            textView2.setText(data.getTranslatedName());
+        });
+
+        showerFragment.setListener(new FragmentFlowListener(next, nextId) {
+            @Override
+            protected void postFragment(Fragment next, String nextId) {
+                FaceDetectActivity.this.postFragment(next, nextId);
+            }
+        });
+
+        return showerFragment;
+    }
+
+    private Fragment getExampleFragment(Data object, Fragment next, String nextId) {
+        final ExampleShowerFragment fragment = new ExampleShowerFragment();
+        fragment.warp(object);
+        fragment.setListener(new FragmentFlowListener(next, nextId) {
+            @Override
+            protected void postFragment(Fragment next, String nextId) {
+                FaceDetectActivity.this.postFragment(next, nextId);
+            }
+        });
+        return fragment;
+
+    }
+
+
+    private FaceFragment.Face getFace(Data object) {
+        String name = object.getName();
+        switch (name) {
+            case "sad":
+                return FaceFragment.Face.sad;
+            case "happy":
+                return FaceFragment.Face.happy;
+            default:
+                throw new RuntimeException("unknown face.");
+        }
+    }
+
+    private int getDrawableId(Data object) {
+        switch (object.getName()) {
+            case "happy":
+                return R.drawable.face_smile;
+            case "sad":
+                return R.drawable.face_sad;
+        }
+        throw new RuntimeException("Drawable not found");
     }
 }
