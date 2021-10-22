@@ -6,6 +6,7 @@ import android.os.*;
 import android.support.v4.app.Fragment;
 import android.util.Base64;
 import android.util.Log;
+import android.widget.Toast;
 import com.example.hiwin.teacher_version_bob.R;
 import com.example.hiwin.teacher_version_bob.data.DataSpeaker;
 import com.example.hiwin.teacher_version_bob.data.concrete.object.parser.JSONDataParser;
@@ -47,14 +48,18 @@ public class FaceDetectActivity extends DetectActivity {
             public void end() {
                 Vibrator myVibrator = (Vibrator) getApplication().getSystemService(Service.VIBRATOR_SERVICE);
                 myVibrator.vibrate(100);
-                detect_start();
+                if (isConnected())
+                    detect_start();
+                else {
+                    Toast.makeText(FaceDetectActivity.this,"Not connected",Toast.LENGTH_SHORT).show();
+                }
             }
         });
         postFragment(fragment, "default");
     }
 
     private void showObjectAndFace(final Data object) throws IOException {
-        Fragment finalFaceFragment = getFinalFaceFragment(getFace(object), null, "null");
+        Fragment finalFaceFragment = getFinalFaceFragment(object.getFace(), null, "null");
         Fragment exampleFragment = getExampleFragment(object, finalFaceFragment, "face2");
         Fragment faceFragment = getFaceFragment(object, exampleFragment, "example");
         Fragment objectFragment = getObjectFragment(object, faceFragment, "face");
@@ -101,7 +106,7 @@ public class FaceDetectActivity extends DetectActivity {
 
     private Fragment getFaceFragment(Data object, Fragment next, String nextId) throws IOException {
         FaceFragment faceFragment = new FaceFragment();
-        faceFragment.warp(context, getFace(object), 5, false);
+        faceFragment.warp(context, object.getFace(), 5, false);
 
         faceFragment.setListener(new FragmentFlowListener(next, nextId) {
             @Override
@@ -157,17 +162,6 @@ public class FaceDetectActivity extends DetectActivity {
     }
 
 
-    private Face getFace(Data object) {
-        String name = object.getName();
-        switch (name) {
-            case "sad":
-                return Face.sad;
-            case "happy":
-                return Face.happy;
-            default:
-                throw new RuntimeException("unknown face.");
-        }
-    }
 
     private int getDrawableId(Data object) {
         switch (object.getName()) {

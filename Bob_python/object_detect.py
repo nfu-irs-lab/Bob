@@ -1,7 +1,7 @@
 """Run inference with a YOLOv5 model on images, videos, directories, streams
 
 Usage:
-    $ python path/to/object.py --source path/to/img.jpg --weights yolov5s.pt --img 640
+    $ python path/to/object_detect.py --source path/to/img.jpg --weights yolov5s.pt --img 640
 """
 
 import argparse
@@ -25,7 +25,7 @@ from bluetooth.framework.monitor import SerialListener
 from bluetooth.framework.package import Package
 from dbctrl.concrete import queryJsonFromName
 from dbctrl.concrete.database import FileDatabase
-from dbctrl.concrete.object import JSONObjectParser, Object
+from dbctrl.concrete.json_data import JSONDataParser, JSONData
 from robotics.concrete.command import RoboticsCommandFactory
 from robotics.framework.action import Action, CSVAction
 
@@ -63,7 +63,7 @@ class RobotSerialListener(SerialListener):
 
 db_location = f"db{os.path.sep}objects.json"
 db_charset = 'UTF-8'
-db = FileDatabase(open(db_location, encoding=db_charset), JSONObjectParser())
+db = FileDatabase(open(db_location, encoding=db_charset), JSONDataParser())
 robot_done = True
 bt_done = True
 robot = getRobot()
@@ -71,8 +71,8 @@ bt = getBluetooth(RobotSerialListener())
 detect = False
 
 
-def getActionFromName(name: str) -> Action:
-    return CSVAction(f'actions{os.path.sep}{name}.csv', RoboticsCommandFactory())
+def getActionFromFileName(file: str) -> Action:
+    return CSVAction(f'actions{os.path.sep}{file}', RoboticsCommandFactory())
 
 
 def pushActionToRobot(action: Action):
@@ -80,7 +80,7 @@ def pushActionToRobot(action: Action):
     if robot.isOpen():
         try:
             robot.doAction(action)
-            robot.doAction(getActionFromName("reset"))
+            robot.doAction(getActionFromFileName("reset.csv"))
         except SerialTimeoutException:
             print("robot serial timeout")
         robot_done = True
@@ -104,20 +104,18 @@ def onDetected(objectList: List[DetectedObject]):
         return
 
     for dobj in objectList:
-        obj: Optional[Object] = db.queryForId(dobj.name)
+        obj: Optional[JSONData] = db.queryForId(dobj.name)
         if obj is not None:
-            js = queryJsonFromName(obj.name, open(db_location, encoding=db_charset))
-            jsonString = json.dumps(js, ensure_ascii=False)
+            data: json = obj.getData()
+            jsonString = json.dumps(data, ensure_ascii=False)
             print(jsonString)
-
             robot_done = False
             bt_done = True
             bt_thread = threading.Thread(target=pushDataToBluetooth,
                                          args=(Base64LinePackage(StringPackage(jsonString, "UTF-8")),))
             bt_thread.start()
-            robot_thread = threading.Thread(target=pushActionToRobot, args=(getActionFromName(obj.action),))
+            robot_thread = threading.Thread(target=pushActionToRobot, args=(getActionFromFileName(data['action']),))
             robot_thread.start()
-
             break
 
 

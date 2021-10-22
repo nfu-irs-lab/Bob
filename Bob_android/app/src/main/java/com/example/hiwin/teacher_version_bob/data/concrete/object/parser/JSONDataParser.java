@@ -27,6 +27,12 @@ public class JSONDataParser implements DataParser<JSONObject, Data> {
         if (translated == null)
             throw new RuntimeException("code not found");
 
-        return new Data(json.getString("name"), translated.getString("tr_name"), json.getString("sentence"), translated.getString("tr_sentence"));
+        Data.Builder builder = new Data.Builder();
+        builder.setName(json.getString("name"));
+        builder.setSentence(json.getString("sentence"));
+        builder.setTranslatedName(translated.getString("tr_name"));
+        builder.setTranslatedSentence(translated.getString("tr_sentence"));
+        builder.setFace(json.getString("face"));
+        return builder.build();
     }
 }

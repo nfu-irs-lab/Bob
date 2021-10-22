@@ -1,24 +1,32 @@
 [
   {
-    "name": "happy",
-    "sentence": "I am happy.",
-    "languages": [
-      {
-        "code": "zh_TW",
-        "tr_name": "開心",
-        "tr_sentence": "我很開心。"
-      }
-    ]
+    "id": "happy",
+    "data": {
+      "name": "happy",
+      "sentence": "I am happy.",
+      "face":  "happy",
+      "languages": [
+        {
+          "code": "zh_TW",
+          "tr_name": "開心",
+          "tr_sentence": "我很開心。"
+        }
+      ]
+    }
   },
   {
-    "name": "sad",
-    "sentence": "I am sad.",
-    "languages": [
-      {
-        "code": "zh_TW",
-        "tr_name": "難過",
-        "tr_sentence": "我很難過。"
-      }
-    ]
+    "id": "sad",
+    "data": {
+      "name": "sad",
+      "sentence": "I am sad.",
+      "face":  "sad",
+      "languages": [
+        {
+          "code": "zh_TW",
+          "tr_name": "難過",
+          "tr_sentence": "我很難過。"
+        }
+      ]
+    }
   }
 ]
