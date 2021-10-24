@@ -7,6 +7,9 @@ import android.speech.tts.TextToSpeech;
 import android.support.v4.app.Fragment;
 import android.util.Base64;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.example.hiwin.teacher_version_bob.R;
 import com.example.hiwin.teacher_version_bob.data.DataSpeaker;
@@ -142,10 +145,10 @@ public class ObjectDetectActivity extends DetectActivity {
 
     public Fragment getDescriptionFragment(Data data, Fragment next, String nextId) {
         final DescriptionFragment descriptionFragment = new DescriptionFragment();
-        descriptionFragment.setShowListener((imageView, textView1, textView2) -> {
-            imageView.setImageDrawable(context.getDrawable(getDrawableId(data)));
-            textView1.setText(data.getName());
-            textView2.setText(data.getTranslatedName());
+        descriptionFragment.setShowListener((views) -> {
+            ((ImageView) views[0]).setImageDrawable(context.getDrawable(getDrawableId(data)));
+            ((TextView) views[1]).setText(data.getName());
+            ((TextView) views[2]).setText(data.getTranslatedName());
         });
 
         descriptionFragment.setListener(new FragmentFlowListener(next, nextId) {
@@ -187,9 +190,9 @@ public class ObjectDetectActivity extends DetectActivity {
             }
         });
 
-        fragment.setShowListener((textView1, textView2) -> {
-            textView1.setText(object.getSentence());
-            textView2.setText(object.getTranslatedSentence());
+        fragment.setShowListener(views -> {
+            ((TextView) views[0]).setText(object.getSentence());
+            ((TextView) views[1]).setText(object.getTranslatedSentence());
         });
         return fragment;
 
@@ -216,5 +219,11 @@ public class ObjectDetectActivity extends DetectActivity {
                 return R.drawable.object_bottle;
         }
         throw new RuntimeException("Drawable not found");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        speaker.shutdown();
     }
 }

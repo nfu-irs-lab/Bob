@@ -7,6 +7,8 @@ import android.speech.tts.TextToSpeech;
 import android.support.v4.app.Fragment;
 import android.util.Base64;
 import android.util.Log;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.example.hiwin.teacher_version_bob.R;
 import com.example.hiwin.teacher_version_bob.data.DataSpeaker;
@@ -69,12 +71,12 @@ public class FaceDetectActivity extends DetectActivity {
         postFragment(fragment, "default");
     }
 
-    private void showObjectAndFace(final Data object) throws IOException {
+    private void showFace(final Data object) throws IOException {
         Fragment finalFaceFragment = getFinalFaceFragment(object.getFace(), null, "null");
         Fragment exampleFragment = getExampleFragment(object, finalFaceFragment, "face2");
         Fragment faceFragment = getFaceFragment(object, exampleFragment, "example");
-        Fragment objectFragment = getObjectFragment(object, faceFragment, "face");
-        postFragment(objectFragment, "object");
+        Fragment descriptionFragment = getDescriptionFragment(object, faceFragment, "face");
+        postFragment(descriptionFragment, "description");
     }
 
     @Override
@@ -86,7 +88,7 @@ public class FaceDetectActivity extends DetectActivity {
 
             try {
                 detect_pause();
-                showObjectAndFace((new JSONDataParser("zh_TW")).parse(new JSONObject(content)));
+                showFace((new JSONDataParser("zh_TW")).parse(new JSONObject(content)));
             } catch (Exception e) {
                 Log.e(THIS_LOG_TAG, e.getMessage());
             }
@@ -116,6 +118,7 @@ public class FaceDetectActivity extends DetectActivity {
     }
 
     private Fragment getFaceFragment(Data object, Fragment next, String nextId) throws IOException {
+
         FaceFragment faceFragment = new FaceFragment();
         faceFragment.warp(context, object.getFace(), 5, false);
 
@@ -141,15 +144,28 @@ public class FaceDetectActivity extends DetectActivity {
         return faceFragment;
     }
 
-    public Fragment getObjectFragment(Data data, Fragment next, String nextId) {
+    public Fragment getDescriptionFragment(Data data, Fragment next, String nextId) {
         final DescriptionFragment descriptionFragment = new DescriptionFragment();
-        descriptionFragment.setShowListener((imageView, textView1, textView2) -> {
-            imageView.setImageDrawable(context.getDrawable(getDrawableId(data)));
-            textView1.setText(data.getName());
-            textView2.setText(data.getTranslatedName());
+        descriptionFragment.setShowListener((views) -> {
+            ((ImageView) views[0]).setImageDrawable(context.getDrawable(getDrawableId(data)));
+            ((TextView) views[1]).setText(data.getName());
+            ((TextView) views[2]).setText(data.getTranslatedName());
         });
 
         descriptionFragment.setListener(new FragmentFlowListener(next, nextId) {
+            @Override
+            public void start() {
+                super.start();
+                new Thread(() -> {
+                    try {
+                        Thread.sleep(10000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    end();
+                }).start();
+            }
+
             @Override
             protected void postFragment(Fragment next, String nextId) {
                 FaceDetectActivity.this.postFragment(next, nextId);
@@ -166,6 +182,18 @@ public class FaceDetectActivity extends DetectActivity {
             protected void postFragment(Fragment next, String nextId) {
                 FaceDetectActivity.this.postFragment(next, nextId);
             }
+
+            @Override
+            public void start() {
+                super.start();
+                speaker.speakExample(object);
+                speaker.setSpeakerListener(this::end);
+            }
+        });
+
+        fragment.setShowListener(views -> {
+            ((TextView) views[0]).setText(object.getSentence());
+            ((TextView) views[1]).setText(object.getTranslatedSentence());
         });
         return fragment;
 
@@ -181,4 +209,11 @@ public class FaceDetectActivity extends DetectActivity {
         }
         throw new RuntimeException("Drawable not found");
     }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        speaker.shutdown();
+    }
+
 }
