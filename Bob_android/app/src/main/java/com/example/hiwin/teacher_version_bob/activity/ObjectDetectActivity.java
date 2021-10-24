@@ -3,6 +3,7 @@ package com.example.hiwin.teacher_version_bob.activity;
 import android.app.Service;
 import android.content.Context;
 import android.os.*;
+import android.speech.tts.TextToSpeech;
 import android.support.v4.app.Fragment;
 import android.util.Base64;
 import android.util.Log;
@@ -28,7 +29,16 @@ public class ObjectDetectActivity extends DetectActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = this;
-        speaker = new DataSpeaker(context);
+        speaker = new DataSpeaker(new TextToSpeech(context, status -> {
+            if (status != TextToSpeech.ERROR) {
+
+                Log.d(THIS_LOG_TAG, "TextToSpeech is initialized");
+                Toast.makeText(context, "TextToSpeech is initialized", Toast.LENGTH_SHORT).show();
+            } else {
+                Log.d(THIS_LOG_TAG, "TextToSpeech initializing error");
+                Toast.makeText(context, "TextToSpeech initializing error", Toast.LENGTH_SHORT).show();
+            }
+        }));
     }
 
     private void onComplete() {
@@ -39,7 +49,7 @@ public class ObjectDetectActivity extends DetectActivity {
         Fragment finalFaceFragment = getFinalFaceFragment(object.getFace(), null, "null");
         Fragment exampleFragment = getExampleFragment(object, finalFaceFragment, "face2");
         Fragment faceFragment = getFaceFragment(object, exampleFragment, "example");
-        Fragment objectFragment = getObjectFragment(object, faceFragment, "face");
+        Fragment objectFragment = getDescriptionFragment(object, faceFragment, "face");
         postFragment(objectFragment, "object");
     }
 
@@ -77,7 +87,7 @@ public class ObjectDetectActivity extends DetectActivity {
                 if (isConnected())
                     detect_start();
                 else {
-                    Toast.makeText(ObjectDetectActivity.this,"Not connected",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ObjectDetectActivity.this, "Not connected", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -130,32 +140,56 @@ public class ObjectDetectActivity extends DetectActivity {
         return faceFragment;
     }
 
-    public Fragment getObjectFragment(Data data, Fragment next, String nextId) {
-        final ShowerFragment showerFragment = new ShowerFragment();
-        showerFragment.setShowerListener((imageView, textView1, textView2) -> {
+    public Fragment getDescriptionFragment(Data data, Fragment next, String nextId) {
+        final DescriptionFragment descriptionFragment = new DescriptionFragment();
+        descriptionFragment.setShowListener((imageView, textView1, textView2) -> {
             imageView.setImageDrawable(context.getDrawable(getDrawableId(data)));
             textView1.setText(data.getName());
             textView2.setText(data.getTranslatedName());
         });
 
-        showerFragment.setListener(new FragmentFlowListener(next, nextId) {
+        descriptionFragment.setListener(new FragmentFlowListener(next, nextId) {
+            @Override
+            public void start() {
+                super.start();
+                new Thread(() -> {
+                    try {
+                        Thread.sleep(10000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    end();
+                }).start();
+            }
+
             @Override
             protected void postFragment(Fragment next, String nextId) {
                 ObjectDetectActivity.this.postFragment(next, nextId);
             }
         });
 
-        return showerFragment;
+        return descriptionFragment;
     }
 
     private Fragment getExampleFragment(Data object, Fragment next, String nextId) {
-        final ExampleShowerFragment fragment = new ExampleShowerFragment();
-        fragment.warp(object);
+        final ExampleFragment fragment = new ExampleFragment();
         fragment.setListener(new FragmentFlowListener(next, nextId) {
             @Override
             protected void postFragment(Fragment next, String nextId) {
                 ObjectDetectActivity.this.postFragment(next, nextId);
             }
+
+            @Override
+            public void start() {
+                super.start();
+                speaker.speakExample(object);
+                speaker.setSpeakerListener(this::end);
+            }
+        });
+
+        fragment.setShowListener((textView1, textView2) -> {
+            textView1.setText(object.getSentence());
+            textView2.setText(object.getTranslatedSentence());
         });
         return fragment;
 

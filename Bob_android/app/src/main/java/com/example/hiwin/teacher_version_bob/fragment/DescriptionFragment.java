@@ -12,11 +12,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.example.hiwin.teacher_version_bob.R;
 
-public class ShowerFragment extends Fragment {
+public class DescriptionFragment extends Fragment {
 
-    private ShowerListener showerListener;
+    private ShowListener showListener;
 
-    public interface ShowerListener{
+    public interface ShowListener {
         void onShow(ImageView imageView,TextView textView1,TextView textView2);
     }
 
@@ -44,20 +44,7 @@ public class ShowerFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         if (listener != null)
             listener.start();
-
-        new Thread(() -> {
-            try {
-                Thread.sleep(10000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            if (listener != null)
-                listener.end();
-        }).start();
-
-
-        showerListener.onShow(imageView, textView1, textView2);
+        showListener.onShow(imageView, textView1, textView2);
     }
 
 
@@ -65,7 +52,7 @@ public class ShowerFragment extends Fragment {
         this.listener = listener;
     }
 
-    public void setShowerListener(ShowerListener showerListener){
-        this.showerListener =showerListener;
+    public void setShowListener(ShowListener showListener){
+        this.showListener = showListener;
     }
 }

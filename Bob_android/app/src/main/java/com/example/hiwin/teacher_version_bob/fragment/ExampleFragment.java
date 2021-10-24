@@ -9,25 +9,24 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import com.example.hiwin.teacher_version_bob.R;
-import com.example.hiwin.teacher_version_bob.data.DataSpeaker;
-import com.example.hiwin.teacher_version_bob.data.data.Data;
 
-public class ExampleShowerFragment extends Fragment {
-    private Data object;
-    private TextView tr_sentence;
-    private TextView sentence;
-    private DataSpeaker speaker;
+public class ExampleFragment extends Fragment {
+    public interface ShowListener {
+        void onShow(TextView textView1, TextView textView2);
+    }
 
+    private TextView textView2;
+    private TextView textView1;
     private FragmentListener listener;
+    private ShowListener showListener;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_example, container, false);
         View layout = root.findViewById(R.id.example_layout);
-        speaker = new DataSpeaker(getContext());
-        this.sentence = (TextView) layout.findViewById(R.id.example_sentence);
-        this.tr_sentence = (TextView) layout.findViewById(R.id.example_tr_sentence);
+        this.textView1 = (TextView) layout.findViewById(R.id.example_sentence);
+        this.textView2 = (TextView) layout.findViewById(R.id.example_tr_sentence);
 
         return root;
     }
@@ -35,22 +34,17 @@ public class ExampleShowerFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if(listener!=null)
+        if (listener != null)
             listener.start();
-        sentence.setText(object.getSentence());
-        tr_sentence.setText(object.getTranslatedSentence());
-        speaker.speakExample(object);
-        speaker.setSpeakerListener(() -> {
-            if(listener!=null)
-                listener.end();
-        });
-    }
 
-    public void warp(Data object) {
-        this.object = object;
+        showListener.onShow(textView1, textView2);
     }
 
     public void setListener(FragmentListener listener) {
         this.listener = listener;
+    }
+
+    public void setShowListener(ShowListener showListener) {
+        this.showListener = showListener;
     }
 }

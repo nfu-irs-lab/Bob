@@ -3,6 +3,7 @@ package com.example.hiwin.teacher_version_bob.activity;
 import android.app.Service;
 import android.content.Context;
 import android.os.*;
+import android.speech.tts.TextToSpeech;
 import android.support.v4.app.Fragment;
 import android.util.Base64;
 import android.util.Log;
@@ -27,8 +28,18 @@ public class FaceDetectActivity extends DetectActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        speaker = new DataSpeaker(this);
         context = this;
+
+        speaker = new DataSpeaker(new TextToSpeech(context, status -> {
+            if (status != TextToSpeech.ERROR) {
+
+                Log.d(THIS_LOG_TAG, "TextToSpeech is initialized");
+                Toast.makeText(context, "TextToSpeech is initialized", Toast.LENGTH_SHORT).show();
+            } else {
+                Log.d(THIS_LOG_TAG, "TextToSpeech initializing error");
+                Toast.makeText(context, "TextToSpeech initializing error", Toast.LENGTH_SHORT).show();
+            }
+        }));
     }
 
 
@@ -51,7 +62,7 @@ public class FaceDetectActivity extends DetectActivity {
                 if (isConnected())
                     detect_start();
                 else {
-                    Toast.makeText(FaceDetectActivity.this,"Not connected",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(FaceDetectActivity.this, "Not connected", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -131,26 +142,25 @@ public class FaceDetectActivity extends DetectActivity {
     }
 
     public Fragment getObjectFragment(Data data, Fragment next, String nextId) {
-        final ShowerFragment showerFragment = new ShowerFragment();
-        showerFragment.setShowerListener((imageView, textView1, textView2) -> {
+        final DescriptionFragment descriptionFragment = new DescriptionFragment();
+        descriptionFragment.setShowListener((imageView, textView1, textView2) -> {
             imageView.setImageDrawable(context.getDrawable(getDrawableId(data)));
             textView1.setText(data.getName());
             textView2.setText(data.getTranslatedName());
         });
 
-        showerFragment.setListener(new FragmentFlowListener(next, nextId) {
+        descriptionFragment.setListener(new FragmentFlowListener(next, nextId) {
             @Override
             protected void postFragment(Fragment next, String nextId) {
                 FaceDetectActivity.this.postFragment(next, nextId);
             }
         });
 
-        return showerFragment;
+        return descriptionFragment;
     }
 
     private Fragment getExampleFragment(Data object, Fragment next, String nextId) {
-        final ExampleShowerFragment fragment = new ExampleShowerFragment();
-        fragment.warp(object);
+        final ExampleFragment fragment = new ExampleFragment();
         fragment.setListener(new FragmentFlowListener(next, nextId) {
             @Override
             protected void postFragment(Fragment next, String nextId) {
@@ -160,7 +170,6 @@ public class FaceDetectActivity extends DetectActivity {
         return fragment;
 
     }
-
 
 
     private int getDrawableId(Data object) {
