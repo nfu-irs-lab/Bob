@@ -10,16 +10,12 @@ import cv2
 from deepface import DeepFace
 from serial import SerialException, SerialTimeoutException
 
-from bluetooth.concrete.device import SerialBluetoothDevice
 from bluetooth.concrete.package import Base64LinePackage, StringPackage
 from bluetooth.framework.monitor import SerialListener
 from bluetooth.framework.package import Package
 from dbctrl.concrete import queryJsonFromName
 from dbctrl.concrete.database import FileDatabase
-from dbctrl.concrete.face import JSONFaceParser, Face
-from dbctrl.concrete.object import JSONObjectParser
-from robotics.concrete.command import RoboticsCommandFactory
-from robotics.concrete.robot import RoboticsRobot
+from dbctrl.concrete.json_data import JSONData, JSONDataParser
 from robotics.framework.action import CSVAction, Action
 from serial.tools.list_ports_linux import comports
 from serial_utils import getRobot, getBluetooth
@@ -41,7 +37,7 @@ class RobotSerialListener(SerialListener):
 
 db_location = f"db{os.path.sep}faces.json"
 db_charset = 'UTF-8'
-db = FileDatabase(open(db_location, encoding=db_charset), JSONFaceParser())
+db = FileDatabase(open(db_location, encoding=db_charset), JSONDataParser())
 robot = getRobot()
 bt = getBluetooth(RobotSerialListener())
 detect = True
@@ -96,10 +92,11 @@ while True:
         cv2.imshow('result', frame)
         face_type = result['dominant_emotion']
         print("now face emotion: " + face_type)
-        face: Optional[Face] = db.queryForId(face_type)
-        if face is not None:
-            js = queryJsonFromName(face.name, open(db_location, encoding=db_charset))
-            jsonString = json.dumps(js, ensure_ascii=False)
+
+        obj: Optional[JSONData] = db.queryForId(face_type)
+        if obj is not None:
+            data: json = obj.getData()
+            jsonString = json.dumps(data, ensure_ascii=False)
             print(jsonString)
             pushDataToBluetooth(Base64LinePackage(StringPackage(jsonString, 'UTF-8')))
     except Exception as e:

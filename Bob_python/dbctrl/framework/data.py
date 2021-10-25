@@ -8,6 +8,10 @@ class Data(ABC):
     def getQueryId(self):
         pass
 
+    @abc.abstractmethod
+    def getData(self):
+        pass
+
 
 class DataParser(ABC):
     @abc.abstractmethod

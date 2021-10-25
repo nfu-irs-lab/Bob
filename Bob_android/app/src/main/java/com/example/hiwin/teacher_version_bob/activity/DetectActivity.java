@@ -48,6 +48,10 @@ public abstract class DetectActivity extends AppCompatActivity {
 
     protected abstract void showDefault();
 
+    protected boolean isConnected() {
+        return connected == Connected.True;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

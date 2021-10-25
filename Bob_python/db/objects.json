@@ -1,106 +1,138 @@
 [
   {
-    "name": "car",
-    "group": "transportation",
-    "sentence": "My new car is broken.",
-    "action": "car",
-    "languages": [
-      {
-        "code": "zh_TW",
-        "tr_name": "車子",
-        "tr_sentence": "我的新車壞掉了。"
-      }
-    ]
+    "id": "bird",
+    "data": {
+      "name": "bird",
+      "group": "creature",
+      "sentence": "The bird is flying in the sky.",
+      "face": "happy",
+      "action": "bird.csv",
+      "languages": [
+        {
+          "code": "zh_TW",
+          "tr_name": "鳥",
+          "tr_sentence": "鳥兒在天上飛。"
+        }
+      ]
+    }
   },
   {
-    "name": "cake",
-    "group": "food",
-    "sentence": "This cake is delicious",
-    "action": "cake",
-    "languages": [
-      {
-        "code": "zh_TW",
-        "tr_name": "蛋糕",
-        "tr_sentence": "這個蛋糕很好吃。"
-      }
-    ]
+    "id": "bottle",
+    "data": {
+      "name": "bottle",
+      "group": "creature",
+      "sentence": "His bottle is very big",
+      "face": "love_eyes",
+      "action": "bottle.csv",
+      "languages": [
+        {
+          "code": "zh_TW",
+          "tr_name": "瓶子",
+          "tr_sentence": "她的瓶子非常大。"
+        }
+      ]
+    }
   },
   {
-    "name": "knife",
-    "group": "tool",
-    "sentence": "Don't point the knife at me.",
-    "action": "knife",
-    "languages": [
-      {
-        "code": "zh_TW",
-        "tr_name": "刀",
-        "tr_sentence": "不要用刀子指著我。"
-      }
-    ]
+    "id": "bowl",
+    "data": {
+      "name": "bowl",
+      "group": "tool",
+      "sentence": "That bowl is really beautiful.",
+      "face": "love_eyes",
+      "action": "bowl.csv",
+      "languages": [
+        {
+          "code": "zh_TW",
+          "tr_name": "碗",
+          "tr_sentence": "那碗真漂亮。"
+        }
+      ]
+    }
   },
   {
-    "name": "bowl",
-    "group": "tool",
-    "sentence": "That bowl is really beautiful.",
-    "action": "bowl",
-    "languages": [
-      {
-        "code": "zh_TW",
-        "tr_name": "碗",
-        "tr_sentence": "那碗真漂亮。"
-      }
-    ]
+    "id": "cake",
+    "data": {
+      "name": "cake",
+      "group": "food",
+      "sentence": "This cake is delicious",
+      "face": "happy",
+      "action": "cake.csv",
+      "languages": [
+        {
+          "code": "zh_TW",
+          "tr_name": "蛋糕",
+          "tr_sentence": "這個蛋糕很好吃。"
+        }
+      ]
+    }
   },
   {
-    "name": "bird",
-    "group": "creature",
-    "sentence": "The bird is flying in the sky.",
-    "action": "bird",
-    "languages": [
-      {
-        "code": "zh_TW",
-        "tr_name": "鳥",
-        "tr_sentence": "鳥兒在天上飛。"
-      }
-    ]
+    "id": "car",
+    "data": {
+      "group": "transportation",
+      "sentence": "My new car is broken.",
+      "face": "sad",
+      "action": "car.csv",
+      "name": "car",
+      "languages": [
+        {
+          "code": "zh_TW",
+          "tr_name": "車子",
+          "tr_sentence": "我的新車壞掉了。"
+        }
+      ]
+    }
   },
   {
-    "name": "cat",
-    "group": "creature",
-    "sentence": "The cat is very cute",
-    "action": "cat",
-    "languages": [
-      {
-        "code": "zh_TW",
-        "tr_name": "貓",
-        "tr_sentence": "貓很可愛"
-      }
-    ]
+    "id": "cat",
+    "data": {
+      "name": "cat",
+      "group": "creature",
+      "sentence": "The cat is very cute",
+      "face": "love_eyes",
+      "action": "cat.csv",
+      "languages": [
+        {
+          "code": "zh_TW",
+          "tr_name": "貓",
+          "tr_sentence": "貓很可愛"
+        }
+      ]
+    }
   },
   {
-    "name": "person",
-    "group": "creature",
-    "sentence": "She is a kind person ",
-    "action": "person",
-    "languages": [
-      {
-        "code": "zh_TW",
-        "tr_name": "人",
-        "tr_sentence": "她是一個和藹的人"
-      }
-    ]
+    "id": "knife",
+    "data": {
+      "name": "knife",
+      "group": "tool",
+      "sentence": "Don't point the knife at me.",
+      "face": "sad",
+      "action": "knife.csv",
+      "languages": [
+        {
+          "code": "zh_TW",
+          "tr_name": "刀",
+          "tr_sentence": "不要用刀子指著我。"
+        }
+      ]
+    }
   },
   {
-    "name": "bottle",
-    "group": "creature",
-    "sentence": "His bottle is very big",
-    "action": "bottle",
-    "languages": [
-      {
-        "code": "zh_TW",
-        "tr_name": "瓶子",
-        "tr_sentence": "她的瓶子非常大。"
-      }
-    ]
+    "id": "person",
+    "data": {
+      "name": "human",
+      "group": "creature",
+      "sentence": "I am a human.",
+      "face": "happy",
+      "action": "person.csv",
+      "languages": [
+        {
+          "code": "zh_TW",
+          "tr_name": "人",
+          "tr_sentence": "我是一個人類"
+        }
+      ]
+    }
   }
 ]

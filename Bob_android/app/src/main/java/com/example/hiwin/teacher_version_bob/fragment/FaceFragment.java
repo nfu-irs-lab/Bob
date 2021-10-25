@@ -10,24 +10,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import com.example.hiwin.teacher_version_bob.R;
+import com.example.hiwin.teacher_version_bob.data.data.Face;
 import pl.droidsonroids.gif.GifDrawable;
 
 import java.io.IOException;
 
 public class FaceFragment extends Fragment {
-
-    public enum Face {
-        sad(R.raw.face_cry), happy(R.raw.face_happy),love_eyes(R.raw.face_love_eyes),surprise(R.raw.face_surprise);
-        private final int id;
-
-        Face(int id) {
-            this.id = id;
-        }
-
-        public int getId() {
-            return id;
-        }
-    }
 
     private GifDrawable drawable;
     private FragmentListener listener;
@@ -48,8 +36,8 @@ public class FaceFragment extends Fragment {
         start();
     }
 
-    public void warp(Context context, Face face,int loopCount,boolean endByAnimation) throws IOException {
-        drawable = new GifDrawable(context.getResources(), face.getId());
+    public void warp(Context context, Face face, int loopCount, boolean endByAnimation) throws IOException {
+        drawable = new GifDrawable(context.getResources(), face.getGifId());
         drawable.setLoopCount(loopCount);
         drawable.stop();
         if (endByAnimation)
