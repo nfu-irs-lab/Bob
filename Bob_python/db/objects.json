@@ -117,22 +117,5 @@
         }
       ]
     }
-  },
-  {
-    "id": "person",
-    "data": {
-      "name": "human",
-      "group": "creature",
-      "sentence": "I am a human.",
-      "face": "happy",
-      "action": "person.csv",
-      "languages": [
-        {
-          "code": "zh_TW",
-          "tr_name": "人",
-          "tr_sentence": "我是一個人類"
-        }
-      ]
-    }
   }
 ]
