@@ -147,7 +147,7 @@ public class FaceDetectActivity extends DetectActivity {
     public Fragment getDescriptionFragment(Data data, Fragment next, String nextId) {
         final DescriptionFragment descriptionFragment = new DescriptionFragment();
         descriptionFragment.setShowListener((views) -> {
-            ((ImageView) views[0]).setImageDrawable(context.getDrawable(getDrawableId(data)));
+            ((ImageView) views[0]).setImageDrawable(context.getDrawable(data.getFace().getGifId()));
             ((TextView) views[1]).setText(data.getName());
             ((TextView) views[2]).setText(data.getTranslatedName());
         });
@@ -200,15 +200,6 @@ public class FaceDetectActivity extends DetectActivity {
     }
 
 
-    private int getDrawableId(Data object) {
-        switch (object.getName()) {
-            case "happy":
-                return R.drawable.face_smile;
-            case "sad":
-                return R.drawable.face_sad;
-        }
-        throw new RuntimeException("Drawable not found");
-    }
 
     @Override
     public void onStop() {
