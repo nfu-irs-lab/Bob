@@ -110,3 +110,4 @@ try:
 except KeyboardInterrupt as e:
     print("Interrupted!!")
     detector.stop()
+    bt.close()

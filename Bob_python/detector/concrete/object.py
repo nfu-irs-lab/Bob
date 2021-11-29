@@ -200,4 +200,3 @@ class ObjectDetector(Detector):
 
         if update:
             strip_optimizer(weights)  # update model (to fix SourceChangeWarning)
-        pass
