@@ -42,9 +42,9 @@ from serial_utils import getRobot, getBluetooth
 
 
 class DetectedObject:
-    def __init__(self, name: str, number: int):
+    def __init__(self, name: str, confidence: float):
+        self.confidence = confidence
         self.name = name
-        self.number = number
 
 
 class RobotSerialListener(SerialListener):
@@ -96,7 +96,7 @@ def pushDataToBluetooth(package: Package):
         bt_done = True
 
 
-def onDetected(objectList: List[DetectedObject]):
+def onTrigger(objectList: List[DetectedObject]):
     global robot_done
     global bt_done
 
@@ -104,6 +104,9 @@ def onDetected(objectList: List[DetectedObject]):
         return
 
     for dobj in objectList:
+        if dobj.confidence < 0.65:
+            continue
+
         obj: Optional[JSONData] = db.queryForId(dobj.name)
         if obj is not None:
             data: json = obj.getData()
@@ -242,12 +245,13 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
                 # Print results
                 for c in det[:, -1].unique():
                     n = (det[:, -1] == c).sum()  # detections per class
-                    detectedObjectList.append(DetectedObject(names[int(c)], n.item()))
-
                     s += f"{n} {names[int(c)]}{'s' * (n > 1)}, "  # add to string
 
                 # Write results
                 for *xyxy, conf, cls in reversed(det):
+                    c = int(cls)  # integer class
+                    print('%s(%0.2f)' % (names[c], conf), end=',')
+                    detectedObjectList.append(DetectedObject(names[c], float(conf)))
                     # if save_txt:  # Write to file
                     #     xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()  # normalized xywh
                     #     line = (cls, *xywh, conf) if save_conf else (cls, *xywh)  # label format
@@ -255,16 +259,15 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
                     #         f.write(('%g ' * len(line)).rstrip() % line + '\n')
 
                     if save_img or save_crop or view_img:  # Add bbox to image
-                        c = int(cls)  # integer class
                         label = None if hide_labels else (names[c] if hide_conf else f'{names[c]} {conf:.2f}')
                         plot_one_box(xyxy, im0, label=label, color=colors(c, True), line_thickness=line_thickness)
                         if save_crop:
                             save_one_box(xyxy, imc, file=save_dir / 'crops' / names[c] / f'{p.stem}.jpg', BGR=True)
-
+                print()
             # Print time (inference + NMS)
-            print(f'{s}Done. ({t2 - t1:.3f}s)')
+            # print(f'{s}Done. ({t2 - t1:.3f}s)')
 
-            onDetected(detectedObjectList)
+            onTrigger(detectedObjectList)
 
             # Stream results
             if view_img:
