@@ -111,7 +111,7 @@ def onTrigger(objectList: List[DetectedObject]):
         if obj is not None:
             data: json = obj.getData()
             jsonString = json.dumps(data, ensure_ascii=False)
-            print(jsonString)
+            print("Send:", jsonString)
             robot_done = False
             bt_done = True
             bt_thread = threading.Thread(target=pushDataToBluetooth,
@@ -120,6 +120,15 @@ def onTrigger(objectList: List[DetectedObject]):
             robot_thread = threading.Thread(target=pushActionToRobot, args=(getActionFromFileName(data['action']),))
             robot_thread.start()
             break
+
+
+def loadDataset(webcam: bool, source, imgsz, stride):
+    if webcam:
+        cudnn.benchmark = True  # set True to speed up constant image size inference
+        return LoadStreams(source, img_size=imgsz, stride=stride)
+    else:
+        return LoadImages(source, img_size=imgsz, stride=stride)
+    pass
 
 
 @torch.no_grad()
@@ -132,9 +141,6 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
         device='',  # cuda device, i.e. 0 or 0,1,2,3 or cpu
         view_img=False,  # show results
         save_txt=False,  # save results to *.txt
-        save_conf=False,  # save confidences in --save-txt labels
-        save_crop=False,  # save cropped prediction boxes
-        nosave=False,  # do not save images/videos
         classes=None,  # filter by class: --class 0, or --class 0 2 3
         agnostic_nms=False,  # class-agnostic NMS
         augment=False,  # augmented inference
@@ -148,7 +154,7 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
         hide_conf=False,  # hide confidences
         half=False,  # use FP16 half-precision inference
         ):
-    save_img = not nosave and not source.endswith('.txt')  # save inference images
+    # save_img = not nosave and not source.endswith('.txt')  # save inference images
     webcam = source.isnumeric() or source.endswith('.txt') or source.lower().startswith(
         ('rtsp://', 'rtmp://', 'http://', 'https://'))
 
@@ -183,18 +189,12 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
     # Dataloader
     if webcam:
         view_img = check_imshow()
-        cudnn.benchmark = True  # set True to speed up constant image size inference
-        dataset = LoadStreams(source, img_size=imgsz, stride=stride)
-        bs = len(dataset)  # batch_size
-    else:
-        dataset = LoadImages(source, img_size=imgsz, stride=stride)
-        bs = 1  # batch_size
-    vid_path, vid_writer = [None] * bs, [None] * bs
+
+    dataset = loadDataset(webcam, source, imgsz, stride)
 
     # Run inference
     if pt and device.type != 'cpu':
         model(torch.zeros(1, 3, imgsz, imgsz).to(device).type_as(next(model.parameters())))  # run once
-    t0 = time.time()
     for path, img, im0s, vid_cap in dataset:
         if not detect:
             continue
@@ -209,7 +209,6 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
             img = img[None]  # expand for batch dim
 
         # Inference
-        t1 = time_sync()
         if pt:
             visualize = increment_path(save_dir / Path(path).stem, mkdir=True) if visualize else False
             pred = model(img, augment=augment, visualize=visualize)[0]
@@ -218,7 +217,6 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
 
         # NMS
         pred = non_max_suppression(pred, conf_thres, iou_thres, classes, agnostic_nms, max_det=max_det)
-        t2 = time_sync()
 
         # Second-stage classifier (optional)
         if classify:
@@ -227,16 +225,11 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
         # Process predictions
         for i, det in enumerate(pred):  # detections per image
             if webcam:  # batch_size >= 1
-                p, s, im0, frame = path[i], f'{i}: ', im0s[i].copy(), dataset.count
+                p, im0, frame = path[i], im0s[i].copy(), dataset.count
             else:
-                p, s, im0, frame = path, '', im0s.copy(), getattr(dataset, 'frame', 0)
+                p, im0, frame = path, im0s.copy(), getattr(dataset, 'frame', 0)
 
             p = Path(p)  # to Path
-            save_path = str(save_dir / p.name)  # img.jpg
-            txt_path = str(save_dir / 'labels' / p.stem) + ('' if dataset.mode == 'image' else f'_{frame}')  # img.txt
-            s += '%gx%g ' % img.shape[2:]  # print string
-            gn = torch.tensor(im0.shape)[[1, 0, 1, 0]]  # normalization gain whwh
-            imc = im0.copy() if save_crop else im0  # for save_crop
 
             detectedObjectList: List[DetectedObject] = []
             if len(det):
@@ -245,62 +238,26 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
                 # Print results
                 for c in det[:, -1].unique():
                     n = (det[:, -1] == c).sum()  # detections per class
-                    s += f"{n} {names[int(c)]}{'s' * (n > 1)}, "  # add to string
 
+                print("Detected:", end='\t')
                 # Write results
                 for *xyxy, conf, cls in reversed(det):
                     c = int(cls)  # integer class
                     print('%s(%0.2f)' % (names[c], conf), end=',')
                     detectedObjectList.append(DetectedObject(names[c], float(conf)))
-                    # if save_txt:  # Write to file
-                    #     xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()  # normalized xywh
-                    #     line = (cls, *xywh, conf) if save_conf else (cls, *xywh)  # label format
-                    #     with open(txt_path + '.txt', 'a') as f:
-                    #         f.write(('%g ' * len(line)).rstrip() % line + '\n')
-
-                    if save_img or save_crop or view_img:  # Add bbox to image
+                    if view_img:  # add bbox to image
                         label = None if hide_labels else (names[c] if hide_conf else f'{names[c]} {conf:.2f}')
                         plot_one_box(xyxy, im0, label=label, color=colors(c, True), line_thickness=line_thickness)
-                        if save_crop:
-                            save_one_box(xyxy, imc, file=save_dir / 'crops' / names[c] / f'{p.stem}.jpg', BGR=True)
-                print()
-            # Print time (inference + NMS)
-            # print(f'{s}Done. ({t2 - t1:.3f}s)')
-
-            onTrigger(detectedObjectList)
+                print(end='\n')
 
             # Stream results
             if view_img:
                 cv2.imshow(str(p), im0)
                 cv2.waitKey(1)  # 1 millisecond
-
-            # Save results (image with detections)
-            if save_img:
-                if dataset.mode == 'image':
-                    cv2.imwrite(save_path, im0)
-                else:  # 'video' or 'stream'
-                    if vid_path[i] != save_path:  # new video
-                        vid_path[i] = save_path
-                        if isinstance(vid_writer[i], cv2.VideoWriter):
-                            vid_writer[i].release()  # release previous video writer
-                        if vid_cap:  # video
-                            fps = vid_cap.get(cv2.CAP_PROP_FPS)
-                            w = int(vid_cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-                            h = int(vid_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-                        else:  # stream
-                            fps, w, h = 30, im0.shape[1], im0.shape[0]
-                            save_path += '.mp4'
-                        vid_writer[i] = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'mp4v'), fps, (w, h))
-                    vid_writer[i].write(im0)
-
-    if save_txt or save_img:
-        s = f"\n{len(list(save_dir.glob('labels/*.txt')))} labels saved to {save_dir / 'labels'}" if save_txt else ''
-        print(f"Results saved to {save_dir}{s}")
+            onTrigger(detectedObjectList)
 
     if update:
         strip_optimizer(weights)  # update model (to fix SourceChangeWarning)
-
-    print(f'Done. ({time.time() - t0:.3f}s)')
 
 
 if __name__ == "__main__":
