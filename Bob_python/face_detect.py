@@ -11,32 +11,9 @@ from bluetooth.framework.package import Package
 from dbctrl.concrete.database import FileDatabase
 from dbctrl.concrete.json_data import JSONData, JSONDataParser
 from detector.concrete.face import FaceDetector
-from detector.framework.detector import DetectListener, Detector
+from detector.framework.detector import DetectListener
 from robotics.framework.action import Action
 from serial_utils import getRobot, getBluetooth
-
-
-class RobotSerialListener(SerialListener):
-    def __init__(self, d: Detector):
-        self.detector = d
-
-    def onReceive(self, data: bytes):
-        d = base64.decodebytes(data)
-        cmd = d.decode()
-        if cmd == "START_DETECT":
-            self.detector.start()
-            print("Start detect")
-        elif cmd == "PAUSE_DETECT":
-            self.detector.pause()
-            print("Pause detect")
-
-
-db_location = f"db{os.path.sep}faces.json"
-db_charset = 'UTF-8'
-db = FileDatabase(open(db_location, encoding=db_charset), JSONDataParser())
-robot = getRobot()
-robot_done = True
-bt_done = True
 
 
 def pushActionToRobot(action: Action):
@@ -59,6 +36,18 @@ def pushDataToBluetooth(package: Package):
         bt_done = True
 
 
+class RobotControlListener(SerialListener):
+    def onReceive(self, data: bytes):
+        d = base64.decodebytes(data)
+        cmd = d.decode()
+        if cmd == "START_DETECT":
+            detector.start()
+            print("Start detect")
+        elif cmd == "PAUSE_DETECT":
+            detector.pause()
+            print("Pause detect")
+
+
 class AListener(DetectListener):
     def onDetect(self, face_type: str):
         print("now face emotion: " + face_type)
@@ -70,8 +59,15 @@ class AListener(DetectListener):
             pushDataToBluetooth(Base64LinePackage(StringPackage(jsonString, 'UTF-8')))
 
 
-detector = FaceDetector(AListener())
-bt = getBluetooth(RobotSerialListener(detector))
+db_location = f"db{os.path.sep}faces.json"
+db_charset = 'UTF-8'
+db = FileDatabase(open(db_location, encoding=db_charset), JSONDataParser())
+robot = getRobot()
+robot_done = True
+bt_done = True
+detector = FaceDetector()
+detector.setListener(AListener())
+bt = getBluetooth(RobotControlListener())
 try:
     detector.detect()
 except KeyboardInterrupt as e:

@@ -196,7 +196,7 @@ class ObjectDetector(Detector):
                     cv2.imshow(str(p), im0)
                     cv2.waitKey(1)  # 1 millisecond
 
-                self.listener.onDetect(detectedObjectList)
+                self._listener.onDetect(detectedObjectList)
 
         if update:
             strip_optimizer(weights)  # update model (to fix SourceChangeWarning)

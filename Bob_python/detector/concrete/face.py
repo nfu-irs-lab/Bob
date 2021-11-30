@@ -5,8 +5,8 @@ from detector.framework.detector import Detector, DetectListener
 
 
 class FaceDetector(Detector):
-    def __init__(self, listener: DetectListener):
-        super().__init__(listener)
+    def __init__(self):
+        super().__init__()
         self.__start = False
         self.__interrupt = False
 
@@ -44,7 +44,7 @@ class FaceDetector(Detector):
 
                 cv2.imshow('result', frame)
                 face_type = result['dominant_emotion']
-                self.listener.onDetect(face_type)
+                self._listener.onDetect(face_type)
             except Exception as e:
                 print(e.__str__())
                 pass

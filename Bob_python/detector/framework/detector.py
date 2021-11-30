@@ -1,5 +1,6 @@
 import abc
 from abc import ABC
+from typing import Optional
 
 
 class DetectListener(ABC):
@@ -9,8 +10,8 @@ class DetectListener(ABC):
 
 
 class Detector(ABC):
-    def __init__(self, listener: DetectListener):
-        self.listener = listener
+    def __init__(self):
+        self._listener: Optional[DetectListener] = None
 
     @abc.abstractmethod
     def detect(self):
@@ -27,3 +28,6 @@ class Detector(ABC):
     @abc.abstractmethod
     def stop(self):
         pass
+
+    def setListener(self, listener: DetectListener):
+        self._listener = listener
