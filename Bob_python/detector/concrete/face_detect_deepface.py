@@ -5,8 +5,8 @@ from detector.framework.detector import Detector, DetectListener
 
 
 class FaceDetector(Detector):
-    def __init__(self):
-        super().__init__()
+    def __init__(self,listener:DetectListener):
+        super().__init__(listener)
         self.__start = False
         self.__interrupt = False
 
@@ -47,7 +47,6 @@ class FaceDetector(Detector):
                 self._listener.onDetect(face_type)
             except Exception as e:
                 print(e.__str__())
-                pass
             if cv2.waitKey(2) & 0xFF == ord('q'):
                 break
         cap.release()

@@ -10,7 +10,7 @@ from bluetooth.framework.monitor import SerialListener
 from bluetooth.framework.package import Package
 from dbctrl.concrete.database import FileDatabase
 from dbctrl.concrete.json_data import JSONData, JSONDataParser
-from detector.concrete.face import FaceDetector
+from detector.concrete.face_detect_deepface import FaceDetector
 from detector.framework.detector import DetectListener
 from robotics.framework.action import Action
 from serial_utils import getRobot, getBluetooth
@@ -48,7 +48,7 @@ class RobotControlListener(SerialListener):
             print("Pause detect")
 
 
-class AListener(DetectListener):
+class FaceDetectListener(DetectListener):
     def onDetect(self, face_type: str):
         print("now face emotion: " + face_type)
         obj: Optional[JSONData] = db.queryForId(face_type)
@@ -65,8 +65,7 @@ db = FileDatabase(open(db_location, encoding=db_charset), JSONDataParser())
 robot = getRobot()
 robot_done = True
 bt_done = True
-detector = FaceDetector()
-detector.setListener(AListener())
+detector = FaceDetector(FaceDetectListener())
 bt = getBluetooth(RobotControlListener())
 try:
     detector.detect()

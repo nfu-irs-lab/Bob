@@ -22,7 +22,6 @@ from utils.general import check_img_size, check_requirements, check_imshow, colo
 from utils.plots import colors, plot_one_box
 from utils.torch_utils import select_device, load_classifier, time_sync
 
-
 FILE = Path(__file__).absolute()
 sys.path.append(FILE.parents[0].as_posix())  # add yolov5/ to path
 
@@ -38,8 +37,8 @@ def loadDataset(webcam: bool, source, imgsz, stride):
 
 class ObjectDetector(Detector):
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, listener: DetectListener):
+        super().__init__(listener)
         self.__interrupt = False
         self.__start = False
 

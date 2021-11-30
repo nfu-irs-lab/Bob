@@ -15,7 +15,7 @@ from bluetooth.framework.monitor import SerialListener
 from bluetooth.framework.package import Package
 from dbctrl.concrete.database import FileDatabase
 from dbctrl.concrete.json_data import JSONDataParser, JSONData
-from detector.concrete.object import ObjectDetector
+from detector.concrete.object_detect_yolov5 import ObjectDetector
 from detector.framework.detector import DetectListener
 from robotics.concrete.command import RoboticsCommandFactory
 from robotics.framework.action import Action, CSVAction
@@ -47,8 +47,7 @@ def pushDataToBluetooth(package: Package):
         bt_done = True
 
 
-class RobotSerialListener(SerialListener):
-
+class RobotControlListener(SerialListener):
     def onReceive(self, data: bytes):
         d = base64.decodebytes(data)
         cmd = d.decode()
@@ -60,7 +59,7 @@ class RobotSerialListener(SerialListener):
             print("Pause detect")
 
 
-class AListener(DetectListener):
+class ObjectDetectListener(DetectListener):
     def onDetect(self, objectList: List):
         global robot_done
         global bt_done
@@ -94,9 +93,8 @@ db = FileDatabase(open(db_location, encoding=db_charset), JSONDataParser())
 robot_done = True
 bt_done = True
 robot = getRobot()
-detector = ObjectDetector()
-detector.setListener(AListener())
-bt = getBluetooth(RobotSerialListener())
+detector = ObjectDetector(ObjectDetectListener())
+bt = getBluetooth(RobotControlListener())
 # detector.start()
 try:
     detector.detect(source='0', weights='yolov5s.pt')

@@ -10,8 +10,8 @@ class DetectListener(ABC):
 
 
 class Detector(ABC):
-    def __init__(self):
-        self._listener: Optional[DetectListener] = None
+    def __init__(self, listener: DetectListener):
+        self._listener: Optional[DetectListener] = listener
 
     @abc.abstractmethod
     def detect(self):
@@ -28,6 +28,3 @@ class Detector(ABC):
     @abc.abstractmethod
     def stop(self):
         pass
-
-    def setListener(self, listener: DetectListener):
-        self._listener = listener
