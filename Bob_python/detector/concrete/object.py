@@ -3,32 +3,14 @@
 Usage:
     $ python path/to/object_detect.py --source path/to/img.jpg --weights yolov5s.pt --img 640
 """
-
-import argparse
-import base64
-import json
-import os
-import platform
-import re
 import sys
-import threading
-import time
 from pathlib import Path
 from typing import List, Optional
 
 import cv2
 import torch
 import torch.backends.cudnn as cudnn
-from serial import SerialTimeoutException, SerialException
-from bluetooth.concrete.package import StringPackage, Base64LinePackage
-from bluetooth.framework.monitor import SerialListener
-from bluetooth.framework.package import Package
-from dbctrl.concrete import queryJsonFromName
-from dbctrl.concrete.database import FileDatabase
-from dbctrl.concrete.json_data import JSONDataParser, JSONData
 from detector.framework.detector import Detector, DetectListener
-from robotics.concrete.command import RoboticsCommandFactory
-from robotics.framework.action import Action, CSVAction
 
 FILE = Path(__file__).absolute()
 sys.path.append(FILE.parents[0].as_posix())  # add yolov5/ to path
@@ -39,6 +21,10 @@ from utils.general import check_img_size, check_requirements, check_imshow, colo
     apply_classifier, scale_coords, xyxy2xywh, strip_optimizer, set_logging, increment_path, save_one_box
 from utils.plots import colors, plot_one_box
 from utils.torch_utils import select_device, load_classifier, time_sync
+
+
+FILE = Path(__file__).absolute()
+sys.path.append(FILE.parents[0].as_posix())  # add yolov5/ to path
 
 
 def loadDataset(webcam: bool, source, imgsz, stride):
@@ -52,8 +38,8 @@ def loadDataset(webcam: bool, source, imgsz, stride):
 
 class ObjectDetector(Detector):
 
-    def __init__(self, listener: DetectListener):
-        super().__init__(listener)
+    def __init__(self):
+        super().__init__()
         self.__interrupt = False
         self.__start = False
 

@@ -7,9 +7,7 @@ Usage:
 import base64
 import json
 import os
-import sys
 import threading
-from pathlib import Path
 from typing import List, Optional
 from serial import SerialTimeoutException
 from bluetooth.concrete.package import StringPackage, Base64LinePackage
@@ -18,20 +16,10 @@ from bluetooth.framework.package import Package
 from dbctrl.concrete.database import FileDatabase
 from dbctrl.concrete.json_data import JSONDataParser, JSONData
 from detector.concrete.object import ObjectDetector
-from detector.framework.detector import DetectListener, Detector
+from detector.framework.detector import DetectListener
 from robotics.concrete.command import RoboticsCommandFactory
 from robotics.framework.action import Action, CSVAction
-
-FILE = Path(__file__).absolute()
-sys.path.append(FILE.parents[0].as_posix())  # add yolov5/ to path
 from serial_utils import getRobot, getBluetooth
-
-db_location = f"db{os.path.sep}objects.json"
-db_charset = 'UTF-8'
-db = FileDatabase(open(db_location, encoding=db_charset), JSONDataParser())
-robot_done = True
-bt_done = True
-robot = getRobot()
 
 
 def getActionFromFileName(file: str) -> Action:
@@ -60,17 +48,15 @@ def pushDataToBluetooth(package: Package):
 
 
 class RobotSerialListener(SerialListener):
-    def __init__(self, d: Detector):
-        self.detector = d
 
     def onReceive(self, data: bytes):
         d = base64.decodebytes(data)
         cmd = d.decode()
         if cmd == "START_DETECT":
-            self.detector.start()
+            detector.start()
             print("Start detect")
         elif cmd == "PAUSE_DETECT":
-            self.detector.pause()
+            detector.pause()
             print("Pause detect")
 
 
@@ -102,8 +88,15 @@ class AListener(DetectListener):
         pass
 
 
-detector = ObjectDetector(AListener())
-bt = getBluetooth(RobotSerialListener(detector))
+db_location = f"db{os.path.sep}objects.json"
+db_charset = 'UTF-8'
+db = FileDatabase(open(db_location, encoding=db_charset), JSONDataParser())
+robot_done = True
+bt_done = True
+robot = getRobot()
+detector = ObjectDetector()
+detector.setListener(AListener())
+bt = getBluetooth(RobotSerialListener())
 # detector.start()
 try:
     detector.detect(source='0', weights='yolov5s.pt')
