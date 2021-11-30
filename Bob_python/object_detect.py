@@ -18,7 +18,7 @@ from bluetooth.framework.package import Package
 from dbctrl.concrete.database import FileDatabase
 from dbctrl.concrete.json_data import JSONDataParser, JSONData
 from detector.concrete.object import ObjectDetector
-from detector.framework.detector import DetectListener
+from detector.framework.detector import DetectListener, Detector
 from robotics.concrete.command import RoboticsCommandFactory
 from robotics.framework.action import Action, CSVAction
 
@@ -60,7 +60,7 @@ def pushDataToBluetooth(package: Package):
 
 
 class RobotSerialListener(SerialListener):
-    def __init__(self, d: ObjectDetector):
+    def __init__(self, d: Detector):
         self.detector = d
 
     def onReceive(self, data: bytes):

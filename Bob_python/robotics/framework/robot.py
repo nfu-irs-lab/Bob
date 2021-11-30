@@ -20,7 +20,7 @@ class Robot(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def isOpen(self):
+    def isOpen(self) -> bool:
         pass
 
     def doAction(self, action: Action):
@@ -29,6 +29,9 @@ class Robot(metaclass=abc.ABCMeta):
 
 
 class PrintedRobot(Robot):
+
+    def isOpen(self) -> bool:
+        return True
 
     def close(self):
         pass
@@ -45,6 +48,9 @@ class PrintedRobot(Robot):
 
 
 class BytePrintedRobot(Robot):
+
+    def isOpen(self) -> bool:
+        return True
 
     def close(self):
         pass
@@ -74,6 +80,9 @@ class SerialRobot(Robot):
         else:
             self.serial.write(byteArray)
             time.sleep(0.1)
+
+    def isOpen(self) -> bool:
+        return self.serial.isOpen()
 
     def close(self):
         self.serial.close()
