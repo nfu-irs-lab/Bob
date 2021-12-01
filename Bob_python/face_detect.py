@@ -12,7 +12,7 @@ from dbctrl.concrete.database import FileDatabase
 from dbctrl.concrete.json_data import JSONData, JSONDataParser
 from detector.concrete.face_detect_deepface import FaceDetector
 from detector.framework.detector import DetectListener
-from robotics.framework.action import Action
+from robot.framework.fw_action import Action
 from serial_utils import getRobot, getBluetooth
 
 

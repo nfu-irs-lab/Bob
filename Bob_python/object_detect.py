@@ -17,8 +17,9 @@ from dbctrl.concrete.database import FileDatabase
 from dbctrl.concrete.json_data import JSONDataParser, JSONData
 from detector.concrete.object_detect_yolov5 import ObjectDetector
 from detector.framework.detector import DetectListener
-from robotics.concrete.command import RoboticsCommandFactory
-from robotics.framework.action import Action, CSVAction
+from robot.concrete.crt_command import RoboticsCommandFactory
+from robot.framework.fw_action import Action
+from robot.concrete.crt_action import CSVAction
 from serial_utils import getRobot, getBluetooth
 
 

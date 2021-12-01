@@ -1,10 +1,14 @@
 import re
+
+from serial import Serial
 from serial.tools.list_ports_linux import comports
+
+from Bob.device.concrete.crt_serial_dev import LocalSerialDevice
 from bluetooth.concrete.device import SerialBluetoothDevice
 from bluetooth.framework.device import BluetoothDevice
 from bluetooth.framework.monitor import SerialListener
-from robotics.concrete.robot import RoboticsRobot
-from robotics.framework.robot import Robot
+from robot.concrete.crt_robot import SerialRobot, BytePrintedRobot
+from robot.framework.fw_robot import Robot
 
 bt_dev = ".*CP2102.*"
 bot_dev = ".*FT232R.*"
@@ -32,14 +36,15 @@ def getBluetooth(listener: SerialListener) -> BluetoothDevice:
 
 def getRobot() -> Robot:
     if debug:
-        bot = RoboticsRobot(debug_robot_port)
+        bot = BytePrintedRobot()
+        # bot = SerialRobot(LocalSerialDevice(Serial(debug_robot_port, baudrate=57142, timeout=0.5, write_timeout=1)))
         if not bot.isOpen():
             bot.open()
         return bot
 
     for port in comports():
         if re.search(bot_dev, port.description):
-            bot = RoboticsRobot(port.device)
+            bot = SerialRobot(LocalSerialDevice(Serial(port.device, baudrate=57142, timeout=0.5, write_timeout=1)))
             if not bot.isOpen():
                 bot.open()
             return bot
