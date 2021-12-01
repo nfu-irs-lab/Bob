@@ -1,4 +1,12 @@
-from robotics.framework.command import CommandFactory, Command
+from robot.framework.fw_command import CommandFactory, Command, isNotNone
+
+
+def isNone(data):
+    return data is None
+
+
+def isNotNone(data):
+    return data is not None
 
 
 class RoboticsCommand(Command):
@@ -37,9 +45,26 @@ class RoboticsCommandFactory(CommandFactory):
             raise Exception("format error")
 
 
-def isNone(data):
-    return data is None
+class PrintedCommand(Command):
+
+    def __init__(self, id: int = None, pos: int = None, speed: int = None, sleep_duration: float = None):
+        super().__init__(id, pos, speed, sleep_duration)
+
+    def getBytes(self) -> bytes:
+        if self.sleep_duration is None:
+            string = "Do: id={id},pos={pos},speed={speed}".format(id=self.id, pos=self.position, speed=self.speed)
+            return string.encode()
+        else:
+            string = "Sleep: {duration}".format(duration=self.sleep_duration)
+            return string.encode()
 
 
-def isNotNone(data):
-    return data is not None
+class PrintedCommandFactory(CommandFactory):
+    def create(self, id: int = None, pos: int = None, speed: int = None, sleep_duration: float = None) -> Command:
+        if sleep_duration:
+            return PrintedCommand(sleep_duration=sleep_duration)
+
+        elif isNotNone(id) & isNotNone(pos) & isNotNone(speed):
+            return PrintedCommand(id=id, pos=pos, speed=speed)
+        else:
+            raise Exception

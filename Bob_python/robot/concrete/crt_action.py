@@ -1,22 +1,12 @@
-import abc
 import csv
-
 from typing import List
 
-from robotics.framework.command import Command, CommandFactory
+from robot.framework.fw_action import Action
+from robot.framework.fw_command import CommandFactory, Command
 
 
 def empty(content: str):
     return content == ''
-
-
-class Action(metaclass=abc.ABCMeta):
-    def __init__(self):
-        pass
-
-    @abc.abstractmethod
-    def getList(self) -> List[Command]:
-        pass
 
 
 class CSVAction(Action):
