@@ -139,7 +139,7 @@ class ObjectDetector(Detector):
                 pred = model(img, augment=augment, visualize=visualize)[0]
             elif onnx:
                 pred = torch.tensor(
-                    session.running([session.get_outputs()[0].name], {session.get_inputs()[0].name: img}))
+                    session._running([session.get_outputs()[0].name], {session.get_inputs()[0].name: img}))
 
             # NMS
             pred = non_max_suppression(pred, conf_thres, iou_thres, classes, agnostic_nms, max_det=max_det)

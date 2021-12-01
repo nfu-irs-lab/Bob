@@ -10,9 +10,11 @@ import os
 import threading
 from typing import List, Optional
 from serial import SerialTimeoutException
-from bluetooth.concrete.package import StringPackage, Base64LinePackage
-from bluetooth.framework.monitor import SerialListener
-from bluetooth.framework.package import Package
+
+from communication.concrete.crt_monitor import SerialPackageMonitor, ReadLineStrategy, PrintedSerialListener
+from communication.concrete.crt_package import StringPackage, Base64LinePackage
+from communication.framework.fw_monitor import SerialListener
+from communication.framework.fw_package import Package
 from dbctrl.concrete.database import FileDatabase
 from dbctrl.concrete.json_data import JSONDataParser, JSONData
 from detector.concrete.object_detect_yolov5 import ObjectDetector
@@ -20,7 +22,7 @@ from detector.framework.detector import DetectListener
 from robot.concrete.crt_command import RoboticsCommandFactory
 from robot.framework.fw_action import Action
 from robot.concrete.crt_action import CSVAction
-from serial_utils import getRobot, getBluetooth
+from serial_utils import getRobot, getBluetoothPackageDevice
 
 
 def getActionFromFileName(file: str) -> Action:
@@ -40,9 +42,9 @@ def pushActionToRobot(action: Action):
 
 def pushDataToBluetooth(package: Package):
     global bt_done
-    if bt.isOpen():
+    if btSerial.isOpen():
         try:
-            bt.write(package)
+            btSerial.writePackage(package)
         except SerialTimeoutException:
             print("bt serial timeout")
         bt_done = True
@@ -95,11 +97,14 @@ robot_done = True
 bt_done = True
 robot = getRobot()
 detector = ObjectDetector(ObjectDetectListener())
-bt = getBluetooth(RobotControlListener())
-# detector.start()
+btSerial = getBluetoothPackageDevice()
+monitor = btSerial.getMonitor(RobotControlListener(), ReadLineStrategy())
+monitor.start()
+
 try:
     detector.detect(source='0', weights='yolov5s.pt')
 except KeyboardInterrupt as e:
     print("Interrupted!!")
     detector.stop()
-    bt.close()
+    monitor.stop()
+    btSerial.close()

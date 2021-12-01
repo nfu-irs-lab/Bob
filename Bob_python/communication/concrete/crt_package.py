@@ -1,6 +1,6 @@
 import base64
 
-from bluetooth.framework.package import Package
+from communication.framework.fw_package import Package
 
 
 class Base64LinePackage(Package):

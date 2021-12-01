@@ -5,15 +5,16 @@ from typing import Optional, List
 
 from serial import SerialTimeoutException
 
-from bluetooth.concrete.package import Base64LinePackage, StringPackage
-from bluetooth.framework.monitor import SerialListener
-from bluetooth.framework.package import Package
+from communication.concrete.crt_monitor import ReadLineStrategy, SerialPackageMonitor
+from communication.concrete.crt_package import Base64LinePackage, StringPackage
+from communication.framework.fw_monitor import SerialListener
+from communication.framework.fw_package import Package
 from dbctrl.concrete.database import FileDatabase
 from dbctrl.concrete.json_data import JSONData, JSONDataParser
 from detector.concrete.face_detect_deepface import FaceDetector
 from detector.framework.detector import DetectListener
 from robot.framework.fw_action import Action
-from serial_utils import getRobot, getBluetooth
+from serial_utils import getRobot, getBluetoothPackageDevice
 
 
 def pushActionToRobot(action: Action):
@@ -28,9 +29,9 @@ def pushActionToRobot(action: Action):
 
 def pushDataToBluetooth(package: Package):
     global bt_done
-    if bt.isOpen():
+    if btSerial.isOpen():
         try:
-            bt.write(package)
+            btSerial.writePackage(package)
         except SerialTimeoutException:
             print("bt serial timeout")
         bt_done = True
@@ -65,11 +66,16 @@ db = FileDatabase(open(db_location, encoding=db_charset), JSONDataParser())
 robot = getRobot()
 robot_done = True
 bt_done = True
+
 detector = FaceDetector(FaceDetectListener())
-bt = getBluetooth(RobotControlListener())
+btSerial = getBluetoothPackageDevice()
+monitor = btSerial.getMonitor(RobotControlListener(), ReadLineStrategy())
+monitor.start()
+
 try:
     detector.detect()
 except KeyboardInterrupt as e:
     print("Interrupted!!")
     detector.stop()
-    bt.close()
+    monitor.stop()
+    btSerial.close()
