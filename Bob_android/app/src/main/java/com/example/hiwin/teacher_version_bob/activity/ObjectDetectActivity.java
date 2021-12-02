@@ -29,8 +29,9 @@ public class ObjectDetectActivity extends DetectActivity {
     private DataSpeaker speaker;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void initialize(Bundle savedInstanceState) {
+        super.initialize(savedInstanceState);
+
         context = this;
         speaker = new DataSpeaker(new TextToSpeech(context, status -> {
             if (status != TextToSpeech.ERROR) {

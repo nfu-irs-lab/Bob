@@ -28,8 +28,8 @@ public class FaceDetectActivity extends DetectActivity {
     private Context context;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void initialize(Bundle savedInstanceState) {
+        super.initialize(savedInstanceState);
         context = this;
 
         speaker = new DataSpeaker(new TextToSpeech(context, status -> {
@@ -43,7 +43,6 @@ public class FaceDetectActivity extends DetectActivity {
             }
         }));
     }
-
 
     private void onComplete() {
         showDefault();
