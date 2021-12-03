@@ -1,4 +1,5 @@
 import abc
+import threading
 from abc import ABC
 from typing import Optional
 
@@ -9,22 +10,36 @@ class DetectListener(ABC):
         pass
 
 
-class Detector(ABC):
+class Detector(threading.Thread, ABC):
+
     def __init__(self, listener: DetectListener):
+        super().__init__()
         self._listener: Optional[DetectListener] = listener
+        self.__interrupt = False
+        self.__start = False
 
     @abc.abstractmethod
-    def detect(self):
+    def _detect(self):
         pass
 
-    @abc.abstractmethod
-    def start(self):
-        pass
+    def run(self) -> None:
+        try:
+            self._detect()
+        except Exception as e:
+            print(e.__str__())
+            # self.stop()
 
-    @abc.abstractmethod
+    def _interrupted(self) -> bool:
+        return self.__interrupt
+
+    def _running(self) -> bool:
+        return self.__start
+
+    def resume(self):
+        self.__start = True
+
     def pause(self):
-        pass
+        self.__start = False
 
-    @abc.abstractmethod
     def stop(self):
-        pass
+        self.__interrupt = True

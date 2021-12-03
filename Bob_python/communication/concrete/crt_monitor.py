@@ -82,6 +82,8 @@ class SerialPackageMonitor(PackageMonitor):
 
                 if self._strategy.isIntegralPackage():
                     self._listener.onReceive(self._strategy.getPackage())
+            except KeyboardInterrupt:
+                self.stop()
             except Exception as e:
                 print(e.strerror)
 

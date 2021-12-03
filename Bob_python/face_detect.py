@@ -40,11 +40,12 @@ class RobotControlListener(SerialListener):
     def onReceive(self, data: bytes):
         d = base64.decodebytes(data)
         cmd = d.decode()
+        print("receive:", cmd)
         if cmd == "START_DETECT":
-            detector.start()
+            det.resume()
             print("Start detect")
         elif cmd == "PAUSE_DETECT":
-            detector.pause()
+            det.pause()
             print("Pause detect")
 
 
@@ -67,15 +68,15 @@ robot = getRobot()
 robot_done = True
 bt_done = True
 
-detector = FaceDetector(FaceDetectListener())
+det = FaceDetector(FaceDetectListener())
 btSerial = getBluetoothPackageDevice()
 monitor = btSerial.getMonitor(RobotControlListener(), ReadLineStrategy())
 monitor.start()
 
 try:
-    detector.detect()
+    det._detect()
 except KeyboardInterrupt as e:
     print("Interrupted!!")
-    detector.stop()
+    det.stop()
     monitor.stop()
     btSerial.close()

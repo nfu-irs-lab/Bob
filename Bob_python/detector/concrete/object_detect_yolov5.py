@@ -39,43 +39,31 @@ class ObjectDetector(Detector):
 
     def __init__(self, listener: DetectListener):
         super().__init__(listener)
-        self.__interrupt = False
-        self.__start = False
-
-    def start(self):
-        self.__start = True
-
-    def pause(self):
-        self.__start = False
-
-    def stop(self):
-        self.__interrupt = True
-        pass
 
     @torch.no_grad()
-    def detect(self,
-               weights='yolov5s.pt',  # model.pt path(s)
-               source='data/images',  # file/dir/URL/glob, 0 for webcam
-               imgsz=640,  # inference size (pixels)
-               conf_thres=0.25,  # confidence threshold
-               iou_thres=0.45,  # NMS IOU threshold
-               max_det=1000,  # maximum detections per image
-               device='',  # cuda device, i.e. 0 or 0,1,2,3 or cpu
-               view_img=False,  # show results
-               save_txt=False,  # save results to *.txt
-               classes=None,  # filter by class: --class 0, or --class 0 2 3
-               agnostic_nms=False,  # class-agnostic NMS
-               augment=False,  # augmented inference
-               visualize=False,  # visualize features
-               update=False,  # update all models
-               project='runs/detect',  # save results to project/name
-               name='exp',  # save results to project/name
-               exist_ok=False,  # existing project/name ok, do not increment
-               line_thickness=3,  # bounding box thickness (pixels)
-               hide_labels=False,  # hide labels
-               hide_conf=False,  # hide confidences
-               half=False,  # use FP16 half-precision inference
-               ):
+    def _detect(self,
+                weights='yolov5s.pt',  # model.pt path(s)
+                source='0',  # file/dir/URL/glob, 0 for webcam
+                imgsz=640,  # inference size (pixels)
+                conf_thres=0.25,  # confidence threshold
+                iou_thres=0.45,  # NMS IOU threshold
+                max_det=1000,  # maximum detections per image
+                device='',  # cuda device, i.e. 0 or 0,1,2,3 or cpu
+                view_img=False,  # show results
+                save_txt=False,  # save results to *.txt
+                classes=None,  # filter by class: --class 0, or --class 0 2 3
+                agnostic_nms=False,  # class-agnostic NMS
+                augment=False,  # augmented inference
+                visualize=False,  # visualize features
+                update=False,  # update all models
+                project='runs/detect',  # save results to project/name
+                name='exp',  # save results to project/name
+                exist_ok=False,  # existing project/name ok, do not increment
+                line_thickness=3,  # bounding box thickness (pixels)
+                hide_labels=False,  # hide labels
+                hide_conf=False,  # hide confidences
+                half=False,  # use FP16 half-precision inference
+                ):
 
         # save_img = not nosave and not source.endswith('.txt')  # save inference images
         webcam = source.isnumeric() or source.endswith('.txt') or source.lower().startswith(
@@ -119,9 +107,9 @@ class ObjectDetector(Detector):
         if pt and device.type != 'cpu':
             model(torch.zeros(1, 3, imgsz, imgsz).to(device).type_as(next(model.parameters())))  # run once
         for path, img, im0s, vid_cap in dataset:
-            if not self.__start:
+            if not self._running():
                 continue
-            if self.__interrupt:
+            if self._interrupted():
                 break
 
             if pt:

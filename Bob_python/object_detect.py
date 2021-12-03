@@ -55,7 +55,7 @@ class RobotControlListener(SerialListener):
         cmd = d.decode()
         print("receive:", cmd)
         if cmd == "START_DETECT":
-            detector.start()
+            detector.resume()
             print("Start detect")
         elif cmd == "PAUSE_DETECT":
             detector.pause()
@@ -107,7 +107,7 @@ monitor = btSerial.getMonitor(RobotControlListener(), ReadLineStrategy())
 monitor.start()
 
 try:
-    detector.detect(source='0', weights='yolov5s.pt')
+    detector._detect(source='0', weights='yolov5s.pt')
 except KeyboardInterrupt as e:
     print("Interrupted!!")
     detector.stop()

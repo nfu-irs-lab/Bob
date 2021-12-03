@@ -5,27 +5,16 @@ from detector.framework.detector import Detector, DetectListener
 
 
 class FaceDetector(Detector):
-    def __init__(self,listener:DetectListener):
+
+    def __init__(self, listener: DetectListener):
         super().__init__(listener)
-        self.__start = False
-        self.__interrupt = False
 
-    def start(self):
-        self.__start = True
-
-    def pause(self):
-        self.__start = False
-
-    def stop(self):
-        self.__interrupt = True
-        pass
-
-    def detect(self):
+    def _detect(self):
         faceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
         cap = cv2.VideoCapture(0)
         cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
-        while not self.__interrupt:
-            while not self.__start:
+        while not self._interrupted():
+            while not self._running():
                 time.sleep(1)
             ret, frame = cap.read()
             cv2.imshow('raw', frame)
