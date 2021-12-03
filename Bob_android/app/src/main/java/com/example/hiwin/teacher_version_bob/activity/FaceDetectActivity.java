@@ -10,6 +10,7 @@ import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.example.hiwin.teacher_version_bob.R;
 import com.example.hiwin.teacher_version_bob.communication.bluetooth.framework.SerialListener;
 import com.example.hiwin.teacher_version_bob.utils.DataSpeaker;
 import com.example.hiwin.teacher_version_bob.data.Face;
@@ -78,7 +79,7 @@ public class FaceDetectActivity extends DetectActivity {
         Fragment finalFaceFragment = getFinalFaceFragment(face, null, "null");
         Fragment exampleFragment = getExampleFragment(sentence, tr_sentence, finalFaceFragment, "face2");
         Fragment faceFragment = getFaceFragment(face, name, tr_name, sentence, tr_sentence, exampleFragment, "example");
-        Fragment descriptionFragment = getDescriptionFragment(face, name, tr_name, faceFragment, "face");
+        Fragment descriptionFragment = getDescriptionFragment(name, tr_name, faceFragment, "face");
         postFragment(descriptionFragment, "description");
     }
 
@@ -116,7 +117,7 @@ public class FaceDetectActivity extends DetectActivity {
                 String tr_name = translated.getString("tr_name");
                 String tr_sentence = translated.getString("tr_sentence");
 
-                showFace(face,name,tr_name,sentence,tr_sentence);
+                showFace(face, name, tr_name, sentence, tr_sentence);
             } catch (Exception e) {
                 Log.e(THIS_LOG_TAG, e.getMessage());
             }
@@ -171,10 +172,10 @@ public class FaceDetectActivity extends DetectActivity {
         return faceFragment;
     }
 
-    public Fragment getDescriptionFragment(Face face, String name, String tr_name, Fragment next, String nextId) {
+    public Fragment getDescriptionFragment(String name, String tr_name, Fragment next, String nextId) {
         final DescriptionFragment descriptionFragment = new DescriptionFragment();
         descriptionFragment.setShowListener((views) -> {
-            ((ImageView) views[0]).setImageDrawable(context.getDrawable(face.getGifId()));
+            ((ImageView) views[0]).setImageDrawable(context.getDrawable(getDrawableId(name)));
             ((TextView) views[1]).setText(name);
             ((TextView) views[2]).setText(tr_name);
         });
@@ -226,6 +227,16 @@ public class FaceDetectActivity extends DetectActivity {
 
     }
 
+
+    private int getDrawableId(String name) {
+        switch (name) {
+            case "smile":
+                return R.drawable.face_smile;
+            case "sad":
+                return R.drawable.face_sad;
+        }
+        throw new RuntimeException("Drawable not found");
+    }
 
     @Override
     public void onStop() {
