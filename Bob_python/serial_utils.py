@@ -6,7 +6,6 @@ from serial.tools.list_ports_linux import comports
 
 from Bob.device.concrete.crt_serial_dev import LocalSerialDevice
 from communication.concrete.crt_package_device import SerialPackageDevice
-from communication.framework.fw_monitor import SerialListener
 from communication.framework.fw_package_device import PackageDevice
 from robot.concrete.crt_robot import SerialRobot, BytePrintedRobot
 from robot.framework.fw_robot import Robot
@@ -14,7 +13,7 @@ from robot.framework.fw_robot import Robot
 bt_dev = ".*CP2102.*"
 bot_dev = ".*FT232R.*"
 
-debug = False
+debug = True
 debug_robot_port = 'COM1'
 debug_bt_port = 'COM3'
 

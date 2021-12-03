@@ -15,8 +15,7 @@ from communication.concrete.crt_monitor import SerialPackageMonitor, ReadLineStr
 from communication.concrete.crt_package import StringPackage, Base64LinePackage
 from communication.framework.fw_monitor import SerialListener
 from communication.framework.fw_package import Package
-from dbctrl.concrete.database import FileDatabase
-from dbctrl.concrete.json_data import JSONDataParser, JSONData
+from dbctrl.concrete.crt_database import JSONDatabase
 from detector.concrete.object_detect_yolov5 import ObjectDetector
 from detector.framework.detector import DetectListener
 from robot.concrete.crt_command import RoboticsCommandFactory
@@ -54,6 +53,7 @@ class RobotControlListener(SerialListener):
     def onReceive(self, data: bytes):
         d = base64.decodebytes(data)
         cmd = d.decode()
+        print("receive:", cmd)
         if cmd == "START_DETECT":
             detector.start()
             print("Start detect")
@@ -66,6 +66,7 @@ class ObjectDetectListener(DetectListener):
     def onDetect(self, objectList: List):
         global robot_done
         global bt_done
+        global id_counter
 
         if not robot_done or not bt_done:
             return
@@ -74,11 +75,14 @@ class ObjectDetectListener(DetectListener):
             if dobj['confidence'] < 0.65:
                 continue
 
-            obj: Optional[JSONData] = db.queryForId(dobj['name'])
+            obj: Optional[json] = db.queryForId(dobj['name'])
             if obj is not None:
-                data: json = obj.getData()
-                jsonString = json.dumps(data, ensure_ascii=False)
+                data: json = obj['data']
+                sendData = {"id": -1, "response_type": "json_object", "content": "single_object", "data": data}
+                jsonString = json.dumps(sendData, ensure_ascii=False)
                 print("Send:", jsonString)
+
+                # id_counter = id_counter + 1
                 robot_done = False
                 bt_done = True
                 bt_thread = threading.Thread(target=pushDataToBluetooth,
@@ -92,7 +96,8 @@ class ObjectDetectListener(DetectListener):
 
 db_location = f"db{os.path.sep}objects.json"
 db_charset = 'UTF-8'
-db = FileDatabase(open(db_location, encoding=db_charset), JSONDataParser())
+db = JSONDatabase(open(db_location, encoding=db_charset))
+id_counter = 0
 robot_done = True
 bt_done = True
 robot = getRobot()
