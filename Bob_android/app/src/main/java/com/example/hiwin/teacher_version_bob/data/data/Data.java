@@ -3,6 +3,11 @@ package com.example.hiwin.teacher_version_bob.data.data;
 public class Data {
 
     public static class Builder{
+
+        private int id;
+        private String responseType;
+        private String content;
+
         private String name;
         private String translated_name;
         private String sentence;
@@ -29,18 +34,36 @@ public class Data {
             this.face = Face.valueOf(face_string);
         }
 
+        public void setId(int id) {
+            this.id = id;
+        }
+
+        public void setResponseType(String responseType) {
+            this.responseType = responseType;
+        }
+
+        public void setContent(String content) {
+            this.content = content;
+        }
+
         public Data build(){
-            return new Data(name,translated_name,sentence,translated_sentence,face);
+            return new Data(id,responseType,content,name,translated_name,sentence,translated_sentence,face);
         }
     }
 
+    private final int id;
+    private final String responseType;
+    private final String content;
     private final String name;
     private final String translated_name;
     private final String sentence;
     private final String translated_sentence;
     private final Face face;
 
-    private Data(String name, String translated_name, String sentence, String translated_sentence, Face face) {
+    private Data(int id, String responseType, String content, String name, String translated_name, String sentence, String translated_sentence, Face face) {
+        this.id = id;
+        this.responseType = responseType;
+        this.content = content;
         this.name = name;
         this.translated_name = translated_name;
         this.sentence = sentence;
@@ -66,5 +89,17 @@ public class Data {
 
     public Face getFace() {
         return face;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getResponseType() {
+        return responseType;
+    }
+
+    public String getContent() {
+        return content;
     }
 }

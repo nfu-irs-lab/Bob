@@ -2,7 +2,6 @@ package com.example.hiwin.teacher_version_bob.data;
 
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
-import com.example.hiwin.teacher_version_bob.data.data.Data;
 
 import java.util.*;
 
@@ -43,45 +42,45 @@ public class DataSpeaker {
         });
     }
 
-    public void speakFully(Data data) {
+    public void speakFully(String name, String tr_name, String sentence, String tr_sentence) {
         if (!tts.isSpeaking()) {
             for (int i = 0; i < 2; i++) {
                 setLanguage(Locale.US);
-                addTextToQueue(data.getName());
+                addTextToQueue(name);
                 addDelayToQueue(600);
-                spellVocabulary(data.getName());
+                spellVocabulary(name);
                 setLanguage(Locale.TAIWAN);
-                addTextToQueue(data.getTranslatedName());
+                addTextToQueue(tr_name);
                 addDelayToQueue(600);
             }
 
             setLanguage(Locale.US);
-            addTextToQueue(data.getSentence());
+            addTextToQueue(sentence);
             addDelayToQueue(100);
-            addTextToQueue(data.getSentence());
+            addTextToQueue(sentence);
             addDelayToQueue(100);
-            addTextToQueue(data.getSentence());
+            addTextToQueue(sentence);
             addDelayToQueue(100);
 
             setLanguage(Locale.TAIWAN);
-            addTextToQueue(data.getTranslatedSentence());
+            addTextToQueue(tr_sentence);
         }
 
 
     }
 
-    public void speakExample(Data data) {
+    public void speakExampleSentence(String sentence, String tr_sentence) {
 
         setLanguage(Locale.US);
-        addTextToQueue(data.getSentence());
+        addTextToQueue(sentence);
         addDelayToQueue(100);
-        addTextToQueue(data.getSentence());
+        addTextToQueue(sentence);
         addDelayToQueue(100);
-        addTextToQueue(data.getSentence());
+        addTextToQueue(sentence);
         addDelayToQueue(100);
 
         setLanguage(Locale.TAIWAN);
-        addTextToQueue(data.getTranslatedSentence());
+        addTextToQueue(tr_sentence);
 
     }
 
@@ -112,7 +111,7 @@ public class DataSpeaker {
         this.speakerListener = speakerListener;
     }
 
-    public void shutdown(){
+    public void shutdown() {
         tts.shutdown();
     }
 

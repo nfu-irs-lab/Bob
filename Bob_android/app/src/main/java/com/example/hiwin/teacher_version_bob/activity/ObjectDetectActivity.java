@@ -6,9 +6,7 @@ import android.content.Intent;
 import android.os.*;
 import android.speech.tts.TextToSpeech;
 import android.support.v4.app.Fragment;
-import android.util.Base64;
 import android.util.Log;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,7 +14,6 @@ import com.example.hiwin.teacher_version_bob.R;
 import com.example.hiwin.teacher_version_bob.communication.bluetooth.framework.SerialListener;
 import com.example.hiwin.teacher_version_bob.data.DataSpeaker;
 import com.example.hiwin.teacher_version_bob.data.concrete.object.parser.JSONDataParser;
-import com.example.hiwin.teacher_version_bob.data.concrete.pack.Base64Package;
 import com.example.hiwin.teacher_version_bob.data.data.Data;
 import com.example.hiwin.teacher_version_bob.data.data.Face;
 import com.example.hiwin.teacher_version_bob.fragment.*;
@@ -141,7 +138,7 @@ public class ObjectDetectActivity extends DetectActivity {
             public void start() {
                 super.start();
                 speaker.setSpeakerListener(this::end);
-                speaker.speakFully(object);
+                speaker.speakFully(object.getName(), object.getTranslatedName(), object.getSentence(), object.getTranslatedSentence());
             }
 
             @Override
@@ -195,7 +192,7 @@ public class ObjectDetectActivity extends DetectActivity {
             @Override
             public void start() {
                 super.start();
-                speaker.speakExample(object);
+                speaker.speakExampleSentence(object.getSentence(), object.getTranslatedSentence());
                 speaker.setSpeakerListener(this::end);
             }
         });

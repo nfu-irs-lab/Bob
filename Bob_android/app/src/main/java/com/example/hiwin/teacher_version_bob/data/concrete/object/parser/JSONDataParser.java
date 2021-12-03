@@ -15,8 +15,14 @@ public class JSONDataParser implements DataParser<JSONObject, Data> {
 
     @Override
     public Data parse(JSONObject json) throws JSONException {
+        Data.Builder builder = new Data.Builder();
+        builder.setId(json.getInt("id"));
+        builder.setResponseType(json.getString("response_type"));
+        builder.setContent(json.getString("content"));
 
-        JSONArray languages = json.getJSONArray("languages");
+        JSONObject data = json.getJSONObject("data");
+
+        JSONArray languages = data.getJSONArray("languages");
 
         JSONObject translated = null;
         for (int i = 0; i < languages.length(); i++) {
@@ -26,13 +32,11 @@ public class JSONDataParser implements DataParser<JSONObject, Data> {
 
         if (translated == null)
             throw new RuntimeException("code not found");
-
-        Data.Builder builder = new Data.Builder();
-        builder.setName(json.getString("name"));
-        builder.setSentence(json.getString("sentence"));
+        builder.setName(data.getString("name"));
+        builder.setSentence(data.getString("sentence"));
         builder.setTranslatedName(translated.getString("tr_name"));
         builder.setTranslatedSentence(translated.getString("tr_sentence"));
-        builder.setFace(json.getString("face"));
+        builder.setFace(data.getString("face"));
         return builder.build();
     }
 }
