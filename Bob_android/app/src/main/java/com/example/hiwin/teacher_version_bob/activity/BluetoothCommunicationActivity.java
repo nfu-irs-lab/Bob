@@ -39,6 +39,7 @@ public abstract class BluetoothCommunicationActivity extends AppCompatActivity {
     private MenuItem item_connection;
     private String deviceAddress;
     private SerialService serialService;
+    private SerialListener listener;
 
 
     protected abstract void receive(byte[] data);
@@ -53,17 +54,22 @@ public abstract class BluetoothCommunicationActivity extends AppCompatActivity {
 
     protected abstract void initialize(Bundle savedInstanceState);
 
+    protected abstract String getDeviceAddress(Bundle savedInstanceState);
+
+    protected abstract SerialListener getListener();
+
     @Override
     protected final void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(getContentView());
         setSupportActionBar(getToolbar());
         initialize(savedInstanceState);
+        listener = getListener();
 
         boolean sus = bindService(new Intent(this, SerialService.class), serviceConnection, Context.BIND_AUTO_CREATE);
         Log.d("BindService", sus + "");
         Intent it = getIntent();
-        deviceAddress = it.getStringExtra("address");
+        deviceAddress = getDeviceAddress(savedInstanceState);
     }
 
 
@@ -182,6 +188,9 @@ public abstract class BluetoothCommunicationActivity extends AppCompatActivity {
             Log.d(BT_LOG_TAG, "Bluetooth device connected");
             Toast.makeText(BluetoothCommunicationActivity.this, "Bluetooth device connected", Toast.LENGTH_SHORT).show();
             setConnectionMenuItem(true);
+            if (listener != null)
+                listener.onSerialConnect();
+
         }
 
         @Override
@@ -190,11 +199,16 @@ public abstract class BluetoothCommunicationActivity extends AppCompatActivity {
             Log.e(BT_LOG_TAG, e.getMessage());
             Toast.makeText(BluetoothCommunicationActivity.this, "Connection Error:" + e.getMessage(), Toast.LENGTH_SHORT).show();
             disconnect();
+            if (listener != null)
+                listener.onSerialConnectError(e);
         }
 
         @Override
         public void onSerialRead(byte[] data) {
-            receive(data);
+            receive(new Base64Package(data, Base64.DEFAULT).getDecoded());
+
+            if (listener != null)
+                listener.onSerialRead(data);
         }
 
         @Override
@@ -203,6 +217,9 @@ public abstract class BluetoothCommunicationActivity extends AppCompatActivity {
             Log.e(BT_LOG_TAG, e.getMessage());
             Toast.makeText(BluetoothCommunicationActivity.this, "IO Error:" + e.getMessage(), Toast.LENGTH_SHORT).show();
             disconnect();
+
+            if (listener != null)
+                listener.onSerialIoError(e);
         }
     };
 

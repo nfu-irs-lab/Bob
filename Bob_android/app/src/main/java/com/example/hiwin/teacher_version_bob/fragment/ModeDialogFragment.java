@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 public class ModeDialogFragment extends DialogFragment {
     public enum Mode {
-        face_detect("Face Detect"), object_detect("Object Detect");
+        face_detect("Face Detect"), object_detect("Object Detect"),interactive_object_detect("Interactive Object Detect");
 
         final String description;
 

@@ -2,6 +2,7 @@ package com.example.hiwin.teacher_version_bob.activity;
 
 import android.app.Service;
 import android.content.Context;
+import android.content.Intent;
 import android.os.*;
 import android.speech.tts.TextToSpeech;
 import android.support.v4.app.Fragment;
@@ -12,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.example.hiwin.teacher_version_bob.R;
+import com.example.hiwin.teacher_version_bob.communication.bluetooth.framework.SerialListener;
 import com.example.hiwin.teacher_version_bob.data.DataSpeaker;
 import com.example.hiwin.teacher_version_bob.data.concrete.object.parser.JSONDataParser;
 import com.example.hiwin.teacher_version_bob.data.concrete.pack.Base64Package;
@@ -27,6 +29,13 @@ public class ObjectDetectActivity extends DetectActivity {
     private static final String THIS_LOG_TAG = "ObjectDetectActivity";
     private Context context;
     private DataSpeaker speaker;
+
+
+    @Override
+    protected String getDeviceAddress(Bundle savedInstanceState) {
+        Intent it = getIntent();
+        return it.getStringExtra("address");
+    }
 
     @Override
     protected void initialize(Bundle savedInstanceState) {
@@ -60,7 +69,7 @@ public class ObjectDetectActivity extends DetectActivity {
     @Override
     protected void receive(byte[] data) {
         try {
-            String content = new String(new Base64Package(data, Base64.DEFAULT).getDecoded(), StandardCharsets.UTF_8);
+            String content = new String(data, StandardCharsets.UTF_8);
             Log.d(THIS_LOG_TAG, "received string:");
             Log.d(THIS_LOG_TAG, content);
 
@@ -226,5 +235,11 @@ public class ObjectDetectActivity extends DetectActivity {
     public void onStop() {
         super.onStop();
         speaker.shutdown();
+    }
+
+
+    @Override
+    protected SerialListener getListener() {
+        return null;
     }
 }

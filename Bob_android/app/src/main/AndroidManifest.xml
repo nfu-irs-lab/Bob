@@ -29,6 +29,8 @@
 
         <activity android:name=".activity.FaceDetectActivity"/>
 
+        <activity android:name=".activity.InteractiveObjectDetectActivity"/>
+
         <service android:name=".communication.service.SerialService"/>
 
     </application>
