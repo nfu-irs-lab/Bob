@@ -1,7 +1,7 @@
-package com.example.hiwin.teacher_version_bob.data.concrete.pack;
+package com.example.hiwin.teacher_version_bob.pack.concrete;
 
 import android.util.Base64;
-import com.example.hiwin.teacher_version_bob.data.framework.pack.Package;
+import com.example.hiwin.teacher_version_bob.pack.framework.Package;
 
 
 public class Base64Package extends Package {

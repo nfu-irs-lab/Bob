@@ -22,9 +22,9 @@ import com.example.hiwin.teacher_version_bob.communication.bluetooth.concrete.Re
 import com.example.hiwin.teacher_version_bob.communication.bluetooth.concrete.SerialSocket;
 import com.example.hiwin.teacher_version_bob.communication.bluetooth.framework.SerialListener;
 import com.example.hiwin.teacher_version_bob.communication.service.SerialService;
-import com.example.hiwin.teacher_version_bob.data.concrete.pack.Base64Package;
-import com.example.hiwin.teacher_version_bob.data.concrete.pack.LinePackage;
-import com.example.hiwin.teacher_version_bob.data.framework.pack.Package;
+import com.example.hiwin.teacher_version_bob.pack.concrete.Base64Package;
+import com.example.hiwin.teacher_version_bob.pack.concrete.LinePackage;
+import com.example.hiwin.teacher_version_bob.pack.framework.Package;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

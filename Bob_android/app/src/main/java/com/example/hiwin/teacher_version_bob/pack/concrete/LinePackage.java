@@ -1,6 +1,6 @@
-package com.example.hiwin.teacher_version_bob.data.concrete.pack;
+package com.example.hiwin.teacher_version_bob.pack.concrete;
 
-import com.example.hiwin.teacher_version_bob.data.framework.pack.Package;
+import com.example.hiwin.teacher_version_bob.pack.framework.Package;
 
 import java.util.Arrays;
 

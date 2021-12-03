@@ -1,4 +1,4 @@
-package com.example.hiwin.teacher_version_bob.data.framework.pack;
+package com.example.hiwin.teacher_version_bob.pack.framework;
 
 public abstract class Package {
 

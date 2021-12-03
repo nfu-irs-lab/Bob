@@ -8,9 +8,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import com.example.hiwin.teacher_version_bob.R;
 import com.example.hiwin.teacher_version_bob.communication.bluetooth.framework.SerialListener;
-import com.example.hiwin.teacher_version_bob.data.concrete.object.parser.JSONDataParser;
 import com.example.hiwin.teacher_version_bob.fragment.ObjectSelectFragment;
-import org.json.JSONObject;
 
 import java.nio.charset.StandardCharsets;
 

@@ -1,4 +1,4 @@
-package com.example.hiwin.teacher_version_bob.data.data;
+package com.example.hiwin.teacher_version_bob.data;
 
 import com.example.hiwin.teacher_version_bob.R;
 
