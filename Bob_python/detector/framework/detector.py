@@ -23,11 +23,7 @@ class Detector(threading.Thread, ABC):
         pass
 
     def run(self) -> None:
-        try:
-            self._detect()
-        except Exception as e:
-            print(e.__str__())
-            # self.stop()
+        self._detect()
 
     def _interrupted(self) -> bool:
         return self.__interrupt

@@ -34,6 +34,7 @@ public class ObjectDetectActivity extends DetectActivity {
         return it.getStringExtra("address");
     }
 
+
     @Override
     protected void initialize(Bundle savedInstanceState) {
         super.initialize(savedInstanceState);
@@ -233,33 +234,20 @@ public class ObjectDetectActivity extends DetectActivity {
 
     @Override
     public void onStop() {
-        super.onStop();
+        sendMessage("PAUSE_DETECT");
+//        sendMessage("STOP_DETECT");
         speaker.shutdown();
+        super.onStop();
     }
 
+    @Override
+    protected void onConnect() {
+        sendMessage("DETECT_OBJET");
+    }
 
     @Override
-    protected SerialListener getListener() {
-        return new SerialListener() {
-            @Override
-            public void onSerialConnect() {
-                sendMessage("DETECT_OBJET");
-            }
-
-            @Override
-            public void onSerialConnectError(Exception e) {
-
-            }
-
-            @Override
-            public void onSerialRead(byte[] data) {
-
-            }
-
-            @Override
-            public void onSerialIoError(Exception e) {
-
-            }
-        };
+    protected void onDisconnect() {
+        sendMessage("PAUSE_DETECT");
+//        sendMessage("STOP_DETECT");
     }
 }

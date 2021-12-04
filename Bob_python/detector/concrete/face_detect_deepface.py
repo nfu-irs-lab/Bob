@@ -1,4 +1,3 @@
-import time
 import cv2
 from deepface import DeepFace
 from detector.framework.detector import Detector, DetectListener
@@ -13,9 +12,11 @@ class FaceDetector(Detector):
         faceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
         cap = cv2.VideoCapture(0)
         cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
-        while not self._interrupted():
-            while not self._running():
-                time.sleep(1)
+        while True:
+            if self._interrupted():
+                break
+            if not self._running():
+                continue
             ret, frame = cap.read()
             cv2.imshow('raw', frame)
             try:
@@ -36,7 +37,10 @@ class FaceDetector(Detector):
                 self._listener.onDetect(face_type)
             except Exception as e:
                 print(e.__str__())
+
             if cv2.waitKey(2) & 0xFF == ord('q'):
                 break
+        print("Release webcam")
         cap.release()
-        cv2.destroyWindow()
+        print("Destroy windows")
+        cv2.destroyAllWindows()

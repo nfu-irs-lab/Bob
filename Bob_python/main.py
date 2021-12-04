@@ -8,7 +8,6 @@ import base64
 import json
 import os
 import threading
-import time
 from typing import List, Optional
 from serial import SerialTimeoutException
 
@@ -17,8 +16,9 @@ from communication.concrete.crt_package import StringPackage, Base64LinePackage
 from communication.framework.fw_monitor import SerialListener
 from communication.framework.fw_package import Package
 from dbctrl.concrete.crt_database import JSONDatabase
+from detector.concrete.face_detect_deepface import FaceDetector
 from detector.concrete.object_detect_yolov5 import ObjectDetector
-from detector.framework.detector import DetectListener
+from detector.framework.detector import Detector, DetectListener
 from robot.concrete.crt_command import RoboticsCommandFactory
 from robot.framework.fw_action import Action
 from robot.concrete.crt_action import CSVAction
@@ -50,30 +50,52 @@ def pushDataToBluetooth(package: Package):
         bt_done = True
 
 
-class RobotControlListener(SerialListener):
-    def onReceive(self, data: bytes):
-        global id_counter,running
+class DetectorControlListener(SerialListener):
+    def __init__(self, detector: Detector):
+        self.detector = detector
 
+    def onReceive(self, data: bytes):
         d = base64.decodebytes(data)
         cmd = d.decode()
         print("receive:", cmd)
-        if cmd == "START_DETECT":
-            detector.resume()
+
+        if cmd == "DETECT_OBJET":
+            if self.detector is not None:
+                self.detector.stop()
+
+            self.detector = ObjectDetector(ObjectDetectListener())
+            self.detector.start()
+        elif cmd == "DETECT_FACE":
+            if self.detector is not None:
+                self.detector.stop()
+
+            self.detector = FaceDetector(FaceDetectListener())
+            self.detector.start()
+
+        elif cmd == "START_DETECT":
             print("Start detect")
+            if self.detector is None:
+                return
+            self.detector.resume()
         elif cmd == "PAUSE_DETECT":
-            detector.pause()
+            if self.detector is None:
+                return
             print("Pause detect")
+            self.detector.pause()
         elif cmd == "DB_GET_ALL":
-            all_data: json = db.getAllData()
-            sendData = {"id": id_counter, "response_type": "json_object", "content": "all_object", "data": all_data}
+            pass
+
+
+class FaceDetectListener(DetectListener):
+    def onDetect(self, face_type: str):
+        print("now face emotion: " + face_type)
+        obj: Optional[json] = face_db.queryForId(face_type)
+        if obj is not None:
+            data: json = obj['data']
+            sendData = {"id": -1, "response_type": "json_object", "content": "single_object", "data": data}
             jsonString = json.dumps(sendData, ensure_ascii=False)
             print("Send:", jsonString)
-            bt_thread = threading.Thread(target=pushDataToBluetooth,
-                                         args=(Base64LinePackage(StringPackage(jsonString, "UTF-8")),))
-            bt_thread.start()
-            id_counter = id_counter + 1
-        elif cmd == "STOP_DETECT":
-            running = False
+            pushDataToBluetooth(Base64LinePackage(StringPackage(jsonString, 'UTF-8')))
 
 
 class ObjectDetectListener(DetectListener):
@@ -86,10 +108,10 @@ class ObjectDetectListener(DetectListener):
             return
 
         for dobj in objectList:
-            if dobj['confidence'] < 0.60:
+            if dobj['confidence'] < 0.65:
                 continue
 
-            obj: Optional[json] = db.queryForId(dobj['name'])
+            obj: Optional[json] = obj_db.queryForId(dobj['name'])
             if obj is not None:
                 data: json = obj['data']
                 sendData = {"id": -1, "response_type": "json_object", "content": "single_object", "data": data}
@@ -105,37 +127,25 @@ class ObjectDetectListener(DetectListener):
                 robot_thread = threading.Thread(target=pushActionToRobot, args=(getActionFromFileName(data['action']),))
                 robot_thread.start()
                 break
-        pass
 
 
-db_location = f"db{os.path.sep}objects.json"
+det: Optional[Detector] = None
+
+obj_db_location = f"db{os.path.sep}objects.json"
+face_db_location = f"db{os.path.sep}faces.json"
 db_charset = 'UTF-8'
-db = JSONDatabase(open(db_location, encoding=db_charset))
+obj_db = JSONDatabase(open(obj_db_location, encoding=db_charset))
+face_db = JSONDatabase(open(face_db_location, encoding=db_charset))
 id_counter = 0
 robot_done = True
 bt_done = True
 robot = getRobot()
-detector = ObjectDetector(ObjectDetectListener())
 btSerial = getBluetoothPackageDevice()
-monitor = btSerial.getMonitor(RobotControlListener(), ReadLineStrategy())
-monitor.start()
-detector.start()
-
-# try:
-#     detector._detect(source='0', weights='yolov5s.pt')
-# except KeyboardInterrupt as e:
-#     print("Interrupted!!")
-#     detector.stop()
-#     monitor.stop()
-#     btSerial.close()
-
-running = True
+monitor = btSerial.getMonitor(DetectorControlListener(det), ReadLineStrategy())
 try:
-    while running:
-        time.sleep(1)
-except (KeyboardInterrupt, SystemExit):
-    print("Interrupted!!")
-
-detector.stop()
-monitor.stop()
-btSerial.close()
+    print("Monitor start")
+    monitor.start()
+except KeyboardInterrupt:
+    print("Main Interrupted")
+    monitor.stop()
+    btSerial.close()

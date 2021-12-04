@@ -1,6 +1,7 @@
 import base64
 import json
 import os
+import time
 from typing import Optional, List
 
 from serial import SerialTimeoutException
@@ -38,15 +39,18 @@ def pushDataToBluetooth(package: Package):
 
 class RobotControlListener(SerialListener):
     def onReceive(self, data: bytes):
+        global running
         d = base64.decodebytes(data)
         cmd = d.decode()
         print("receive:", cmd)
         if cmd == "START_DETECT":
-            det.resume()
+            detector.resume()
             print("Start detect")
         elif cmd == "PAUSE_DETECT":
-            det.pause()
+            detector.pause()
             print("Pause detect")
+        elif cmd == "STOP_DETECT":
+            running = False
 
 
 class FaceDetectListener(DetectListener):
@@ -68,15 +72,18 @@ robot = getRobot()
 robot_done = True
 bt_done = True
 
-det = FaceDetector(FaceDetectListener())
+detector = FaceDetector(FaceDetectListener())
 btSerial = getBluetoothPackageDevice()
 monitor = btSerial.getMonitor(RobotControlListener(), ReadLineStrategy())
 monitor.start()
-
+detector.start()
+running = True
 try:
-    det._detect()
-except KeyboardInterrupt as e:
+    while running:
+        time.sleep(1)
+except (KeyboardInterrupt, SystemExit):
     print("Interrupted!!")
-    det.stop()
-    monitor.stop()
-    btSerial.close()
+
+detector.stop()
+monitor.stop()
+btSerial.close()

@@ -231,33 +231,21 @@ public class FaceDetectActivity extends DetectActivity {
 
     @Override
     public void onStop() {
-        super.onStop();
         speaker.shutdown();
+        sendMessage("PAUSE_DETECT");
+//        sendMessage("STOP_DETECT");
+        super.onStop();
     }
 
     @Override
-    protected SerialListener getListener() {
-        return new SerialListener() {
-            @Override
-            public void onSerialConnect() {
-                sendMessage("DETECT_FACE");
-            }
+    protected void onConnect() {
+        sendMessage("DETECT_FACE");
+    }
 
-            @Override
-            public void onSerialConnectError(Exception e) {
-
-            }
-
-            @Override
-            public void onSerialRead(byte[] data) {
-
-            }
-
-            @Override
-            public void onSerialIoError(Exception e) {
-
-            }
-        };
+    @Override
+    protected void onDisconnect() {
+        sendMessage("PAUSE_DETECT");
+//        sendMessage("STOP_DETECT");
     }
 
 }

@@ -172,6 +172,24 @@ public class InteractiveObjectDetectActivity extends BluetoothCommunicationActiv
         return objectDetectFragment;
     }
 
+
+    @Override
+    protected void onConnect() {
+        sendMessage("DB_GET_ALL");
+    }
+
+    @Override
+    protected void onDisconnect() {
+        sendMessage("PAUSE_DETECT");
+//        sendMessage("STOP_DETECT");
+    }
+    @Override
+    public void onStop() {
+        sendMessage("PAUSE_DETECT");
+//        sendMessage("STOP_DETECT");
+        super.onStop();
+    }
+
     @Override
     protected Toolbar getToolbar() {
         return (Toolbar) findViewById(R.id.inter_obj_detect_toolbar);
@@ -189,30 +207,5 @@ public class InteractiveObjectDetectActivity extends BluetoothCommunicationActiv
         fragmentTransaction.commit();
     }
 
-
-    @Override
-    protected SerialListener getListener() {
-        return new SerialListener() {
-            @Override
-            public void onSerialConnect() {
-                sendMessage("DB_GET_ALL");
-            }
-
-            @Override
-            public void onSerialConnectError(Exception e) {
-
-            }
-
-            @Override
-            public void onSerialRead(byte[] data) {
-
-            }
-
-            @Override
-            public void onSerialIoError(Exception e) {
-
-            }
-        };
-    }
 
 }

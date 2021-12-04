@@ -8,6 +8,7 @@ import base64
 import json
 import os
 import threading
+import time
 from typing import List, Optional
 from serial import SerialTimeoutException
 
@@ -51,6 +52,7 @@ def pushDataToBluetooth(package: Package):
 
 class RobotControlListener(SerialListener):
     def onReceive(self, data: bytes):
+        global running
         d = base64.decodebytes(data)
         cmd = d.decode()
         print("receive:", cmd)
@@ -60,6 +62,8 @@ class RobotControlListener(SerialListener):
         elif cmd == "PAUSE_DETECT":
             detector.pause()
             print("Pause detect")
+        elif cmd == "STOP_DETECT":
+            running = False
 
 
 class ObjectDetectListener(DetectListener):
@@ -106,10 +110,15 @@ btSerial = getBluetoothPackageDevice()
 monitor = btSerial.getMonitor(RobotControlListener(), ReadLineStrategy())
 monitor.start()
 
+detector.start()
+
+running = True
 try:
-    detector._detect(source='0', weights='yolov5s.pt')
-except KeyboardInterrupt as e:
+    while running:
+        time.sleep(1)
+except (KeyboardInterrupt, SystemExit):
     print("Interrupted!!")
-    detector.stop()
-    monitor.stop()
-    btSerial.close()
+
+detector.stop()
+monitor.stop()
+btSerial.close()

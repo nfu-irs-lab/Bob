@@ -68,7 +68,6 @@ class ObjectDetector(Detector):
         # save_img = not nosave and not source.endswith('.txt')  # save inference images
         webcam = source.isnumeric() or source.endswith('.txt') or source.lower().startswith(
             ('rtsp://', 'rtmp://', 'http://', 'https://'))
-
         # Directories
         save_dir = increment_path(Path(project) / name, exist_ok=exist_ok)  # increment run
         (save_dir / 'labels' if save_txt else save_dir).mkdir(parents=True, exist_ok=True)  # make dir
@@ -107,10 +106,10 @@ class ObjectDetector(Detector):
         if pt and device.type != 'cpu':
             model(torch.zeros(1, 3, imgsz, imgsz).to(device).type_as(next(model.parameters())))  # run once
         for path, img, im0s, vid_cap in dataset:
-            if not self._running():
-                continue
             if self._interrupted():
                 break
+            if not self._running():
+                continue
 
             if pt:
                 img = torch.from_numpy(img).to(device)
@@ -173,3 +172,6 @@ class ObjectDetector(Detector):
 
         if update:
             strip_optimizer(weights)  # update model (to fix SourceChangeWarning)
+
+        cv2.destroyAllWindows()
+
