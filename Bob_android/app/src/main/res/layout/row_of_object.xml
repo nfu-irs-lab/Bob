@@ -5,10 +5,10 @@
 >
 
     <ImageView
-            android:layout_width="256dp"
-            android:layout_height="256dp"
+            android:layout_width="128dp"
+            android:layout_height="128dp"
             app:srcCompat="@drawable/object_bird"
-            android:id="@+id/imageView"/>
+            android:id="@+id/object_row_img"/>
     <TextView
             android:id="@+id/object_row_name"
             android:layout_width="match_parent"
@@ -17,6 +17,6 @@
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
             android:text="TextView"
-            android:textSize="100sp"/>
+            android:textSize="60sp"/>
 
 </LinearLayout>

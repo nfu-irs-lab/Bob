@@ -25,11 +25,12 @@ public abstract class StaticFragment extends Fragment {
         if (listener != null)
             listener.start();
 
-        showListener.onShow(getViews());
+        if (showListener != null)
+            showListener.onShow(getViews());
     }
 
 
-    public void setListener(FragmentListener listener) {
+    public <L extends FragmentListener> void setListener(L listener) {
         this.listener = listener;
     }
 

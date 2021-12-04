@@ -10,7 +10,6 @@ import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.example.hiwin.teacher_version_bob.R;
 import com.example.hiwin.teacher_version_bob.communication.bluetooth.framework.SerialListener;
 import com.example.hiwin.teacher_version_bob.utils.DataSpeaker;
 import com.example.hiwin.teacher_version_bob.data.Face;
@@ -20,6 +19,8 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+
+import static com.example.hiwin.teacher_version_bob.Constants.getFaceDrawableId;
 
 public class FaceDetectActivity extends DetectActivity {
     private static final String THIS_LOG_TAG = "FaceDetectActivity";
@@ -175,7 +176,7 @@ public class FaceDetectActivity extends DetectActivity {
     public Fragment getDescriptionFragment(String name, String tr_name, Fragment next, String nextId) {
         final DescriptionFragment descriptionFragment = new DescriptionFragment();
         descriptionFragment.setShowListener((views) -> {
-            ((ImageView) views[0]).setImageDrawable(context.getDrawable(getDrawableId(name)));
+            ((ImageView) views[0]).setImageDrawable(context.getDrawable(getFaceDrawableId(name)));
             ((TextView) views[1]).setText(name);
             ((TextView) views[2]).setText(tr_name);
         });
@@ -228,16 +229,6 @@ public class FaceDetectActivity extends DetectActivity {
     }
 
 
-    private int getDrawableId(String name) {
-        switch (name) {
-            case "smile":
-                return R.drawable.face_smile;
-            case "sad":
-                return R.drawable.face_sad;
-        }
-        throw new RuntimeException("Drawable not found");
-    }
-
     @Override
     public void onStop() {
         super.onStop();
@@ -246,7 +237,27 @@ public class FaceDetectActivity extends DetectActivity {
 
     @Override
     protected SerialListener getListener() {
-        return null;
+        return new SerialListener() {
+            @Override
+            public void onSerialConnect() {
+                sendMessage("DETECT_FACE");
+            }
+
+            @Override
+            public void onSerialConnectError(Exception e) {
+
+            }
+
+            @Override
+            public void onSerialRead(byte[] data) {
+
+            }
+
+            @Override
+            public void onSerialIoError(Exception e) {
+
+            }
+        };
     }
 
 }

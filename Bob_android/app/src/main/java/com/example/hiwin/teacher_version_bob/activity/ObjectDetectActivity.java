@@ -10,7 +10,6 @@ import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.example.hiwin.teacher_version_bob.R;
 import com.example.hiwin.teacher_version_bob.communication.bluetooth.framework.SerialListener;
 import com.example.hiwin.teacher_version_bob.utils.DataSpeaker;
 import com.example.hiwin.teacher_version_bob.data.Face;
@@ -20,6 +19,8 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+
+import static com.example.hiwin.teacher_version_bob.Constants.getObjectDrawableId;
 
 public class ObjectDetectActivity extends DetectActivity {
     private static final String THIS_LOG_TAG = "ObjectDetectActivity";
@@ -177,7 +178,7 @@ public class ObjectDetectActivity extends DetectActivity {
     public Fragment getDescriptionFragment(String name, String tr_name, Fragment next, String nextId) {
         final DescriptionFragment descriptionFragment = new DescriptionFragment();
         descriptionFragment.setShowListener((views) -> {
-            ((ImageView) views[0]).setImageDrawable(context.getDrawable(getDrawableId(name)));
+            ((ImageView) views[0]).setImageDrawable(context.getDrawable(getObjectDrawableId(name)));
             ((TextView) views[1]).setText(name);
             ((TextView) views[2]).setText(tr_name);
         });
@@ -230,28 +231,6 @@ public class ObjectDetectActivity extends DetectActivity {
     }
 
 
-    private int getDrawableId(String name) {
-        switch (name) {
-            case "car":
-                return R.drawable.object_car;
-            case "knife":
-                return R.drawable.object_knife;
-            case "cake":
-                return R.drawable.object_cake;
-            case "bird":
-                return R.drawable.object_bird;
-            case "bowl":
-                return R.drawable.object_bowl;
-            case "human":
-                return R.drawable.object_person;
-            case "cat":
-                return R.drawable.object_cat;
-            case "bottle":
-                return R.drawable.object_bottle;
-        }
-        throw new RuntimeException("Drawable not found");
-    }
-
     @Override
     public void onStop() {
         super.onStop();
@@ -261,6 +240,26 @@ public class ObjectDetectActivity extends DetectActivity {
 
     @Override
     protected SerialListener getListener() {
-        return null;
+        return new SerialListener() {
+            @Override
+            public void onSerialConnect() {
+                sendMessage("DETECT_OBJET");
+            }
+
+            @Override
+            public void onSerialConnectError(Exception e) {
+
+            }
+
+            @Override
+            public void onSerialRead(byte[] data) {
+
+            }
+
+            @Override
+            public void onSerialIoError(Exception e) {
+
+            }
+        };
     }
 }

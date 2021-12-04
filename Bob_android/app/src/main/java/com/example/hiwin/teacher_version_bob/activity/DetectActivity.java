@@ -28,7 +28,7 @@ public abstract class DetectActivity extends BluetoothCommunicationActivity {
 
     @Override
     protected Toolbar getToolbar() {
-        return (Toolbar) findViewById(R.id.dectect_toolbar);
+        return (Toolbar) findViewById(R.id.detect_toolbar);
     }
 
     @Override
