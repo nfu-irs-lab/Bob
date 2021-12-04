@@ -232,8 +232,9 @@ public class FaceDetectActivity extends DetectActivity {
     @Override
     public void onStop() {
         speaker.shutdown();
-        sendMessage("PAUSE_DETECT");
-//        sendMessage("STOP_DETECT");
+//        sendMessage("PAUSE_DETECT");
+        if(isConnected())
+            sendMessage("STOP_DETECT");
         super.onStop();
     }
 
@@ -244,8 +245,8 @@ public class FaceDetectActivity extends DetectActivity {
 
     @Override
     protected void onDisconnect() {
-        sendMessage("PAUSE_DETECT");
-//        sendMessage("STOP_DETECT");
+//        sendMessage("PAUSE_DETECT");
+        sendMessage("STOP_DETECT");
     }
 
 }

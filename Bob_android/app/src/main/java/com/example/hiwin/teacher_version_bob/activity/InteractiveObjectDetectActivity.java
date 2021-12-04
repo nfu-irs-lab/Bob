@@ -158,6 +158,7 @@ public class InteractiveObjectDetectActivity extends BluetoothCommunicationActiv
         objectDetectFragment.setListener(new FragmentListener() {
             @Override
             public void start() {
+                sendMessage("DETECT_OBJECT");
                 sendMessage("START_DETECT");
                 objectDetectFragment.setAnswer(selectedObject.getName());
                 detectedListener = objectDetectFragment.getListener();
@@ -180,13 +181,14 @@ public class InteractiveObjectDetectActivity extends BluetoothCommunicationActiv
 
     @Override
     protected void onDisconnect() {
-        sendMessage("PAUSE_DETECT");
-//        sendMessage("STOP_DETECT");
+//        sendMessage("PAUSE_DETECT");
+        sendMessage("STOP_DETECT");
     }
     @Override
     public void onStop() {
-        sendMessage("PAUSE_DETECT");
-//        sendMessage("STOP_DETECT");
+//        sendMessage("PAUSE_DETECT");
+        if(isConnected())
+            sendMessage("STOP_DETECT");
         super.onStop();
     }
 

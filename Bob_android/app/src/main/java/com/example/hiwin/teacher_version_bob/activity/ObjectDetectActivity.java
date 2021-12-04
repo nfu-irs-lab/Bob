@@ -234,8 +234,9 @@ public class ObjectDetectActivity extends DetectActivity {
 
     @Override
     public void onStop() {
-        sendMessage("PAUSE_DETECT");
-//        sendMessage("STOP_DETECT");
+//        sendMessage("PAUSE_DETECT");
+        if(isConnected())
+            sendMessage("STOP_DETECT");
         speaker.shutdown();
         super.onStop();
     }
@@ -247,7 +248,7 @@ public class ObjectDetectActivity extends DetectActivity {
 
     @Override
     protected void onDisconnect() {
-        sendMessage("PAUSE_DETECT");
-//        sendMessage("STOP_DETECT");
+//        sendMessage("PAUSE_DETECT");
+        sendMessage("STOP_DETECT");
     }
 }
