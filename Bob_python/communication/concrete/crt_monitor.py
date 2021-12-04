@@ -1,6 +1,4 @@
-import threading
-import time
-from queue import Queue
+from typing import List
 
 from Bob.device.framework.fw_device import SerialDevice
 from communication.framework.fw_monitor import SerialReadStrategy, SerialListener, PackageMonitor
@@ -8,16 +6,36 @@ from communication.framework.fw_monitor import SerialReadStrategy, SerialListene
 
 class ReadLineStrategy(SerialReadStrategy):
     def __init__(self):
-        self.buffer = Queue()
-        self.isIntegral = False
-        self.package_data = bytearray()
+        # self.waiting_time = 0
+        self.buffer = bytearray()
         self.delay_timer = 0
+        self.packages: List[bytes] = []
 
     def warp(self, data: bytes):
-        current_time = time.time()
-        if current_time >= self.delay_timer:
-            self.buffer.queue.clear()
+        for b in data:
+            self.buffer.append(b)
 
+        indexOfFirstEOL = self.__getIndexOfFirstEOL(self.buffer)
+        while indexOfFirstEOL != -1:
+            # remove \n,add to packages array.
+            self.packages.append(self.buffer[0:indexOfFirstEOL])
+
+            # remove from content to \n in buffer.
+            del self.buffer[0:indexOfFirstEOL + 1]
+            indexOfFirstEOL = self.__getIndexOfFirstEOL(self.buffer)
+
+    def hasNextPackage(self) -> bool:
+        return len(self.packages) > 0
+
+    def nextPackage(self) -> bytes:
+        if self.hasNextPackage():
+            b = self.packages[0]
+            del self.packages[0]
+            return b
+        else:
+            raise RuntimeError("No package")
+
+    def __getIndexOfFirstEOL(self, data):
         indexOfEOL = -1
         i = 0
         for b in data:
@@ -26,36 +44,7 @@ class ReadLineStrategy(SerialReadStrategy):
                 break
             i = i + 1
 
-        self.isIntegral = indexOfEOL != -1
-
-        if not self.isIntegral:
-            self.package_data = None
-            for b in data:
-                self.buffer.put(b)
-            self.delay_timer = current_time + 1500
-
-        else:
-            for i in range(indexOfEOL):
-                self.buffer.put(data[i])
-
-            self.package_data = bytearray(self.buffer.qsize())
-
-            for i in range(0, len(self.package_data)):
-                self.package_data[i] = self.buffer.get()
-
-            if indexOfEOL + 1 < len(data):
-                for i in range(indexOfEOL + 1, len(data)):
-                    self.buffer.put(data[i])
-                self.delay_timer = current_time + 1500
-
-    def isIntegralPackage(self) -> bool:
-        return self.isIntegral
-
-    def getPackage(self) -> bytes:
-        if self.isIntegral:
-            return bytes(self.package_data)
-        else:
-            return bytes(0)
+        return indexOfEOL
 
 
 class PrintedSerialListener(SerialListener):
@@ -75,13 +64,13 @@ class SerialPackageMonitor(PackageMonitor):
             try:
                 data = self._ser.read(1024)
 
-                if data is None:
-                    return
+                if len(data) == 0:
+                    continue
 
                 self._strategy.warp(data)
 
-                if self._strategy.isIntegralPackage():
-                    self._listener.onReceive(self._strategy.getPackage())
+                while self._strategy.hasNextPackage():
+                    self._listener.onReceive(self._strategy.nextPackage())
             except KeyboardInterrupt:
                 self.stop()
             except Exception as e:

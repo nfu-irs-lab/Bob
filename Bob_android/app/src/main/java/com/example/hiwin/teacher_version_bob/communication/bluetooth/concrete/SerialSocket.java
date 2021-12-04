@@ -106,9 +106,9 @@ public class SerialSocket implements Runnable {
 
                 strategy.warp(data);
 
-                if(strategy.isIntegralPackage()){
+                if(strategy.hasNextPackage()){
                     if(listener != null)
-                        listener.onSerialRead(strategy.getPackage());
+                        listener.onSerialRead(strategy.nextPackage());
                 }
             }
         } catch (Exception e) {

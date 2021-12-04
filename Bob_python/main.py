@@ -51,7 +51,7 @@ def pushDataToBluetooth(package: Package):
         bt_done = True
 
 
-class DetectorControlListener(SerialListener):
+class CommandControlListener(SerialListener):
     def __init__(self):
         self.__id_counter = 0
 
@@ -61,7 +61,7 @@ class DetectorControlListener(SerialListener):
         cmd = d.decode()
         print("receive:", cmd)
 
-        if cmd == "DETECT_OBJET":
+        if cmd == "DETECT_OBJECT":
             if detector is not None:
                 detector.stop()
 
@@ -154,7 +154,7 @@ bt_done = True
 robot = getRobot()
 detector = None
 btSerial = getBluetoothPackageDevice()
-monitor = btSerial.getMonitor(DetectorControlListener(), ReadLineStrategy())
+monitor = btSerial.getMonitor(CommandControlListener(), ReadLineStrategy())
 monitor.start()
 
 print("Monitor start")

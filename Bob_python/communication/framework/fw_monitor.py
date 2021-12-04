@@ -11,11 +11,11 @@ class SerialReadStrategy(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def isIntegralPackage(self) -> bool:
+    def hasNextPackage(self) -> bool:
         pass
 
     @abc.abstractmethod
-    def getPackage(self) -> bytes:
+    def nextPackage(self) -> bytes:
         pass
 
 

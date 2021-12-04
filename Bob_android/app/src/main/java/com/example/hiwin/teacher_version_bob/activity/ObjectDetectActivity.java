@@ -243,7 +243,7 @@ public class ObjectDetectActivity extends DetectActivity {
 
     @Override
     protected void onConnect() {
-        sendMessage("DETECT_OBJET");
+        sendMessage("DETECT_OBJECT");
     }
 
     @Override

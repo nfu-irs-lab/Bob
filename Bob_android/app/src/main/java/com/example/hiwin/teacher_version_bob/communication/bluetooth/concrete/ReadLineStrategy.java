@@ -2,74 +2,68 @@ package com.example.hiwin.teacher_version_bob.communication.bluetooth.concrete;
 
 import com.example.hiwin.teacher_version_bob.communication.bluetooth.framework.SerialReadStrategy;
 
+import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 public class ReadLineStrategy implements SerialReadStrategy {
 
-    private final Queue<Byte> buffer = new LinkedList<>();
-    private long delay_timer;
-    private boolean isIntegralPackage;
-    private byte[] package_data;
+    private final List<Byte> buffer = new LinkedList<>();
+    private List<byte[]> packages = new LinkedList<>();
 
     @Override
     public void warp(byte[] data) {
-        long current_time = System.currentTimeMillis();
 
-        if (current_time >= delay_timer) {
-            buffer.clear();
+        for (byte b : data) {
+            buffer.add(b);
         }
 
+        int indexOfEOL = getIndexOfFirstEOL(buffer);
+        while (indexOfEOL != -1) {
+            packages.add(subArray(buffer, 0, indexOfEOL));
+
+            for (int i = 0; i <= indexOfEOL; i++) {
+                buffer.remove(0);
+            }
+
+            indexOfEOL = getIndexOfFirstEOL(buffer);
+        }
+    }
+
+    @Override
+    public boolean hasNextPackage() {
+        return packages.size() != 0;
+    }
+
+    private int getIndexOfFirstEOL(List<Byte> data) {
         int indexOfEOL = -1;
-        for (int i = 0; i < data.length; i++) {
-            if (data[i] == '\n') {
+        for (int i = 0; i < data.size(); i++) {
+            if (data.get(i) == '\n') {
                 indexOfEOL = i;
                 break;
             }
         }
+        return indexOfEOL;
+    }
 
-        isIntegralPackage = indexOfEOL != -1;
-
-        if (!isIntegralPackage) {
-            package_data = null;
-            for (byte datum : data) {
-                buffer.offer(datum);
-            }
-            delay_timer = current_time + 1500;
-
-        } else {
-            for (int i = 0; i < indexOfEOL; i++) {
-                buffer.offer(data[i]);
-            }
-
-            package_data = new byte[buffer.size()];
-            for (int i = 0; i < package_data.length; i++) {
-                Byte b = buffer.poll();
-                if (b == null)
-                    throw new RuntimeException();
-                package_data[i] = b;
-            }
-
-            if (indexOfEOL + 1 < data.length) {
-                for (int i = indexOfEOL + 1; i < data.length; i++) {
-                    buffer.offer(data[i]);
-                }
-                delay_timer = current_time + 1500;
-            }
+    private byte[] subArray(List<Byte> data, int start, int len) {
+        byte[] buf = new byte[len];
+        for (int i = start; i < start + len; i++) {
+            buf[i - start] = data.get(i);
         }
+        return buf;
     }
 
     @Override
-    public boolean isIntegralPackage() {
-        return isIntegralPackage;
-    }
-
-    @Override
-    public byte[] getPackage() {
-        if (isIntegralPackage) {
-            return package_data;
+    public byte[] nextPackage() {
+        if (hasNextPackage()) {
+            byte[] data = packages.get(0);
+            byte[] buf = Arrays.copyOf(data, data.length);
+            packages.remove(0);
+            return buf;
         } else {
-            return null;
+            throw new RuntimeException("No package");
         }
     }
 }
