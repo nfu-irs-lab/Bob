@@ -2,6 +2,7 @@ from typing import List
 
 from Bob.device.framework.fw_device import SerialDevice
 from communication.framework.fw_monitor import SerialReadStrategy, SerialListener, PackageMonitor
+from communication.framework.fw_package_device import PackageDevice
 
 
 class ReadLineStrategy(SerialReadStrategy):
@@ -48,14 +49,15 @@ class ReadLineStrategy(SerialReadStrategy):
 
 
 class PrintedSerialListener(SerialListener):
-    def onReceive(self, data: bytes):
+    def onReceive(self, device: PackageDevice, data: bytes):
         print(data.decode())
         pass
 
 
 class SerialPackageMonitor(PackageMonitor):
-    def __init__(self, ser: SerialDevice, listener: SerialListener, strategy: SerialReadStrategy):
-        super().__init__(listener, strategy)
+    def __init__(self, device: PackageDevice, ser: SerialDevice, listener: SerialListener,
+                 strategy: SerialReadStrategy):
+        super().__init__(device, listener, strategy)
         self._ser = ser
         self._running = True
 
@@ -70,7 +72,7 @@ class SerialPackageMonitor(PackageMonitor):
                 self._strategy.warp(data)
 
                 while self._strategy.hasNextPackage():
-                    self._listener.onReceive(self._strategy.nextPackage())
+                    self._listener.onReceive(self._package_device, self._strategy.nextPackage())
             except KeyboardInterrupt:
                 self.stop()
             except Exception as e:

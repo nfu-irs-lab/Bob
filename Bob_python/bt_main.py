@@ -14,11 +14,11 @@ from serial import SerialTimeoutException
 
 from Bob.device.concrete.crt_serial_dev import BluetoothSocketSerialDevice
 from bluetooth_utils.utils import ClientConnectionListener, BluetoothServer
-from communication.concrete.crt_monitor import SerialPackageMonitor, ReadLineStrategy, PrintedSerialListener
+from communication.concrete.crt_monitor import ReadLineStrategy
 from communication.concrete.crt_package import StringPackage, Base64LinePackage
 from communication.concrete.crt_package_device import SerialPackageDevice
 from communication.framework.fw_monitor import SerialListener
-from communication.framework.fw_package import Package
+from communication.framework.fw_package_device import PackageDevice
 from dbctrl.concrete.crt_database import JSONDatabase
 from detector.concrete.face_detect_deepface import FaceDetector
 from detector.concrete.object_detect_yolov5 import ObjectDetector
@@ -26,7 +26,7 @@ from detector.framework.detector import Detector, DetectListener
 from robot.concrete.crt_command import RoboticsCommandFactory
 from robot.framework.fw_action import Action
 from robot.concrete.crt_action import CSVAction
-from serial_utils import getRobot, getBluetoothPackageDevice
+from serial_utils import getRobot
 
 
 def getActionFromFileName(file: str) -> Action:
@@ -44,16 +44,6 @@ def pushActionToRobot(action: Action):
         robot_done = True
 
 
-def pushDataToBluetooth(package: Package):
-    global bt_done
-    if package_device.isOpen():
-        try:
-            package_device.writePackage(package)
-        except SerialTimeoutException:
-            print("bt serial timeout")
-        bt_done = True
-
-
 class BListener(ClientConnectionListener):
 
     def onConnected(self, socket):
@@ -69,7 +59,7 @@ class CommandControlListener(SerialListener):
     def __init__(self):
         self.__id_counter = 0
 
-    def onReceive(self, data: bytes):
+    def onReceive(self, device: PackageDevice, data: bytes):
         global detector
         d = base64.decodebytes(data)
         cmd = d.decode()
@@ -79,13 +69,13 @@ class CommandControlListener(SerialListener):
             if detector is not None:
                 detector.stop()
 
-            detector = ObjectDetector(ObjectDetectListener())
+            detector = ObjectDetector(ObjectDetectListener(device))
             detector.start()
         elif cmd == "DETECT_FACE":
             if detector is not None:
                 detector.stop()
 
-            detector = FaceDetector(FaceDetectListener())
+            detector = FaceDetector(FaceDetectListener(device))
             detector.start()
 
         elif cmd == "START_DETECT":
@@ -108,13 +98,14 @@ class CommandControlListener(SerialListener):
                         "data": all_data}
             jsonString = json.dumps(sendData, ensure_ascii=False)
             print("Send:", jsonString)
-            bt_thread = threading.Thread(target=pushDataToBluetooth,
-                                         args=(Base64LinePackage(StringPackage(jsonString, "UTF-8")),))
-            bt_thread.start()
+            device.writePackage(Base64LinePackage(StringPackage(jsonString, "UTF-8")))
             self.__id_counter = self.__id_counter + 1
 
 
 class FaceDetectListener(DetectListener):
+    def __init__(self, device: PackageDevice):
+        self.device = device
+
     def onDetect(self, face_type: str):
         print("now face emotion: " + face_type)
         obj: Optional[json] = face_db.queryForId(face_type)
@@ -123,10 +114,13 @@ class FaceDetectListener(DetectListener):
             sendData = {"id": -1, "response_type": "json_object", "content": "single_object", "data": data}
             jsonString = json.dumps(sendData, ensure_ascii=False)
             print("Send:", jsonString)
-            pushDataToBluetooth(Base64LinePackage(StringPackage(jsonString, 'UTF-8')))
+            self.device.writePackage(Base64LinePackage(StringPackage(jsonString, "UTF-8")))
 
 
 class ObjectDetectListener(DetectListener):
+    def __init__(self, device: PackageDevice):
+        self.device = device
+
     def onDetect(self, objectList: List):
         global robot_done
         global bt_done
@@ -146,14 +140,11 @@ class ObjectDetectListener(DetectListener):
                 jsonString = json.dumps(sendData, ensure_ascii=False)
                 print("Send:", jsonString)
 
-                # id_counter = id_counter + 1
+                self.device.writePackage(Base64LinePackage(StringPackage(jsonString, "UTF-8")))
                 robot_done = False
-                bt_done = True
-                bt_thread = threading.Thread(target=pushDataToBluetooth,
-                                             args=(Base64LinePackage(StringPackage(jsonString, "UTF-8")),))
-                bt_thread.start()
                 robot_thread = threading.Thread(target=pushActionToRobot, args=(getActionFromFileName(data['action']),))
                 robot_thread.start()
+
                 break
 
 
@@ -168,7 +159,6 @@ bt_done = True
 robot = getRobot()
 detector = None
 monitor = None
-package_device = None
 
 try:
     server = BluetoothServer(BListener())

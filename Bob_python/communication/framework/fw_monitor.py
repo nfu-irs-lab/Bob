@@ -1,6 +1,8 @@
 import abc
 import threading
 
+from communication.framework.fw_package_device import PackageDevice
+
 
 class SerialReadStrategy(metaclass=abc.ABCMeta):
 
@@ -18,15 +20,15 @@ class SerialReadStrategy(metaclass=abc.ABCMeta):
 
 
 class SerialListener(metaclass=abc.ABCMeta):
-
     @abc.abstractmethod
-    def onReceive(self, data: bytes):
+    def onReceive(self, device: PackageDevice, data: bytes):
         pass
 
 
 class PackageMonitor(threading.Thread, abc.ABC):
-    def __init__(self, listener: SerialListener, strategy: SerialReadStrategy):
+    def __init__(self, device: PackageDevice, listener: SerialListener, strategy: SerialReadStrategy):
         super().__init__()
+        self._package_device = device
         self._listener = listener
         self._strategy = strategy
 

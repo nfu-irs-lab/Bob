@@ -1,6 +1,6 @@
 from Bob.device.framework.fw_device import SerialDevice
 from communication.concrete.crt_monitor import SerialPackageMonitor
-from communication.framework.fw_monitor import SerialListener, SerialReadStrategy
+from communication.framework.fw_monitor import SerialReadStrategy, PackageMonitor, SerialListener
 from communication.framework.fw_package import Package
 from communication.framework.fw_package_device import PackageDevice
 
@@ -24,5 +24,6 @@ class SerialPackageDevice(PackageDevice):
     def writePackage(self, package: Package) -> int:
         return self.ser.write(package.getBytes())
 
-    def getMonitor(self, listener: SerialListener, strategy: SerialReadStrategy):
-        return SerialPackageMonitor(self.ser, listener, strategy)
+    def getMonitor(self, listener: SerialListener,
+                   strategy: SerialReadStrategy) -> PackageMonitor:
+        return SerialPackageMonitor(self, self.ser, listener, strategy)
