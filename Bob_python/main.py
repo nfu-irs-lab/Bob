@@ -12,9 +12,11 @@ import time
 from typing import List, Optional
 from serial import SerialTimeoutException
 
-from communication.concrete.crt_monitor import SerialPackageMonitor, ReadLineStrategy, PrintedSerialListener
+from communication.concrete.crt_monitor import SerialPackageMonitor
+from communication.concrete.crt_listener import PrintedPackageListener
+from communication.concrete.crt_strategy import ReadLineStrategy
 from communication.concrete.crt_package import StringPackage, Base64LinePackage
-from communication.framework.fw_monitor import SerialListener
+from communication.framework.fw_listener import PackageListener
 from communication.framework.fw_package import Package
 from dbctrl.concrete.crt_database import JSONDatabase
 from detector.concrete.face_detect_deepface import FaceDetector
@@ -51,7 +53,7 @@ def pushDataToBluetooth(package: Package):
         bt_done = True
 
 
-class CommandControlListener(SerialListener):
+class CommandControlListener(PackageListener):
     def __init__(self):
         self.__id_counter = 0
 

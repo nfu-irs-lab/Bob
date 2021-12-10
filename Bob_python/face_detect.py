@@ -6,9 +6,10 @@ from typing import Optional, List
 
 from serial import SerialTimeoutException
 
-from communication.concrete.crt_monitor import ReadLineStrategy, SerialPackageMonitor
+from communication.concrete.crt_monitor import SerialPackageMonitor
+from communication.concrete.crt_strategy import ReadLineStrategy
 from communication.concrete.crt_package import Base64LinePackage, StringPackage
-from communication.framework.fw_monitor import SerialListener
+from communication.framework.fw_listener import PackageListener
 from communication.framework.fw_package import Package
 from dbctrl.concrete.crt_database import JSONDatabase
 from detector.concrete.face_detect_deepface import FaceDetector
@@ -37,7 +38,7 @@ def pushDataToBluetooth(package: Package):
         bt_done = True
 
 
-class RobotControlListener(SerialListener):
+class RobotControlListener(PackageListener):
     def onReceive(self, data: bytes):
         global running
         d = base64.decodebytes(data)

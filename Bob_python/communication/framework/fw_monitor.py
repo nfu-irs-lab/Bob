@@ -1,34 +1,13 @@
 import abc
 import threading
 
-from communication.framework.fw_package_device import PackageDevice
-
-
-class SerialReadStrategy(metaclass=abc.ABCMeta):
-
-    @abc.abstractmethod
-    def warp(self, data: bytes):
-        pass
-
-    @abc.abstractmethod
-    def hasNextPackage(self) -> bool:
-        pass
-
-    @abc.abstractmethod
-    def nextPackage(self) -> bytes:
-        pass
-
-
-class SerialListener(metaclass=abc.ABCMeta):
-    @abc.abstractmethod
-    def onReceive(self, device: PackageDevice, data: bytes):
-        pass
+from communication.framework.fw_listener import PackageListener
+from communication.framework.fw_strategy import SerialReadStrategy
 
 
 class PackageMonitor(threading.Thread, abc.ABC):
-    def __init__(self, device: PackageDevice, listener: SerialListener, strategy: SerialReadStrategy):
+    def __init__(self, listener: PackageListener, strategy: SerialReadStrategy):
         super().__init__()
-        self._package_device = device
         self._listener = listener
         self._strategy = strategy
 

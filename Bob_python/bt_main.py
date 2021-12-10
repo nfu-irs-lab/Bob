@@ -7,22 +7,20 @@ Usage:
 import base64
 import json
 import os
-import threading
-import time
 from typing import List, Optional
 from serial import SerialTimeoutException
 
 from Bob.device.concrete.crt_serial_dev import BluetoothSocketSerialDevice
 from bluetooth_utils.utils import ClientConnectionListener, BluetoothServer
-from communication.concrete.crt_monitor import ReadLineStrategy
+from communication.concrete.crt_strategy import ReadLineStrategy
 from communication.concrete.crt_package import StringPackage, Base64LinePackage
 from communication.concrete.crt_package_device import SerialPackageDevice
-from communication.framework.fw_monitor import SerialListener
+from communication.framework.fw_listener import PackageListener
 from communication.framework.fw_package_device import PackageDevice
 from dbctrl.concrete.crt_database import JSONDatabase
 from detector.concrete.face_detect_deepface import FaceDetector
 from detector.concrete.object_detect_yolov5 import ObjectDetector
-from detector.framework.detector import Detector, DetectListener
+from detector.framework.detector import DetectListener
 from robot.concrete.crt_command import RoboticsCommandFactory
 from robot.framework.fw_action import Action
 from robot.concrete.crt_action import CSVAction
@@ -33,33 +31,22 @@ def getActionFromFileName(file: str) -> Action:
     return CSVAction(f'actions{os.path.sep}{file}', RoboticsCommandFactory())
 
 
-def pushActionToRobot(action: Action):
-    global robot_done
-    if robot.isOpen():
-        try:
-            robot.doAction(action)
-            robot.doAction(getActionFromFileName("reset.csv"))
-        except SerialTimeoutException:
-            print("robot serial timeout")
-        robot_done = True
-
-
 class BListener(ClientConnectionListener):
 
     def onConnected(self, socket):
         global monitor
-        global package_device
         print("Monitor start")
         package_device = SerialPackageDevice(BluetoothSocketSerialDevice(socket))
-        monitor = package_device.getMonitor(CommandControlListener(), ReadLineStrategy())
+        monitor = package_device.getMonitor(CommandControlListener(package_device), ReadLineStrategy())
         monitor.start()
 
 
-class CommandControlListener(SerialListener):
-    def __init__(self):
+class CommandControlListener(PackageListener):
+    def __init__(self, device: PackageDevice):
         self.__id_counter = 0
+        self.package_device = device
 
-    def onReceive(self, device: PackageDevice, data: bytes):
+    def onReceive(self, data: bytes):
         global detector
         d = base64.decodebytes(data)
         cmd = d.decode()
@@ -69,13 +56,13 @@ class CommandControlListener(SerialListener):
             if detector is not None:
                 detector.stop()
 
-            detector = ObjectDetector(ObjectDetectListener(device))
+            detector = ObjectDetector(ObjectDetectListener(self.package_device))
             detector.start()
         elif cmd == "DETECT_FACE":
             if detector is not None:
                 detector.stop()
 
-            detector = FaceDetector(FaceDetectListener(device))
+            detector = FaceDetector(FaceDetectListener(self.package_device))
             detector.start()
 
         elif cmd == "START_DETECT":
@@ -98,7 +85,7 @@ class CommandControlListener(SerialListener):
                         "data": all_data}
             jsonString = json.dumps(sendData, ensure_ascii=False)
             print("Send:", jsonString)
-            device.writePackage(Base64LinePackage(StringPackage(jsonString, "UTF-8")))
+            self.package_device.writePackage(Base64LinePackage(StringPackage(jsonString, "UTF-8")))
             self.__id_counter = self.__id_counter + 1
 
 
@@ -141,9 +128,13 @@ class ObjectDetectListener(DetectListener):
                 print("Send:", jsonString)
 
                 self.device.writePackage(Base64LinePackage(StringPackage(jsonString, "UTF-8")))
-                robot_done = False
-                robot_thread = threading.Thread(target=pushActionToRobot, args=(getActionFromFileName(data['action']),))
-                robot_thread.start()
+
+                if robot.isOpen():
+                    try:
+                        robot.doAction(getActionFromFileName(data['action']))
+                        robot.doAction(getActionFromFileName("reset.csv"))
+                    except SerialTimeoutException:
+                        print("robot serial timeout")
 
                 break
 
