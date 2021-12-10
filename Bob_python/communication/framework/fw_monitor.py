@@ -1,8 +1,6 @@
 import abc
 import threading
 
-from Bob.device.framework.fw_device import Device
-
 
 class SerialReadStrategy(metaclass=abc.ABCMeta):
 
@@ -20,6 +18,7 @@ class SerialReadStrategy(metaclass=abc.ABCMeta):
 
 
 class SerialListener(metaclass=abc.ABCMeta):
+
     @abc.abstractmethod
     def onReceive(self, data: bytes):
         pass

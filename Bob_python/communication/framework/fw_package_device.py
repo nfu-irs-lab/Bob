@@ -1,7 +1,7 @@
 import abc
 from abc import ABC
 
-from Bob.device.framework.fw_device import  Device
+from Bob.device.framework.fw_device import Device
 from communication.framework.fw_monitor import SerialListener, SerialReadStrategy, PackageMonitor
 from communication.framework.fw_package import Package
 
