@@ -1,5 +1,7 @@
 import os
 
+from detector.concrete.object_detect_yolov5 import ObjectDetector
+from detector.concrete.face_detect_deepface import FaceDetector
 from dbctrl.concrete.crt_database import JSONDatabase
 from robot.concrete.crt_action import CSVAction
 from robot.concrete.crt_command import RoboticsCommandFactory
@@ -12,8 +14,6 @@ from serial import SerialTimeoutException
 from communication.concrete.crt_package import StringPackage, Base64LinePackage
 from communication.framework.fw_listener import PackageListener
 from communication.framework.fw_package_device import PackageDevice
-from detector.concrete.face_detect_deepface import FaceDetector
-from detector.concrete.object_detect_yolov5 import ObjectDetector
 from detector.framework.detector import DetectListener
 
 obj_db_location = f"db{os.path.sep}objects.json"
