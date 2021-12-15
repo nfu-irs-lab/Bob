@@ -1,8 +1,8 @@
 from Bob.device.concrete.crt_serial_dev import BluetoothSocketSerialDevice
-from bluetooth_utils.utils import BluetoothServer, ClientConnectionListener
-from communication.concrete.crt_package_device import SerialPackageDevice
-from communication.concrete.crt_strategy import ReadLineStrategy
-from constants import detector, monitor, CommandControlListener
+from Bob.bluetooth_utils.utils import BluetoothServer, ClientConnectionListener
+from Bob.communication.concrete.crt_package_device import SerialPackageDevice
+from Bob.communication.concrete.crt_strategy import ReadLineStrategy
+from constants import detector, CommandControlListener
 
 
 class ConnectListener(ClientConnectionListener):

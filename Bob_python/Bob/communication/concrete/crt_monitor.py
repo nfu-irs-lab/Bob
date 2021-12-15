@@ -1,7 +1,7 @@
+from Bob.communication.framework.fw_listener import PackageListener
+from Bob.communication.framework.fw_monitor import PackageMonitor
+from Bob.communication.framework.fw_strategy import SerialReadStrategy
 from Bob.device.framework.fw_device import SerialDevice
-from communication.framework.fw_monitor import PackageMonitor
-from communication.framework.fw_listener import PackageListener
-from communication.framework.fw_strategy import SerialReadStrategy
 
 
 class SerialPackageMonitor(PackageMonitor):

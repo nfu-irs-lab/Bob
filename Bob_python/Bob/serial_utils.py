@@ -4,11 +4,11 @@ import serial
 from serial import Serial
 from serial.tools.list_ports_linux import comports
 
+from Bob.communication.framework.fw_package_device import PackageDevice
 from Bob.device.concrete.crt_serial_dev import LocalSerialDevice
-from communication.concrete.crt_package_device import SerialPackageDevice
-from communication.framework.fw_package_device import PackageDevice
-from robot.concrete.crt_robot import SerialRobot, BytePrintedRobot
-from robot.framework.fw_robot import Robot
+from Bob.communication.concrete.crt_package_device import SerialPackageDevice
+from Bob.robot.concrete.crt_robot import SerialRobot, BytePrintedRobot
+from Bob.robot.framework.fw_robot import Robot
 
 
 def getBluetoothPackageDeviceWithDescription(description: str) -> PackageDevice:

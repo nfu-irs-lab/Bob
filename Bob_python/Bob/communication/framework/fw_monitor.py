@@ -1,8 +1,8 @@
 import abc
 import threading
 
-from communication.framework.fw_listener import PackageListener
-from communication.framework.fw_strategy import SerialReadStrategy
+from Bob.communication.framework.fw_listener import PackageListener
+from Bob.communication.framework.fw_strategy import SerialReadStrategy
 
 
 class PackageMonitor(threading.Thread, abc.ABC):

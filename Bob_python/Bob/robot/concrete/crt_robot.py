@@ -1,8 +1,8 @@
 import time
 
 from Bob.device.framework.fw_device import SerialDevice
-from robot.framework.fw_command import Command
-from robot.framework.fw_robot import Robot
+from Bob.robot.framework.fw_command import Command
+from Bob.robot.framework.fw_robot import Robot
 
 
 class SerialRobot(Robot):

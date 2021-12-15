@@ -1,4 +1,4 @@
-from robot.framework.fw_command import CommandFactory, Command, isNotNone
+from Bob.robot.framework.fw_command import CommandFactory, Command, isNotNone
 
 
 def isNone(data):

@@ -1,6 +1,6 @@
 from typing import List
 
-from communication.framework.fw_strategy import SerialReadStrategy
+from Bob.communication.framework.fw_strategy import SerialReadStrategy
 
 
 class ReadLineStrategy(SerialReadStrategy):

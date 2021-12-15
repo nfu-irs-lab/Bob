@@ -1,6 +1,6 @@
 import cv2
 from deepface import DeepFace
-from detector.framework.detector import Detector, DetectListener
+from Bob.detector.framework.detector import Detector, DetectListener
 
 
 class FaceDetector(Detector):

@@ -1,6 +1,6 @@
 import base64
 
-from communication.framework.fw_package import Package
+from Bob.communication.framework.fw_package import Package
 
 
 class Base64LinePackage(Package):
