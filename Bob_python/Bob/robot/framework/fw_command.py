@@ -1,37 +1,31 @@
 import abc
+import time
 from abc import ABC
-
-
-def isNone(data):
-    return data is None
-
-
-def isNotNone(data):
-    return data is not None
+from typing import Optional
 
 
 class Command(ABC):
-    SLEEP = bytes([0x11, 0x22])
 
-    def __init__(self, id: int = None, pos: int = None, speed: int = None,
-                 sleep_duration: float = None):
-        if isNotNone(sleep_duration):
-            self.sleep_duration = sleep_duration
-        elif isNotNone(id) & isNotNone(pos) & isNotNone(speed):
-            self.id = id
-            self.position = pos
-            self.speed = speed
-            self.sleep_duration = None
-        else:
-            raise Exception("format error")
+    @abc.abstractmethod
+    def doCommand(self) -> Optional:
+        pass
+
+
+class BytesCommand(Command, ABC):
+
+    def doCommand(self) -> Optional:
+        return self.getBytes()
 
     @abc.abstractmethod
     def getBytes(self) -> bytes:
         pass
 
 
-class CommandFactory(ABC):
+class SleepCommand(Command):
+    def __init__(self, duration: float):
+        self.__duration = duration
 
-    @abc.abstractmethod
-    def create(self, id: int = None, pos: int = None, speed: int = None, sleep_duration: float = None) -> Command:
-        pass
+    def doCommand(self):
+        time.sleep(self.__duration)
+        print("Sleep:%.2f" % self.__duration)
+        return None

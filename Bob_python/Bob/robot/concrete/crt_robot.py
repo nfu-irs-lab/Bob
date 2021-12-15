@@ -1,7 +1,7 @@
 import time
 
 from Bob.device.framework.fw_device import SerialDevice
-from Bob.robot.framework.fw_command import Command
+from Bob.robot.framework.fw_command import BytesCommand, Command
 from Bob.robot.framework.fw_robot import Robot
 
 
@@ -11,13 +11,9 @@ class SerialRobot(Robot):
         self.serial = device
 
     def doCommand(self, cmd: Command):
-        byteArray = cmd.getBytes()
-
-        if byteArray is Command.SLEEP:
-            time.sleep(cmd.sleep_duration)
-        else:
-            self.serial.write(byteArray)
-            time.sleep(0.1)
+        do = cmd.doCommand()
+        if do is not None:
+            self.serial.write(do)
 
     def isOpen(self):
         return self.serial.isOpen()
@@ -44,31 +40,11 @@ class BytePrintedRobot(Robot):
     def __init__(self):
         super().__init__()
 
-    def doCommand(self, cmd: Command):
-        string = "["
-        for b in cmd.getBytes():
-            string = string + str(b) + ","
-        string = string + "]"
-        print(string)
-
-
-class PrintedRobot(Robot):
-
-    def open(self):
-        pass
-
-    def isOpen(self) -> bool:
-        return True
-
-    def close(self):
-        pass
-
-    def __init__(self):
-        super().__init__()
-
-    def doCommand(self, cmd: Command):
-        byteArray = cmd.getBytes()
-        if byteArray == Command.SLEEP:
-            print("Sleep:", cmd.sleep_duration)
-        else:
-            print(byteArray.decode())
+    def doCommand(self, cmd: BytesCommand):
+        do = cmd.doCommand()
+        if do is not None:
+            string = "["
+            for b in cmd.getBytes():
+                string = string + str(b) + ","
+            string = string + "]"
+            print(string)

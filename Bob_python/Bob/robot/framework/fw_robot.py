@@ -2,7 +2,7 @@ import abc
 
 from Bob.device.framework.fw_device import Device
 from Bob.robot.framework.fw_action import Action
-from Bob.robot.framework.fw_command import Command
+from Bob.robot.framework.fw_command import BytesCommand, Command
 
 
 class Robot(Device, abc.ABC):

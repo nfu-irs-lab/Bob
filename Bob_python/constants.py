@@ -4,7 +4,6 @@ from Bob.detector.concrete.object_detect_yolov5 import ObjectDetector
 from Bob.detector.concrete.face_detect_deepface import FaceDetector
 from Bob.dbctrl.concrete.crt_database import JSONDatabase
 from Bob.robot.concrete.crt_action import CSVAction
-from Bob.robot.concrete.crt_command import RoboticsCommandFactory
 from Bob.robot.framework.fw_action import Action
 from Bob.serial_utils import *
 import base64
@@ -26,14 +25,14 @@ face_db = JSONDatabase(open(face_db_location, encoding=db_charset))
 bt_description = ".*CP2102.*"
 bot_description = ".*FT232R.*"
 
-robot = getPrintedRobot()
+robot = getRobotWithName("COM1")
 
 detector = None
 monitor = None
 
 
 def getActionFromFileName(file: str) -> Action:
-    return CSVAction(f'actions{os.path.sep}{file}', RoboticsCommandFactory())
+    return CSVAction(f'actions{os.path.sep}{file}')
 
 
 class CommandControlListener(PackageListener):

@@ -15,7 +15,8 @@ def getBluetoothPackageDeviceWithDescription(description: str) -> PackageDevice:
     for port in comports():
         if re.search(description, port.description):
             ser = SerialPackageDevice(LocalSerialDevice(
-                serial.Serial(port.device, baudrate=38400, parity=serial.PARITY_NONE, timeout=0.5, write_timeout=1)))
+                serial.Serial(port.device, baudrate=38400, parity=serial.PARITY_NONE, timeout=0.5, write_timeout=1),
+                write_delay_ms=0))
             ser.open()
             return ser
 
@@ -24,7 +25,7 @@ def getBluetoothPackageDeviceWithDescription(description: str) -> PackageDevice:
 
 def getBluetoothPackageDeviceWithName(name: str) -> PackageDevice:
     ser = SerialPackageDevice(LocalSerialDevice(
-        serial.Serial(name, baudrate=38400, parity=serial.PARITY_NONE, timeout=0.5, write_timeout=1)))
+        serial.Serial(name, baudrate=38400, parity=serial.PARITY_NONE, timeout=0.5, write_timeout=1), write_delay_ms=0))
     ser.open()
     return ser
 
@@ -32,7 +33,8 @@ def getBluetoothPackageDeviceWithName(name: str) -> PackageDevice:
 def getRobotWithDescription(description: str) -> Robot:
     for port in comports():
         if re.search(description, port.description):
-            bot = SerialRobot(LocalSerialDevice(Serial(port.device, baudrate=57142, timeout=0.5, write_timeout=1)))
+            bot = SerialRobot(LocalSerialDevice(Serial(port.device, baudrate=57142, timeout=0.5, write_timeout=100),
+                                                write_delay_ms=100))
             if not bot.isOpen():
                 bot.open()
             return bot
@@ -41,7 +43,8 @@ def getRobotWithDescription(description: str) -> Robot:
 
 
 def getRobotWithName(name: str):
-    bot = SerialRobot(LocalSerialDevice(Serial(name, baudrate=57142, timeout=0.5, write_timeout=1)))
+    bot = SerialRobot(
+        LocalSerialDevice(Serial(name, baudrate=57142, timeout=0.5, write_timeout=1), write_delay_ms=100))
     if not bot.isOpen():
         bot.open()
     return bot
