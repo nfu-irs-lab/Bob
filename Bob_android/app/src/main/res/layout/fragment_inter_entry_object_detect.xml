@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                             xmlns:app="http://schemas.android.com/apk/res-auto"
+                                             xmlns:tools="http://schemas.android.com/tools"
+                                             android:layout_width="match_parent"
+                                             android:layout_height="match_parent">
+    <ImageView
+            android:layout_width="0dp"
+            android:layout_height="0dp" app:srcCompat="@drawable/object_cake"
+            android:id="@+id/inter_obj_detect_entry_detected_img"
+            app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/inter_obj_detect_entry_detected_text"
+            app:layout_constraintStart_toEndOf="@+id/inter_obj_detect_entry_answer_img"
+            android:layout_marginTop="50dp"/>
+    <TextView
+            android:text="TextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" android:id="@+id/inter_obj_detect_entry_detected_text"
+            android:textSize="40sp"
+            android:gravity="center"
+            app:layout_constraintTop_toBottomOf="@id/inter_obj_detect_entry_detected_img"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="@+id/inter_obj_detect_entry_detected_img"
+            app:layout_constraintBottom_toBottomOf="@+id/inter_obj_detect_entry_answer_text"/>
+    <ImageView
+            android:layout_width="0dp"
+            android:layout_height="0dp" app:srcCompat="@drawable/object_cake"
+            android:id="@+id/inter_obj_detect_entry_answer_img"
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/inter_obj_detect_entry_answer_text"
+            app:layout_constraintEnd_toStartOf="@id/inter_obj_detect_entry_detected_img"
+            android:layout_marginTop="50dp"/>
+    <TextView
+            android:text="TextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" android:id="@+id/inter_obj_detect_entry_answer_text"
+            android:textSize="40sp"
+            android:gravity="center"
+            app:layout_constraintTop_toBottomOf="@+id/inter_obj_detect_entry_answer_img"
+            app:layout_constraintStart_toStartOf="@+id/inter_obj_detect_entry_answer_img"
+            app:layout_constraintEnd_toEndOf="@+id/inter_obj_detect_entry_answer_img"
+            app:layout_constraintBottom_toTopOf="@id/inter_obj_detect_entry_hint"
+    />
+    <TextView
+            android:text="TextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" android:id="@+id/inter_obj_detect_entry_hint"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintTop_toBottomOf="@id/inter_obj_detect_entry_answer_text"
+            android:gravity="center" android:layout_marginTop="30dp"
+            android:textSize="50sp"
+            android:layout_marginBottom="50dp"/>
+</android.support.constraint.ConstraintLayout>

@@ -2,25 +2,25 @@ package com.example.hiwin.teacher_version_bob.activity;
 
 import android.app.Service;
 import android.content.Context;
+import android.content.Intent;
 import android.os.*;
 import android.speech.tts.TextToSpeech;
 import android.support.v4.app.Fragment;
-import android.util.Base64;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.example.hiwin.teacher_version_bob.R;
-import com.example.hiwin.teacher_version_bob.data.DataSpeaker;
-import com.example.hiwin.teacher_version_bob.data.concrete.object.parser.JSONDataParser;
-import com.example.hiwin.teacher_version_bob.data.concrete.pack.Base64Package;
-import com.example.hiwin.teacher_version_bob.data.data.Data;
-import com.example.hiwin.teacher_version_bob.data.data.Face;
+import com.example.hiwin.teacher_version_bob.communication.bluetooth.framework.SerialListener;
+import com.example.hiwin.teacher_version_bob.utils.DataSpeaker;
+import com.example.hiwin.teacher_version_bob.data.Face;
 import com.example.hiwin.teacher_version_bob.fragment.*;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+
+import static com.example.hiwin.teacher_version_bob.Constants.getFaceDrawableId;
 
 public class FaceDetectActivity extends DetectActivity {
     private static final String THIS_LOG_TAG = "FaceDetectActivity";
@@ -28,8 +28,14 @@ public class FaceDetectActivity extends DetectActivity {
     private Context context;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected String getDeviceAddress(Bundle savedInstanceState) {
+        Intent it = getIntent();
+        return it.getStringExtra("address");
+    }
+
+    @Override
+    protected void initialize(Bundle savedInstanceState) {
+        super.initialize(savedInstanceState);
         context = this;
 
         speaker = new DataSpeaker(new TextToSpeech(context, status -> {
@@ -43,7 +49,6 @@ public class FaceDetectActivity extends DetectActivity {
             }
         }));
     }
-
 
     private void onComplete() {
         showDefault();
@@ -71,24 +76,49 @@ public class FaceDetectActivity extends DetectActivity {
         postFragment(fragment, "default");
     }
 
-    private void showFace(final Data object) throws IOException {
-        Fragment finalFaceFragment = getFinalFaceFragment(object.getFace(), null, "null");
-        Fragment exampleFragment = getExampleFragment(object, finalFaceFragment, "face2");
-        Fragment faceFragment = getFaceFragment(object, exampleFragment, "example");
-        Fragment descriptionFragment = getDescriptionFragment(object, faceFragment, "face");
+    private void showFace(Face face, String name, String tr_name, String sentence, String tr_sentence) throws IOException {
+        Fragment finalFaceFragment = getFinalFaceFragment(face, null, "null");
+        Fragment exampleFragment = getExampleFragment(sentence, tr_sentence, finalFaceFragment, "face2");
+        Fragment faceFragment = getFaceFragment(face, name, tr_name, sentence, tr_sentence, exampleFragment, "example");
+        Fragment descriptionFragment = getDescriptionFragment(name, tr_name, faceFragment, "face");
         postFragment(descriptionFragment, "description");
     }
 
     @Override
     protected void receive(byte[] data) {
         try {
-            String content = new String(new Base64Package(data, Base64.DEFAULT).getDecoded(), StandardCharsets.UTF_8);
+            String content = new String(data, StandardCharsets.UTF_8);
             Log.d(THIS_LOG_TAG, "received string:");
             Log.d(THIS_LOG_TAG, content);
 
             try {
                 detect_pause();
-                showFace((new JSONDataParser("zh_TW")).parse(new JSONObject(content)));
+                JSONObject object = new JSONObject(content);
+
+//                builder.setId(json.getInt("id"));
+//                builder.setResponseType(json.getString("response_type"));
+//                builder.setContent(json.getString("content"));
+
+                JSONObject jdata = object.getJSONObject("data");
+
+                JSONArray languages = jdata.getJSONArray("languages");
+
+                JSONObject translated = null;
+                for (int i = 0; i < languages.length(); i++) {
+                    if (languages.getJSONObject(i).get("code").equals("zh_TW"))
+                        translated = languages.getJSONObject(i);
+                }
+
+                if (translated == null)
+                    throw new RuntimeException("code not found");
+
+                Face face = Face.valueOf(jdata.getString("face"));
+                String name = jdata.getString("name");
+                String sentence = jdata.getString("sentence");
+                String tr_name = translated.getString("tr_name");
+                String tr_sentence = translated.getString("tr_sentence");
+
+                showFace(face, name, tr_name, sentence, tr_sentence);
             } catch (Exception e) {
                 Log.e(THIS_LOG_TAG, e.getMessage());
             }
@@ -97,7 +127,6 @@ public class FaceDetectActivity extends DetectActivity {
         }
 
     }
-
 
     private Fragment getFinalFaceFragment(Face face, Fragment next, String nextId) throws IOException {
         FaceFragment faceFragment = new FaceFragment();
@@ -117,10 +146,10 @@ public class FaceDetectActivity extends DetectActivity {
         return faceFragment;
     }
 
-    private Fragment getFaceFragment(Data object, Fragment next, String nextId) throws IOException {
+    private Fragment getFaceFragment(Face face, String name, String tr_name, String sentence, String tr_sentence, Fragment next, String nextId) throws IOException {
 
         FaceFragment faceFragment = new FaceFragment();
-        faceFragment.warp(context, object.getFace(), 5, false);
+        faceFragment.warp(context, face, 5, false);
 
         faceFragment.setListener(new FragmentFlowListener(next, nextId) {
             @Override
@@ -132,7 +161,7 @@ public class FaceDetectActivity extends DetectActivity {
             public void start() {
                 super.start();
                 speaker.setSpeakerListener(this::end);
-                speaker.speakFully(object);
+                speaker.speakFully(name, tr_name, sentence, tr_sentence);
             }
 
             @Override
@@ -144,12 +173,12 @@ public class FaceDetectActivity extends DetectActivity {
         return faceFragment;
     }
 
-    public Fragment getDescriptionFragment(Data data, Fragment next, String nextId) {
+    public Fragment getDescriptionFragment(String name, String tr_name, Fragment next, String nextId) {
         final DescriptionFragment descriptionFragment = new DescriptionFragment();
         descriptionFragment.setShowListener((views) -> {
-            ((ImageView) views[0]).setImageDrawable(context.getDrawable(data.getFace().getGifId()));
-            ((TextView) views[1]).setText(data.getName());
-            ((TextView) views[2]).setText(data.getTranslatedName());
+            ((ImageView) views[0]).setImageDrawable(context.getDrawable(getFaceDrawableId(name)));
+            ((TextView) views[1]).setText(name);
+            ((TextView) views[2]).setText(tr_name);
         });
 
         descriptionFragment.setListener(new FragmentFlowListener(next, nextId) {
@@ -175,7 +204,7 @@ public class FaceDetectActivity extends DetectActivity {
         return descriptionFragment;
     }
 
-    private Fragment getExampleFragment(Data object, Fragment next, String nextId) {
+    private Fragment getExampleFragment(String sentence, String tr_sentence, Fragment next, String nextId) {
         final ExampleFragment fragment = new ExampleFragment();
         fragment.setListener(new FragmentFlowListener(next, nextId) {
             @Override
@@ -186,25 +215,38 @@ public class FaceDetectActivity extends DetectActivity {
             @Override
             public void start() {
                 super.start();
-                speaker.speakExample(object);
+                speaker.speakExampleSentence(sentence, tr_sentence);
                 speaker.setSpeakerListener(this::end);
             }
         });
 
         fragment.setShowListener(views -> {
-            ((TextView) views[0]).setText(object.getSentence());
-            ((TextView) views[1]).setText(object.getTranslatedSentence());
+            ((TextView) views[0]).setText(sentence);
+            ((TextView) views[1]).setText(tr_sentence);
         });
         return fragment;
 
     }
 
 
-
     @Override
     public void onStop() {
-        super.onStop();
         speaker.shutdown();
+//        sendMessage("PAUSE_DETECT");
+        if(isConnected())
+            sendMessage("STOP_DETECT");
+        super.onStop();
+    }
+
+    @Override
+    protected void onConnect() {
+        sendMessage("DETECT_FACE");
+    }
+
+    @Override
+    protected void onDisconnect() {
+//        sendMessage("PAUSE_DETECT");
+        sendMessage("STOP_DETECT");
     }
 
 }

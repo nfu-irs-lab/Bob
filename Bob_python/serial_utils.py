@@ -1,47 +1,54 @@
 import re
+
+import serial
+from serial import Serial
 from serial.tools.list_ports_linux import comports
-from bluetooth.concrete.device import SerialBluetoothDevice
-from bluetooth.framework.device import BluetoothDevice
-from bluetooth.framework.monitor import SerialListener
-from robotics.concrete.robot import RoboticsRobot
-from robotics.framework.robot import Robot
 
-bt_dev = ".*CP2102.*"
-bot_dev = ".*FT232R.*"
-
-debug = False
-debug_robot_port = 'COM1'
-debug_bt_port = 'COM3'
+from Bob.device.concrete.crt_serial_dev import LocalSerialDevice
+from communication.concrete.crt_package_device import SerialPackageDevice
+from communication.framework.fw_package_device import PackageDevice
+from robot.concrete.crt_robot import SerialRobot, BytePrintedRobot
+from robot.framework.fw_robot import Robot
 
 
-def getBluetooth(listener: SerialListener) -> BluetoothDevice:
-    if debug:
-        bt = SerialBluetoothDevice(debug_bt_port, listener)
-        if not bt.isOpen():
-            bt.open()
-        return bt
-
+def getBluetoothPackageDeviceWithDescription(description: str) -> PackageDevice:
     for port in comports():
-        if re.search(bt_dev, port.description):
-            bt = SerialBluetoothDevice(port.device, listener)
-            if not bt.isOpen():
-                bt.open()
-            return bt
-    raise Exception(bt_dev + " not found.")
+        if re.search(description, port.description):
+            ser = SerialPackageDevice(LocalSerialDevice(
+                serial.Serial(port.device, baudrate=38400, parity=serial.PARITY_NONE, timeout=0.5, write_timeout=1)))
+            ser.open()
+            return ser
+
+    raise Exception(description + " not found.")
 
 
-def getRobot() -> Robot:
-    if debug:
-        bot = RoboticsRobot(debug_robot_port)
-        if not bot.isOpen():
-            bot.open()
-        return bot
+def getBluetoothPackageDeviceWithName(name: str) -> PackageDevice:
+    ser = SerialPackageDevice(LocalSerialDevice(
+        serial.Serial(name, baudrate=38400, parity=serial.PARITY_NONE, timeout=0.5, write_timeout=1)))
+    ser.open()
+    return ser
 
+
+def getRobotWithDescription(description: str) -> Robot:
     for port in comports():
-        if re.search(bot_dev, port.description):
-            bot = RoboticsRobot(port.device)
+        if re.search(description, port.description):
+            bot = SerialRobot(LocalSerialDevice(Serial(port.device, baudrate=57142, timeout=0.5, write_timeout=1)))
             if not bot.isOpen():
                 bot.open()
             return bot
 
-    raise Exception(bot_dev + " not found.")
+    raise Exception(description + " not found.")
+
+
+def getRobotWithName(name: str):
+    bot = SerialRobot(LocalSerialDevice(Serial(name, baudrate=57142, timeout=0.5, write_timeout=1)))
+    if not bot.isOpen():
+        bot.open()
+    return bot
+
+
+def getPrintedRobot() -> Robot:
+    bot = BytePrintedRobot()
+    if not bot.isOpen():
+        bot.open()
+    return bot

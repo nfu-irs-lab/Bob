@@ -280,10 +280,10 @@ if __name__ == '__main__':
     opt = parser.parse_args()
     opt.cfg = check_file(opt.cfg)  # check file
     set_logging()
-    device = select_device(opt.device)
+    package_device = select_device(opt.device)
 
     # Create model
-    model = Model(opt.cfg).to(device)
+    model = Model(opt.cfg).to(package_device)
     model.train()
 
     # Profile
