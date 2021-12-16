@@ -26,7 +26,8 @@ bt_description = ".*CP2102.*"
 bot_description = ".*FT232R.*"
 
 # robot = getRobotWithName("COM1")
-robot = getRobotWithDescription(bot_description)
+# robot = getRobotWithDescription(bot_description)
+robot = getPrintedRobot()
 
 detector = None
 monitor = None
