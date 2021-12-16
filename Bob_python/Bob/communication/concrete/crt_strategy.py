@@ -1,6 +1,6 @@
 from typing import List
 
-from communication.framework.fw_strategy import SerialReadStrategy
+from Bob.communication.framework.fw_strategy import SerialReadStrategy
 
 
 class ReadLineStrategy(SerialReadStrategy):
@@ -34,7 +34,8 @@ class ReadLineStrategy(SerialReadStrategy):
         else:
             raise RuntimeError("No package")
 
-    def __getIndexOfFirstEOL(self, data):
+    @staticmethod
+    def __getIndexOfFirstEOL(data):
         indexOfEOL = -1
         i = 0
         for b in data:

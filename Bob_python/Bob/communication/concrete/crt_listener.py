@@ -1,4 +1,4 @@
-from communication.framework.fw_listener import PackageListener
+from Bob.communication import PackageListener
 
 
 class PrintedPackageListener(PackageListener):

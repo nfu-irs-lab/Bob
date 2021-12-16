@@ -1,10 +1,10 @@
 import abc
 from abc import ABC
 
+from Bob.communication.framework.fw_listener import PackageListener
+from Bob.communication.framework.fw_package import Package
+from Bob.communication.framework.fw_strategy import SerialReadStrategy
 from Bob.device.framework.fw_device import Device
-from communication.framework.fw_listener import PackageListener
-from communication.framework.fw_strategy import SerialReadStrategy
-from communication.framework.fw_package import Package
 
 
 class PackageDevice(Device, ABC):

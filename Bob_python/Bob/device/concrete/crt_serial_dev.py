@@ -4,13 +4,14 @@ from Bob.device.framework.fw_device import SerialDevice
 
 class LocalSerialDevice(SerialDevice):
 
-    def __init__(self, serial: Serial):
+    def __init__(self, serial: Serial, write_delay_ms: int):
+        super().__init__(write_delay_ms)
         self.serial = serial
 
     def read(self, size: int = 1) -> bytes:
         return self.serial.read(size)
 
-    def write(self, data: bytes) -> int:
+    def _write_without_delay(self, data: bytes) -> int:
         return self.serial.write(data)
 
     def open(self):
@@ -25,15 +26,16 @@ class LocalSerialDevice(SerialDevice):
 
 
 class BluetoothSocketSerialDevice(SerialDevice):
-    def __init__(self, client_sock):
+
+    def __init__(self, client_sock, write_delay_ms: int):
+        super().__init__(write_delay_ms)
         self.client_sock = client_sock
 
     def read(self, n: int) -> bytes:
         return self.client_sock.recv(n)
 
-    def write(self, data: bytes) -> int:
-        self.client_sock.send(data)
-        return -1
+    def _write_without_delay(self, data: bytes) -> int:
+        return self.client_sock.send(data)
 
     def open(self):
         pass

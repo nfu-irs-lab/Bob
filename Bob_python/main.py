@@ -5,9 +5,9 @@ Usage:
 """
 
 import time
-from communication.concrete.crt_strategy import ReadLineStrategy
+from Bob.communication.concrete.crt_strategy import ReadLineStrategy
 from constants import bt_description, CommandControlListener, detector
-from serial_utils import getBluetoothPackageDeviceWithDescription
+from Bob.serial_config import getBluetoothPackageDeviceWithDescription
 
 package_device = getBluetoothPackageDeviceWithDescription(bt_description)
 monitor = package_device.getMonitor(CommandControlListener(package_device), ReadLineStrategy())

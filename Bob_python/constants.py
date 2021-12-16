@@ -1,20 +1,19 @@
 import os
 
-from detector.concrete.object_detect_yolov5 import ObjectDetector
-from detector.concrete.face_detect_deepface import FaceDetector
-from dbctrl.concrete.crt_database import JSONDatabase
-from robot.concrete.crt_action import CSVAction
-from robot.concrete.crt_command import RoboticsCommandFactory
-from robot.framework.fw_action import Action
-from serial_utils import *
+from Bob.detector.concrete.object_detect_yolov5 import ObjectDetector
+from Bob.detector.concrete.face_detect_deepface import FaceDetector
+from Bob.dbctrl.concrete.crt_database import JSONDatabase
+from Bob.robot.concrete.crt_action import CSVAction
+from Bob.robot.framework.fw_action import Action
+from Bob.serial_config import *
 import base64
 import json
 from typing import List, Optional
 from serial import SerialTimeoutException
-from communication.concrete.crt_package import StringPackage, Base64LinePackage
-from communication.framework.fw_listener import PackageListener
-from communication.framework.fw_package_device import PackageDevice
-from detector.framework.detector import DetectListener
+from Bob.communication.concrete.crt_package import StringPackage, Base64LinePackage
+from Bob.communication.framework.fw_listener import PackageListener
+from Bob.communication.framework.fw_package_device import PackageDevice
+from Bob.detector.framework.detector import DetectListener
 
 obj_db_location = f"db{os.path.sep}objects.json"
 face_db_location = f"db{os.path.sep}faces.json"
@@ -26,6 +25,8 @@ face_db = JSONDatabase(open(face_db_location, encoding=db_charset))
 bt_description = ".*CP2102.*"
 bot_description = ".*FT232R.*"
 
+# robot = getRobotWithName("COM1")
+# robot = getRobotWithDescription(bot_description)
 robot = getPrintedRobot()
 
 detector = None
@@ -33,7 +34,7 @@ monitor = None
 
 
 def getActionFromFileName(file: str) -> Action:
-    return CSVAction(f'actions{os.path.sep}{file}', RoboticsCommandFactory())
+    return CSVAction(f'actions{os.path.sep}{file}')
 
 
 class CommandControlListener(PackageListener):
