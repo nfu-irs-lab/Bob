@@ -5,7 +5,7 @@ from Bob.detector.concrete.face_detect_deepface import FaceDetector
 from Bob.dbctrl.concrete.crt_database import JSONDatabase
 from Bob.robot.concrete.crt_action import CSVAction
 from Bob.robot.framework.fw_action import Action
-from Bob.serial_utils import *
+from Bob.serial_config import *
 import base64
 import json
 from typing import List, Optional
@@ -25,7 +25,8 @@ face_db = JSONDatabase(open(face_db_location, encoding=db_charset))
 bt_description = ".*CP2102.*"
 bot_description = ".*FT232R.*"
 
-robot = getRobotWithName("COM1")
+# robot = getRobotWithName("COM1")
+robot = getRobotWithDescription(bot_description)
 
 detector = None
 monitor = None

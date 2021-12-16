@@ -11,12 +11,21 @@ from Bob.robot.concrete.crt_robot import SerialRobot, BytePrintedRobot
 from Bob.robot.framework.fw_robot import Robot
 
 
+def getBTSerial(device):
+    return LocalSerialDevice(
+        serial.Serial(device, baudrate=38400, parity=serial.PARITY_NONE, timeout=0.5, write_timeout=1),
+        write_delay_ms=0)
+
+
+def getRobotSerial(device):
+    return LocalSerialDevice(Serial(device, baudrate=57142, timeout=0.5, write_timeout=100),
+                             write_delay_ms=100)
+
+
 def getBluetoothPackageDeviceWithDescription(description: str) -> PackageDevice:
     for port in comports():
         if re.search(description, port.description):
-            ser = SerialPackageDevice(LocalSerialDevice(
-                serial.Serial(port.device, baudrate=38400, parity=serial.PARITY_NONE, timeout=0.5, write_timeout=1),
-                write_delay_ms=0))
+            ser = SerialPackageDevice(getBTSerial(port.device))
             ser.open()
             return ser
 
@@ -24,8 +33,7 @@ def getBluetoothPackageDeviceWithDescription(description: str) -> PackageDevice:
 
 
 def getBluetoothPackageDeviceWithName(name: str) -> PackageDevice:
-    ser = SerialPackageDevice(LocalSerialDevice(
-        serial.Serial(name, baudrate=38400, parity=serial.PARITY_NONE, timeout=0.5, write_timeout=1), write_delay_ms=0))
+    ser = SerialPackageDevice(getBTSerial(name))
     ser.open()
     return ser
 
@@ -33,8 +41,7 @@ def getBluetoothPackageDeviceWithName(name: str) -> PackageDevice:
 def getRobotWithDescription(description: str) -> Robot:
     for port in comports():
         if re.search(description, port.description):
-            bot = SerialRobot(LocalSerialDevice(Serial(port.device, baudrate=57142, timeout=0.5, write_timeout=100),
-                                                write_delay_ms=100))
+            bot = SerialRobot(getRobotSerial(port.device))
             if not bot.isOpen():
                 bot.open()
             return bot
@@ -43,8 +50,7 @@ def getRobotWithDescription(description: str) -> Robot:
 
 
 def getRobotWithName(name: str):
-    bot = SerialRobot(
-        LocalSerialDevice(Serial(name, baudrate=57142, timeout=0.5, write_timeout=1), write_delay_ms=100))
+    bot = SerialRobot(getRobotSerial(name))
     if not bot.isOpen():
         bot.open()
     return bot
