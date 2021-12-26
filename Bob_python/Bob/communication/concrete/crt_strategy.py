@@ -1,7 +1,6 @@
 from typing import List
 
-from Bob.device.framework.fw_device import SerialDevice
-from communication.framework.fw_monitor import SerialReadStrategy, SerialListener, PackageMonitor
+from Bob.communication.framework.fw_strategy import SerialReadStrategy
 
 
 class ReadLineStrategy(SerialReadStrategy):
@@ -35,7 +34,8 @@ class ReadLineStrategy(SerialReadStrategy):
         else:
             raise RuntimeError("No package")
 
-    def __getIndexOfFirstEOL(self, data):
+    @staticmethod
+    def __getIndexOfFirstEOL(data):
         indexOfEOL = -1
         i = 0
         for b in data:
@@ -45,36 +45,3 @@ class ReadLineStrategy(SerialReadStrategy):
             i = i + 1
 
         return indexOfEOL
-
-
-class PrintedSerialListener(SerialListener):
-    def onReceive(self, data: bytes):
-        print(data.decode())
-        pass
-
-
-class SerialPackageMonitor(PackageMonitor):
-    def __init__(self, ser: SerialDevice, listener: SerialListener, strategy: SerialReadStrategy):
-        super().__init__(listener, strategy)
-        self._ser = ser
-        self._running = True
-
-    def run(self):
-        while self._running:
-            try:
-                data = self._ser.read(1024)
-
-                if len(data) == 0:
-                    continue
-
-                self._strategy.warp(data)
-
-                while self._strategy.hasNextPackage():
-                    self._listener.onReceive(self._strategy.nextPackage())
-            except KeyboardInterrupt:
-                self.stop()
-            except Exception as e:
-                print(e.strerror)
-
-    def stop(self):
-        self._running = False

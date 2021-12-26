@@ -1,8 +1,9 @@
 import csv
 from typing import List
 
-from robot.framework.fw_action import Action
-from robot.framework.fw_command import CommandFactory, Command
+from Bob.robot.concrete.crt_command import RoboticsBytesCommand
+from Bob.robot.framework.fw_action import Action
+from Bob.robot.framework.fw_command import Command, SleepCommand
 
 
 def empty(content: str):
@@ -10,9 +11,8 @@ def empty(content: str):
 
 
 class CSVAction(Action):
-    def __init__(self, csv_file: str, factory: CommandFactory):
+    def __init__(self, csv_file: str):
         super().__init__()
-        self.strategy = factory
         self.csv_file = csv_file
 
     def getList(self) -> List[Command]:
@@ -31,10 +31,10 @@ class CSVAction(Action):
                     delay = row[3]
 
                     if empty(delay) and (not empty(_id)) and (not empty(position)) and (not empty(speed)):
-                        cmdList.append(self.strategy.create(id=int(_id), pos=int(position), speed=int(speed)))
-                        pass
+                        cmdList.append(RoboticsBytesCommand(id=int(_id), position=int(position), speed=int(speed)))
                     elif not empty(delay):
-                        cmdList.append(self.strategy.create(sleep_duration=float(delay)))
+                        cmdList.append(SleepCommand(float(delay)))
+
                 line = line + 1
 
             return cmdList

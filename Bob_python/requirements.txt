@@ -32,3 +32,5 @@ pycocotools  # COCO mAP
 deepface~=0.0.68
 
 pyserial~=3.5
+
+PyBluez==0.23
