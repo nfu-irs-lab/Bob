@@ -158,7 +158,7 @@ public class InteractiveObjectDetectActivity extends BluetoothCommunicationActiv
         objectDetectFragment.setListener(new FragmentListener() {
             @Override
             public void start() {
-                sendMessage("DETECT_OBJECT");
+                sendMessage("DETECT_INTER_OBJECT");
                 sendMessage("START_DETECT");
                 objectDetectFragment.setAnswer(selectedObject.getName());
                 detectedListener = objectDetectFragment.getListener();
