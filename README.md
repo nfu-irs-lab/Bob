@@ -102,11 +102,10 @@ re.search(x,y) 則是從y輸入字串中比對是否符合x正規表達示。
 因為HC-05會接上CP2102，所以可以認定含有CP2102描述的即為HC-05序列埠。藉此在判斷式中進行初始化。
 
 ### 安裝 PyBluez
-```
+```shell
 sudo apt install python-dev libpython3.6-dev libbluetooth-dev
 
 sudo hciconfig hci0 piscan
-sudo chmod 666 /var/run/sdp
 ```
 
 ```
@@ -114,8 +113,28 @@ sudo nano /etc/systemd/system/dbus-org.bluez.service
 ExecStart=/usr/lib/bluetooth/bluetoothd -C
 sudo systemctl daemon-reload
 sudo systemctl restart bluetooth
+```
+#### 藍芽sp權限遭拒
 
 ```
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/vincent/git_projects/Bob/Bob_python/bt_main.py", line 19, in <module>
+    server = BluetoothServer(ConnectListener())
+  File "/home/vincent/git_projects/Bob/Bob_python/Bob/bluetooth_utils/utils.py", line 28, in __init__
+    profiles=[bluetooth.SERIAL_PORT_PROFILE],
+  File "/home/vincent/git_projects/Bob/Bob_python/venv/lib/python3.6/site-packages/bluetooth/bluez.py", line 275, in advertise_service
+    raise BluetoothError (*e.args)
+bluetooth.btcommon.BluetoothError: [Errno 13] Permission denied
+```
+
+```shell
+sudo chmod 666 /var/run/sdp
+```
+
+
+
 - https://stackoverflow.com/questions/37913796/bluetooth-error-no-advertisable-device
 - https://pybluez.readthedocs.io/en/latest/install.html
 - https://github.com/MeetMe/newrelic-plugin-agent/issues/151
@@ -123,6 +142,7 @@ sudo systemctl restart bluetooth
 - https://raspberrypi.stackexchange.com/questions/41776/failed-to-connect-to-sdp-server-on-ffffff000000-no-such-file-or-directory
 - https://forums.developer.nvidia.com/t/nvidia-jetson-xavier-nx-bluetooth-connection-issue/156351/18
 - https://blog.csdn.net/qq_33475105/article/details/111995309
+
 ## Linux
 ### Bluetooth
 - https://scribles.net/setting-up-bluetooth-serial-port-profile-on-raspberry-pi/
@@ -131,5 +151,4 @@ sudo systemctl restart bluetooth
 - https://connectivity-staging.s3.us-east-2.amazonaws.com/s3fs-public/2018-10/HCI%20Bluetooth%20Module%20SPP%20Connection%20on%20Linux%20v1_0.pdf
 - https://raspberrypi.stackexchange.com/questions/41776/failed-to-connect-to-sdp-server-on-ffffff000000-no-such-file-or-directory
 - https://forums.developer.nvidia.com/t/jetson-nano-bluetooth-issue-rfcomm-tty-support-not-available/81432
-
 
