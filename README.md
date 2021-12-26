@@ -104,8 +104,6 @@ re.search(x,y) 則是從y輸入字串中比對是否符合x正規表達示。
 ### 安裝 PyBluez
 ```shell
 sudo apt install python-dev libpython3.6-dev libbluetooth-dev
-
-sudo hciconfig hci0 piscan
 ```
 
 ```
@@ -114,6 +112,12 @@ ExecStart=/usr/lib/bluetooth/bluetoothd -C
 sudo systemctl daemon-reload
 sudo systemctl restart bluetooth
 ```
+#### 手機無法連線Serial Port Server
+
+```shell
+sudo hciconfig hci0 piscan
+```
+
 #### 藍芽sp權限遭拒
 
 ```
