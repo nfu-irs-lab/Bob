@@ -1,0 +1,44 @@
+[
+  {
+    "id": "happy_new_year",
+    "data": {
+      "name": "Happy New Year",
+      "total": 2,
+      "stories": [
+        {
+          "text": "A long, long time ago in China, a big scary beast named Nian, whose name means year. He had sharp teeth, giant claws and a mean growl. Most of the time, he lived in the wilderness. The Nian would sleep for the whole year, and every year he would wake up at the same time when the new moon was in the sky. He was always starving when he woke up because he had slept for so long.\nThe Nian will be so hungry that he will sneak into the village and scare everyone in the town, even the animals. People feel worried about the new moon for many, many years. One day a wise man taught them the three things Nina was afraid of loud noises, fire, and the color red. The next time Nian came, the villagers fought back. They hit their drums as loud as they could let every firecracker they had, wear the color red from head to toe, hang red lanterns and spring couplets around the village. Nian ran far away and never came back. Since then, the villagers have been able to protect themselves from the Nian. Finally, people started celebrating the New moon instead of fearing it that celebration became a 15 days festival of family, food and good fortune called Chinese New Year. Since then, the villagers have been able to protect themselves from the Nian. And this is the story about the Chinese New Year.",
+          "image:": null
+        },
+        {
+          "text": "BBBB",
+          "image:": "happy_new_year_1.jpg"
+        },
+        {
+          "text": "BBBB",
+          "image:": "happy_new_year_2.jpg"
+        }
+      ]
+    }
+  },
+  {
+    "id": "happy_halloween",
+    "data": {
+      "name": "Happy Halloween",
+      "total": 2,
+      "stories": [
+        {
+          "text": "AAA",
+          "image:": null
+        },
+        {
+          "text": "BBBB",
+          "image:": "happy_new_year_1.jpg"
+        },
+        {
+          "text": "BBBB",
+          "image:": "happy_new_year_2.jpg"
+        }
+      ]
+    }
+  }
+]

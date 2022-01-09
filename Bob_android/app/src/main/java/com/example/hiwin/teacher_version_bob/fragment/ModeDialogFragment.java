@@ -4,22 +4,35 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import com.example.hiwin.teacher_version_bob.activity.FaceDetectActivity;
+import com.example.hiwin.teacher_version_bob.activity.InteractiveObjectDetectActivity;
+import com.example.hiwin.teacher_version_bob.activity.ObjectDetectActivity;
+import com.example.hiwin.teacher_version_bob.activity.StoryActivity;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
 public class ModeDialogFragment extends DialogFragment {
     public enum Mode {
-        face_detect("Face Detect"), object_detect("Object Detect"),interactive_object_detect("Interactive Object Detect");
+        face_detect("Face Detect", FaceDetectActivity.class),
+        object_detect("Object Detect", ObjectDetectActivity.class),
+        interactive_object_detect("Interactive Object Detect", InteractiveObjectDetectActivity.class),
+        story("Story", StoryActivity.class);
 
         final String description;
+        private final Class<?> clazz;
 
-        Mode(String description) {
+        Mode(String description, Class<?> clazz) {
             this.description = description;
+            this.clazz = clazz;
         }
 
         public String getDescription() {
             return description;
+        }
+
+        public Class<?> getSelectedClass() {
+            return clazz;
         }
     }
 
@@ -32,8 +45,8 @@ public class ModeDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        Mode[] list=Mode.values();
-        String[] items=new String[list.length];
+        Mode[] list = Mode.values();
+        String[] items = new String[list.length];
         Arrays.stream(Mode.values()).map(Mode::getDescription).collect(Collectors.toList()).toArray(items);
         builder.setTitle("Mode")
                 .setItems(items, (dialog, which) -> {
