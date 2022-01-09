@@ -4,18 +4,172 @@
     "data": {
       "name": "Happy New Year",
       "total": 2,
+      "wordlist": [
+        {
+          "name": "Beast",
+          "translated": "野獸",
+          "part_of_speech": "n",
+          "image:": null
+        },
+        {
+          "name": "Afraid",
+          "translated": "畏懼的，害怕的",
+          "part_of_speech": "adj",
+          "image:": null
+        },
+        {
+          "name": "Sharp",
+          "translated": "尖銳的",
+          "part_of_speech": "adj",
+          "image:": null
+        },
+        {
+          "name": "Drum",
+          "translated": "鼓",
+          "part_of_speech": "n",
+          "image:": null
+        },
+        {
+          "name": "Claw",
+          "translated": "爪，腳爪",
+          "part_of_speech": "n",
+          "image:": null
+        },
+        {
+          "name": "Firecracker",
+          "translated": "鞭炮",
+          "part_of_speech": "n",
+          "image:": null
+        },
+        {
+          "name": "Growl",
+          "translated": "發出低沈的吼叫，咆哮",
+          "part_of_speech": "v",
+          "image:": null
+        },
+        {
+          "name": "Lantern",
+          "translated": "燈籠",
+          "part_of_speech": "n",
+          "image:": null
+        },
+        {
+          "name": "Wilderness",
+          "translated": "荒無人煙的地區，荒野",
+          "part_of_speech": "n",
+          "image:": null
+        },
+        {
+          "name": "Spring couplet",
+          "translated": "春聯",
+          "part_of_speech": "n",
+          "image:": null
+        },
+        {
+          "name": "Moon",
+          "translated": "月亮",
+          "part_of_speech": "n",
+          "image:": null
+        },
+        {
+          "name": "Festival",
+          "translated": "節日",
+          "part_of_speech": "n",
+          "image:": null
+        },
+        {
+          "name": "Starving",
+          "translated": "快餓死的，十分飢餓的",
+          "part_of_speech": "adj",
+          "image:": null
+        },
+        {
+          "name": "Family",
+          "translated": "家人",
+          "part_of_speech": "n",
+          "image:": null
+        },
+        {
+          "name": "Sneak",
+          "translated": "偷偷地走，潛行",
+          "part_of_speech": "v",
+          "image:": null
+        },
+        {
+          "name": "Fortune",
+          "translated": "運氣，機會",
+          "part_of_speech": "n",
+          "image:": null
+        },
+        {
+          "name": "Scare",
+          "translated": "驚恐，害怕",
+          "part_of_speech": "v",
+          "image:": null
+        },
+        {
+          "name": "New Year",
+          "translated": "新年",
+          "part_of_speech": "n",
+          "image:": null
+        }
+      ],
       "stories": [
         {
           "text": "A long, long time ago in China, a big scary beast named Nian, whose name means year. He had sharp teeth, giant claws and a mean growl. Most of the time, he lived in the wilderness. The Nian would sleep for the whole year, and every year he would wake up at the same time when the new moon was in the sky. He was always starving when he woke up because he had slept for so long.\nThe Nian will be so hungry that he will sneak into the village and scare everyone in the town, even the animals. People feel worried about the new moon for many, many years. One day a wise man taught them the three things Nina was afraid of loud noises, fire, and the color red. The next time Nian came, the villagers fought back. They hit their drums as loud as they could let every firecracker they had, wear the color red from head to toe, hang red lanterns and spring couplets around the village. Nian ran far away and never came back. Since then, the villagers have been able to protect themselves from the Nian. Finally, people started celebrating the New moon instead of fearing it that celebration became a 15 days festival of family, food and good fortune called Chinese New Year. Since then, the villagers have been able to protect themselves from the Nian. And this is the story about the Chinese New Year.",
           "image:": null
         },
         {
-          "text": "BBBB",
-          "image:": "happy_new_year_1.jpg"
+          "text": "A long, long time ago in China, a big scary beast named Nian, whose name means year.",
+          "image:": "happy_new_year_1"
         },
         {
-          "text": "BBBB",
-          "image:": "happy_new_year_2.jpg"
+          "text": "He had sharp teeth.",
+          "image:": "happy_new_year_2"
+        },
+        {
+          "text": "giant claws and a mean growl",
+          "image:": "happy_new_year_3"
+        },
+        {
+          "text": "Most of the time, he lived in the wilderness.",
+          "image:": "happy_new_year_4"
+        },
+        {
+          "text": "The Nian would sleep for the whole year, and every year he would wake up at the same time when the new moon was in the sky. He was always starving when he woke up because he had slept for so long.",
+          "image:": "happy_new_year_5"
+        },
+        {
+          "text": "The Nian will be so hungry that he will sneak into the village and scare everyone in the town, even the animals. People feel worried about the new moon for many, many years.",
+          "image:": "happy_new_year_6"
+        },
+        {
+          "text": "One day a wise man taught them the three things Nina was afraid of loud noises, fire, and the color red.",
+          "image:": "happy_new_year_7"
+        },
+        {
+          "text": "The next time Nian came, the villagers fought back.",
+          "image:": "happy_new_year_8"
+        },
+        {
+          "text": "They hit their drums as loud as they could",
+          "image:": "happy_new_year_9"
+        },
+        {
+          "text": "let every firecracker they had,",
+          "image:": "happy_new_year_10"
+        },
+        {
+          "text": "wear the color red from head to toe, hang red lanterns and spring couplets around the village.",
+          "image:": "happy_new_year_11"
+        },
+        {
+          "text": "Nian ran far away and never came back.",
+          "image:": "happy_new_year_12"
+        },
+        {
+          "text": "Since then, the villagers have been able to protect themselves from the Nian. Finally, people started celebrating the New moon instead of fearing it that celebration became a 15 days festival of family, food and good fortune called Chinese New Year. Since then, the villagers have been able to protect themselves from the Nian. And this is the story about the Chinese New Year.",
+          "image:": "happy_new_year_13"
         }
       ]
     }
