@@ -1,6 +1,7 @@
 package com.example.hiwin.teacher_version_bob.activity;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -121,23 +122,24 @@ public class StoryActivity extends BluetoothCommunicationActivity {
         return selectFragment;
     }
 
-    private Fragment getStoryPageFragment(JSONObject page, Fragment next, String nextId) {
+    private Fragment getStoryPageFragment(JSONObject page, Fragment next, String nextId) throws JSONException {
         StoryPageFragment storyPageFragment = new StoryPageFragment();
-        storyPageFragment.setShowListener(new StaticFragment.ShowListener() {
-            @Override
-            public void onShow(View[] views) {
-                try {
-                    ((ImageView)views[0]).setImageDrawable(getDrawable(getResourceIDByString(page.getString("image"),"raw")));
-                    ((TextView) views[1]).setText(page.getString("text"));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
+
+        final Drawable drawable;
+        final String text;
+        final MediaPlayer player;
+        drawable = getDrawable(getResourceIDByString(page.getString("image"), "raw"));
+        text = page.getString("text");
+        player = MediaPlayer.create(StoryActivity.this, getResourceIDByString(page.getString("audio"), "raw"));
+
+        storyPageFragment.setShowListener(views -> {
+            ((ImageView) views[0]).setImageDrawable(drawable);
+            ((TextView) views[1]).setText(text);
         });
+
         storyPageFragment.setListener(new FragmentListener() {
             @Override
             public void start() {
-                MediaPlayer player = MediaPlayer.create(StoryActivity.this, R.raw.sound_story_happy_new_year);
                 player.start();
                 player.setOnCompletionListener(mp -> end());
             }
@@ -151,7 +153,7 @@ public class StoryActivity extends BluetoothCommunicationActivity {
     }
 
     private void postFragment(Fragment fragment, String id) {
-        if(fragment==null || id==null)
+        if (fragment == null || id == null)
             return;
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.setReorderingAllowed(true);
