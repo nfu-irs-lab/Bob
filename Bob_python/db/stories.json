@@ -3,12 +3,17 @@
     "id": "the_story_of_niana",
     "data": {
       "name": "THE STORY OF NIAN, A CHINESE NEW YEAR STORY",
-      "total": 12,
+      "total": 13,
       "pages": [
         {
+          "text": "THE STORY OF NIAN, A CHINESE NEW YEAR STORY",
+          "audio": "story_audio_the_story_of_niana_title",
+          "image": null
+        },
+        {
           "text": "Once upon a time, long long ago, there was a man-eating monster called \"Nian\". This beast lived deep in the ocean. It would sleep every day of the year, except on the last day of the Lunar Year, when the cold winter months would turn into Spring.",
-          "audio": "story_audio_the_story_of_niana_1",
-          "image": "story_img_the_story_of_niana_1"
+          "image": "story_img_the_story_of_niana_1",
+          "audio": "story_audio_the_story_of_niana_1"
         },
         {
           "text": "Nian would come on land to attack, and eat whatever it could find and whatever lay in its path. This was the night everyone lived in terror!",
@@ -56,8 +61,8 @@
           "audio": "story_audio_the_story_of_niana_10"
         },
         {
-          "text": "The next year, the villagers stayed up all night, lit firecrackers, lit red lanterns all around their houses, pasted red paper on their walls and doors, wore red clothing, danced to loud music, and banged loud gongs and drums.",
           "image": "story_img_the_story_of_niana_11",
+          "text": "The next year, the villagers stayed up all night, lit firecrackers, lit red lanterns all around their houses, pasted red paper on their walls and doors, wore red clothing, danced to loud music, and banged loud gongs and drums.",
           "audio": "story_audio_the_story_of_niana_11"
         },
         {
@@ -124,18 +129,11 @@
           "audio": "vocabulary_audio_live_in_terror"
         },
         {
-          "name": "Power",
-          "translated": "影響力 操控力",
-          "part_of_speech": "n",
+          "name": "Power / Powerful",
+          "translated": "影響力 操控力 / 強大的，有力量的",
+          "part_of_speech": "n / adj",
           "image": "vocabulary_img_power",
-          "audio": "vocabulary_audio_power"
-        },
-        {
-          "name": "Powerful",
-          "translated": "強大的，有力量的",
-          "part_of_speech": "adj",
-          "image": "vocabulary_img_power",
-          "audio": "vocabulary_audio_powerful"
+          "audio": "vocabulary_audio_power_powerful"
         },
         {
           "name": "Defeat",
@@ -152,9 +150,9 @@
           "audio": "vocabulary_audio_village"
         },
         {
-          "name": "villager",
+          "name": "Villager",
           "translated": "村民",
-          "part_of_speech": "adj",
+          "part_of_speech": "n",
           "image": "vocabulary_img_villager",
           "audio": "vocabulary_audio_villager"
         },
@@ -191,14 +189,14 @@
           "translated": "慷慨的",
           "part_of_speech": "adj",
           "image": "vocabulary_img_kind",
-          "audio": "vocabulary_audio_kind"
+          "audio": "vocabulary_audio_generous_kind"
         },
         {
           "name": "generosity/kindness",
           "translated": "慷慨",
           "part_of_speech": "n",
           "image": "vocabulary_img_kind",
-          "audio": "vocabulary_audio_kind"
+          "audio": "vocabulary_audio_generosity_kindness"
         },
         {
           "name": "Secret",
@@ -222,16 +220,9 @@
           "audio": "vocabulary_audio_lick_its_lips"
         },
         {
-          "name": "Eagerness",
-          "translated": "渴望",
-          "part_of_speech": "n",
-          "image": "vocabulary_img_eagerness",
-          "audio": "vocabulary_audio_eagerness"
-        },
-        {
-          "name": "Eager to do something",
-          "translated": "渴望做某事",
-          "part_of_speech": "phr",
+          "name": "Eagerness / Eager to do something",
+          "translated": "渴望 / 渴望做某事",
+          "part_of_speech": "n / phr",
           "image": "vocabulary_img_eagerness",
           "audio": "vocabulary_audio_eagerness"
         },
@@ -250,18 +241,11 @@
           "audio": "vocabulary_audio_return"
         },
         {
-          "name": "Hurt",
-          "translated": "（使）感到疼痛；弄傷",
-          "part_of_speech": "v",
-          "image": "vocabulary_img_hurt",
-          "audio": "vocabulary_audio_hurt"
-        },
-        {
-          "name": "Unhurt",
-          "translated": "未受傷害的",
-          "part_of_speech": "adj",
-          "image": "vocabulary_img_hurt",
-          "audio": "vocabulary_audio_hurt"
+          "name": "Hurt / Unhurt",
+          "translated": "（使）感到疼痛；弄傷 / 未受傷害的",
+          "part_of_speech": "v / adj",
+          "image": "vocabulary_img_hurt_unhurt",
+          "audio": "vocabulary_audio_hurt_unhurt"
         },
         {
           "name": "Survive",

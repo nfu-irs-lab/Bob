@@ -38,8 +38,10 @@ public class StoryActivity extends BluetoothCommunicationActivity {
                 postFragment(fragment, "stories select");
             } else if (content.equals("story_content")) {
                 JSONObject dataObj = obj.getJSONObject("data");
-//                showStory(dataObj.getJSONArray("pages"));
-                showVocabulary(dataObj.getJSONArray("vocabularies"));
+                StaticFragment vocabulariesFragment = getAllVocabulary(dataObj.getJSONArray("vocabularies"), null);
+//                postFragment(vocabulariesFragment, "vocabularies");
+                StaticFragment storyFragment = getAllStory(dataObj.getJSONArray("pages"),vocabulariesFragment);
+                postFragment(storyFragment, "story");
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -77,22 +79,22 @@ public class StoryActivity extends BluetoothCommunicationActivity {
 
     }
 
-    private void showStory(JSONArray pages) throws JSONException {
-        Fragment previous = null;
+    private StaticFragment getAllStory(JSONArray pages,StaticFragment external_next) throws JSONException {
+        StaticFragment next = external_next;
         for (int i = pages.length() - 1; i >= 0; i--) {
             JSONObject page = pages.getJSONObject(i);
-            previous = getStoryPageFragment(page, previous, "page" + (i + 1));
+            next = getStoryPageFragment(page, next, "page" + (i + 1));
         }
-        postFragment(previous, "page0");
+        return next;
     }
 
-    private void showVocabulary(JSONArray vocabularies) throws JSONException {
-        Fragment previous = null;
+    private StaticFragment getAllVocabulary(JSONArray vocabularies, StaticFragment external_next) throws JSONException {
+        StaticFragment next = external_next;
         for (int i = vocabularies.length() - 1; i >= 0; i--) {
             JSONObject vocabulary = vocabularies.getJSONObject(i);
-            previous = getVocabularyFragment(vocabulary, previous, "vocabulary" + (i + 1));
+            next = getVocabularyFragment(vocabulary, next, "vocabulary" + (i + 1));
         }
-        postFragment(previous, "vocabulary0");
+        return next;
     }
 
     private Fragment getSelectFragment(JSONArray array, Fragment next, String nextId) {
@@ -128,36 +130,30 @@ public class StoryActivity extends BluetoothCommunicationActivity {
         return selectFragment;
     }
 
-    private Fragment getVocabularyFragment(JSONObject vocabulary, Fragment next, String nextId) throws JSONException {
+    private StaticFragment getVocabularyFragment(JSONObject vocabulary, Fragment next, String nextId) throws JSONException {
 
         VocabularyFragment storyPageFragment = new VocabularyFragment();
-        final Drawable drawable = getDrawable(getResourceIDByString(vocabulary.getString("image"), "raw"));
+        final int drawable_id = getResourceIDByString(vocabulary.getString("image"), "raw");
+        final Drawable drawable = drawable_id <= 0 ? null : getDrawable(drawable_id);
+        final int audio_id = getResourceIDByString(vocabulary.getString("audio"), "raw");
         String name = vocabulary.getString("name");
         String translated = vocabulary.getString("translated");
         String part_of_speech = vocabulary.getString("part_of_speech");
-
-//        final MediaPlayer player;
-//        player = MediaPlayer.create(StoryActivity.this, getResourceIDByString(page.getString("audio"), "raw"));
-
         storyPageFragment.setShowListener(views -> {
             ((ImageView) views[0]).setImageDrawable(drawable);
-            ((TextView) views[1]).setText(name+" ("+part_of_speech+".)");
+            ((TextView) views[1]).setText(name + " (" + part_of_speech + ".)");
             ((TextView) views[2]).setText(translated);
         });
 
         storyPageFragment.setListener(new FragmentListener() {
             @Override
             public void start() {
-                new Thread(() -> {
-                    try {
-                        Thread.sleep(5000);
-                        end();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }).start();
-//                player.start();
-//                player.setOnCompletionListener(mp -> end());
+                final MediaPlayer player = MediaPlayer.create(StoryActivity.this, audio_id);
+                player.start();
+                player.setOnCompletionListener(mp -> {
+                    player.release();
+                    end();
+                });
             }
 
             @Override
@@ -168,15 +164,12 @@ public class StoryActivity extends BluetoothCommunicationActivity {
         return storyPageFragment;
     }
 
-    private Fragment getStoryPageFragment(JSONObject page, Fragment next, String nextId) throws JSONException {
+    private StaticFragment getStoryPageFragment(JSONObject page, Fragment next, String nextId) throws JSONException {
         StoryPageFragment storyPageFragment = new StoryPageFragment();
-
-        final Drawable drawable;
-        final String text;
-        final MediaPlayer player;
-        drawable = getDrawable(getResourceIDByString(page.getString("image"), "raw"));
-        text = page.getString("text");
-        player = MediaPlayer.create(StoryActivity.this, getResourceIDByString(page.getString("audio"), "raw"));
+        final String text = page.getString("text");
+        final int audio_id = getResourceIDByString(page.getString("audio"), "raw");
+        final int drawable_id = getResourceIDByString(page.getString("image"), "raw");
+        final Drawable drawable = drawable_id <= 0 ? null : getDrawable(drawable_id);
 
         storyPageFragment.setShowListener(views -> {
             ((ImageView) views[0]).setImageDrawable(drawable);
@@ -186,8 +179,14 @@ public class StoryActivity extends BluetoothCommunicationActivity {
         storyPageFragment.setListener(new FragmentListener() {
             @Override
             public void start() {
+                final MediaPlayer player;
+                player = MediaPlayer.create(StoryActivity.this, audio_id);
                 player.start();
-                player.setOnCompletionListener(mp -> end());
+                player.setOnCompletionListener(mp -> {
+                            player.release();
+                            end();
+                        }
+                );
             }
 
             @Override
