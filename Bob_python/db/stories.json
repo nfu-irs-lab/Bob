@@ -4,121 +4,11 @@
     "data": {
       "name": "THE STORY OF NIAN, A CHINESE NEW YEAR STORY",
       "total": 12,
-      "wordlist": [
-        {
-          "name": "Beast",
-          "translated": "野獸",
-          "part_of_speech": "n",
-          "image:": null
-        },
-        {
-          "name": "Afraid",
-          "translated": "畏懼的，害怕的",
-          "part_of_speech": "adj",
-          "image:": null
-        },
-        {
-          "name": "Sharp",
-          "translated": "尖銳的",
-          "part_of_speech": "adj",
-          "image:": null
-        },
-        {
-          "name": "Drum",
-          "translated": "鼓",
-          "part_of_speech": "n",
-          "image:": null
-        },
-        {
-          "name": "Claw",
-          "translated": "爪，腳爪",
-          "part_of_speech": "n",
-          "image:": null
-        },
-        {
-          "name": "Firecracker",
-          "translated": "鞭炮",
-          "part_of_speech": "n",
-          "image:": null
-        },
-        {
-          "name": "Growl",
-          "translated": "發出低沈的吼叫，咆哮",
-          "part_of_speech": "v",
-          "image:": null
-        },
-        {
-          "name": "Lantern",
-          "translated": "燈籠",
-          "part_of_speech": "n",
-          "image:": null
-        },
-        {
-          "name": "Wilderness",
-          "translated": "荒無人煙的地區，荒野",
-          "part_of_speech": "n",
-          "image:": null
-        },
-        {
-          "name": "Spring couplet",
-          "translated": "春聯",
-          "part_of_speech": "n",
-          "image:": null
-        },
-        {
-          "name": "Moon",
-          "translated": "月亮",
-          "part_of_speech": "n",
-          "image:": null
-        },
-        {
-          "name": "Festival",
-          "translated": "節日",
-          "part_of_speech": "n",
-          "image:": null
-        },
-        {
-          "name": "Starving",
-          "translated": "快餓死的，十分飢餓的",
-          "part_of_speech": "adj",
-          "image:": null
-        },
-        {
-          "name": "Family",
-          "translated": "家人",
-          "part_of_speech": "n",
-          "image:": null
-        },
-        {
-          "name": "Sneak",
-          "translated": "偷偷地走，潛行",
-          "part_of_speech": "v",
-          "image:": null
-        },
-        {
-          "name": "Fortune",
-          "translated": "運氣，機會",
-          "part_of_speech": "n",
-          "image:": null
-        },
-        {
-          "name": "Scare",
-          "translated": "驚恐，害怕",
-          "part_of_speech": "v",
-          "image:": null
-        },
-        {
-          "name": "New Year",
-          "translated": "新年",
-          "part_of_speech": "n",
-          "image:": null
-        }
-      ],
       "pages": [
         {
           "text": "Once upon a time, long long ago, there was a man-eating monster called \"Nian\". This beast lived deep in the ocean. It would sleep every day of the year, except on the last day of the Lunar Year, when the cold winter months would turn into Spring.",
-          "image": "story_img_the_story_of_niana_1",
-          "audio": "story_audio_the_story_of_niana_1"
+          "audio": "story_audio_the_story_of_niana_1",
+          "image": "story_img_the_story_of_niana_1"
         },
         {
           "text": "Nian would come on land to attack, and eat whatever it could find and whatever lay in its path. This was the night everyone lived in terror!",
@@ -175,26 +65,238 @@
           "text": "That year and every year since, Nian has never returned. This eventually became a tradition and the way to celebrate Chinese New Year.",
           "audio": "story_audio_the_story_of_niana_12"
         }
-      ]
-    }
-  },
-  {
-    "id": "happy_halloween",
-    "data": {
-      "name": "Happy Halloween",
-      "total": 2,
-      "pages": [
+      ],
+      "vocabularies": [
         {
-          "text": "AAA",
-          "image:": null
+          "name": "Monster",
+          "translated": "（虛構的）怪物",
+          "part_of_speech": "n",
+          "image": "vocabulary_img_monster",
+          "audio": "vocabulary_audio_monster"
         },
         {
-          "text": "BBBB",
-          "image:": "happy_new_year_1.jpg"
+          "name": "Beast",
+          "translated": "(尤指大型或野生的)動物；野獸",
+          "part_of_speech": "n",
+          "image": "vocabulary_img_beast",
+          "audio": "vocabulary_audio_beast"
         },
         {
-          "text": "BBBB",
-          "image:": "happy_new_year_2.jpg"
+          "name": "Except on",
+          "translated": "除了",
+          "part_of_speech": "phr",
+          "image": "vocabulary_img_except_on",
+          "audio": "vocabulary_audio_except_on"
+        },
+        {
+          "name": "Lunar Year",
+          "translated": "農曆年",
+          "part_of_speech": "n",
+          "image": "vocabulary_img_lunar_year",
+          "audio": "vocabulary_audio_lunar_year"
+        },
+        {
+          "name": "Land",
+          "translated": "土地",
+          "part_of_speech": "n",
+          "image": "vocabulary_img_land",
+          "audio": "vocabulary_audio_land"
+        },
+        {
+          "name": "Ocean",
+          "translated": "海洋",
+          "part_of_speech": "n",
+          "image": "vocabulary_img_ocean",
+          "audio": "vocabulary_audio_ocean"
+        },
+        {
+          "name": "Attack",
+          "translated": "攻擊",
+          "part_of_speech": "v",
+          "image": "vocabulary_img_attack",
+          "audio": "vocabulary_audio_attack"
+        },
+        {
+          "name": "Live in terror",
+          "translated": "活在恐懼中",
+          "part_of_speech": "phr",
+          "image": "vocabulary_img_live_in_terror",
+          "audio": "vocabulary_audio_live_in_terror"
+        },
+        {
+          "name": "Power",
+          "translated": "影響力 操控力",
+          "part_of_speech": "n",
+          "image": "vocabulary_img_power",
+          "audio": "vocabulary_audio_power"
+        },
+        {
+          "name": "Powerful",
+          "translated": "強大的，有力量的",
+          "part_of_speech": "adj",
+          "image": "vocabulary_img_power",
+          "audio": "vocabulary_audio_powerful"
+        },
+        {
+          "name": "Defeat",
+          "translated": "擊敗，打敗",
+          "part_of_speech": "v",
+          "image": "vocabulary_img_defeat",
+          "audio": "vocabulary_audio_defeat"
+        },
+        {
+          "name": "Village",
+          "translated": "村莊",
+          "part_of_speech": "n",
+          "image": "vocabulary_img_village",
+          "audio": "vocabulary_audio_village"
+        },
+        {
+          "name": "villager",
+          "translated": "村民",
+          "part_of_speech": "adj",
+          "image": "vocabulary_img_villager",
+          "audio": "vocabulary_audio_villager"
+        },
+        {
+          "name": "Hide",
+          "translated": "躲藏；把…藏起來",
+          "part_of_speech": "v",
+          "image": "vocabulary_img_hide",
+          "audio": "vocabulary_audio_hide"
+        },
+        {
+          "name": "Travel",
+          "translated": "旅行",
+          "part_of_speech": "v",
+          "image": "vocabulary_img_travel",
+          "audio": "vocabulary_audio_travel"
+        },
+        {
+          "name": "Traveler",
+          "translated": "旅行者",
+          "part_of_speech": "n",
+          "image": "vocabulary_img_traveler",
+          "audio": "vocabulary_audio_traveler"
+        },
+        {
+          "name": "Be touched by something",
+          "translated": "受到感動",
+          "part_of_speech": "phr",
+          "image": "vocabulary_img_be_touched_by_something",
+          "audio": "vocabulary_audio_be_touched_by_something"
+        },
+        {
+          "name": "Generous/kind",
+          "translated": "慷慨的",
+          "part_of_speech": "adj",
+          "image": "vocabulary_img_kind",
+          "audio": "vocabulary_audio_kind"
+        },
+        {
+          "name": "generosity/kindness",
+          "translated": "慷慨",
+          "part_of_speech": "n",
+          "image": "vocabulary_img_kind",
+          "audio": "vocabulary_audio_kind"
+        },
+        {
+          "name": "Secret",
+          "translated": "秘密",
+          "part_of_speech": "n",
+          "image": "vocabulary_img_secret",
+          "audio": "vocabulary_audio_secret"
+        },
+        {
+          "name": "Drive away",
+          "translated": "趕走",
+          "part_of_speech": "phr",
+          "image": "vocabulary_img_drive_away",
+          "audio": "vocabulary_audio_drive_away"
+        },
+        {
+          "name": "Lick its lips",
+          "translated": "舔嘴唇",
+          "part_of_speech": "phr",
+          "image": "vocabulary_img_lick_its_lips",
+          "audio": "vocabulary_audio_lick_its_lips"
+        },
+        {
+          "name": "Eagerness",
+          "translated": "渴望",
+          "part_of_speech": "n",
+          "image": "vocabulary_img_eagerness",
+          "audio": "vocabulary_audio_eagerness"
+        },
+        {
+          "name": "Eager to do something",
+          "translated": "渴望做某事",
+          "part_of_speech": "phr",
+          "image": "vocabulary_img_eagerness",
+          "audio": "vocabulary_audio_eagerness"
+        },
+        {
+          "name": "Frighten",
+          "translated": "使害怕，使受驚",
+          "part_of_speech": "v",
+          "image": "vocabulary_img_frighten",
+          "audio": "vocabulary_audio_frighten"
+        },
+        {
+          "name": "Return /Come back",
+          "translated": "回；返回",
+          "part_of_speech": "v",
+          "image": "vocabulary_img_return",
+          "audio": "vocabulary_audio_return"
+        },
+        {
+          "name": "Hurt",
+          "translated": "（使）感到疼痛；弄傷",
+          "part_of_speech": "v",
+          "image": "vocabulary_img_hurt",
+          "audio": "vocabulary_audio_hurt"
+        },
+        {
+          "name": "Unhurt",
+          "translated": "未受傷害的",
+          "part_of_speech": "adj",
+          "image": "vocabulary_img_hurt",
+          "audio": "vocabulary_audio_hurt"
+        },
+        {
+          "name": "Survive",
+          "translated": "存活",
+          "part_of_speech": "v",
+          "image": "vocabulary_img_survive",
+          "audio": "vocabulary_audio_survive"
+        },
+        {
+          "name": "Stay up all night",
+          "translated": "熬夜",
+          "part_of_speech": "phr",
+          "image": "vocabulary_img_stay_up_all_night",
+          "audio": "vocabulary_audio_stay_up_all_night"
+        },
+        {
+          "name": "Gong",
+          "translated": "鑼",
+          "part_of_speech": "n",
+          "image": "vocabulary_img_gong",
+          "audio": "vocabulary_audio_gong"
+        },
+        {
+          "name": "Drum",
+          "translated": "鼓",
+          "part_of_speech": "n",
+          "image": "vocabulary_img_drum",
+          "audio": "vocabulary_audio_drum"
+        },
+        {
+          "name": "Tradition",
+          "translated": "傳統",
+          "part_of_speech": "n",
+          "image": "vocabulary_img_tradition",
+          "audio": "vocabulary_audio_tradition"
         }
       ]
     }
