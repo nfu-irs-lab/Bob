@@ -120,7 +120,7 @@ class CommandControlListener(PackageListener):
                 story_id = l1[6:]
                 print("get story", story_id)
                 story_content = stories_db.queryForId(story_id)
-                jsonString = formatDataToJsonString(0, "json_object", "story_content", story_content)
+                jsonString = formatDataToJsonString(0, "json_object", "story_content", story_content['data'])
                 print("Send:", jsonString)
                 self.package_device.writePackage(Base64LinePackage(StringPackage(jsonString, "UTF-8")))
 

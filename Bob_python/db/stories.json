@@ -1,9 +1,9 @@
 [
   {
-    "id": "happy_new_year",
+    "id": "the_story_of_niana",
     "data": {
-      "name": "Happy New Year",
-      "total": 2,
+      "name": "THE STORY OF NIAN, A CHINESE NEW YEAR STORY",
+      "total": 12,
       "wordlist": [
         {
           "name": "Beast",
@@ -114,62 +114,54 @@
           "image:": null
         }
       ],
-      "stories": [
+      "pages": [
         {
-          "text": "A long, long time ago in China, a big scary beast named Nian, whose name means year. He had sharp teeth, giant claws and a mean growl. Most of the time, he lived in the wilderness. The Nian would sleep for the whole year, and every year he would wake up at the same time when the new moon was in the sky. He was always starving when he woke up because he had slept for so long.\nThe Nian will be so hungry that he will sneak into the village and scare everyone in the town, even the animals. People feel worried about the new moon for many, many years. One day a wise man taught them the three things Nina was afraid of loud noises, fire, and the color red. The next time Nian came, the villagers fought back. They hit their drums as loud as they could let every firecracker they had, wear the color red from head to toe, hang red lanterns and spring couplets around the village. Nian ran far away and never came back. Since then, the villagers have been able to protect themselves from the Nian. Finally, people started celebrating the New moon instead of fearing it that celebration became a 15 days festival of family, food and good fortune called Chinese New Year. Since then, the villagers have been able to protect themselves from the Nian. And this is the story about the Chinese New Year.",
-          "image:": null
+          "text": "Once upon a time, long long ago, there was a man-eating monster called \"Nian\". This beast lived deep in the ocean. It would sleep every day of the year, except on the last day of the Lunar Year, when the cold winter months would turn into Spring.",
+          "image": "story_img_the_story_of_niana_1"
         },
         {
-          "text": "A long, long time ago in China, a big scary beast named Nian, whose name means year.",
-          "image:": "happy_new_year_1"
+          "text": "Nian would come on land to attack, and eat whatever it could find and whatever lay in its path. This was the night everyone lived in terror!",
+          "image": "story_img_the_story_of_niana_2"
         },
         {
-          "text": "He had sharp teeth.",
-          "image:": "happy_new_year_2"
+          "text": "Year after year Nian returned, and this was such a powerful beast that no one can take on or defeat it. Many had tried but all had died. On New Year’s Eve, all the villagers would take their loved ones and family members, old and young, deep into the mountains to hide from the beast.",
+          "image": "story_img_the_story_of_niana_3"
         },
         {
-          "text": "giant claws and a mean growl",
-          "image:": "happy_new_year_3"
+          "text": "One year on that night, a traveler came to town, looking for food and a place to stay overnight. Everyone was far too busy packing to leave for the mountains, so no one was kind to him. Only one old lady offered him a simple plate of dumplings and a place to sleep. After his meal, the traveler was so touched by the old lady's generosity and decided to tell a long-hidden secret of how to drive away the New Year beast.",
+          "image": "story_img_the_story_of_niana_4"
         },
         {
-          "text": "Most of the time, he lived in the wilderness.",
-          "image:": "happy_new_year_4"
+          "text": "That evening when Nian arrived at their village, all the houses were dark, except the one where the old woman lived. As Nian saw the light, it licked its lips with eagerness and came near the house.",
+          "image": "story_img_the_story_of_niana_5"
         },
         {
-          "text": "The Nian would sleep for the whole year, and every year he would wake up at the same time when the new moon was in the sky. He was always starving when he woke up because he had slept for so long.",
-          "image:": "happy_new_year_5"
+          "text": "Suddenly, it was greeted with deafening noises of firecrackers sounding endlessly. The monster was frightened! ",
+          "image": "story_img_the_story_of_niana_6"
         },
         {
-          "text": "The Nian will be so hungry that he will sneak into the village and scare everyone in the town, even the animals. People feel worried about the new moon for many, many years.",
-          "image:": "happy_new_year_6"
+          "text": "Next, the beast saw that the house was covered in red paper. ",
+          "image": "story_img_the_story_of_niana_7"
         },
         {
-          "text": "One day a wise man taught them the three things Nina was afraid of loud noises, fire, and the color red.",
-          "image:": "happy_new_year_7"
+          "text": "That scared Nian even more, and it took off running back into the ocean.",
+          "image": "story_img_the_story_of_niana_8"
         },
         {
-          "text": "The next time Nian came, the villagers fought back.",
-          "image:": "happy_new_year_8"
+          "text": "When the villagers returned, they saw that the old woman was unhurt! Everyone was eager to learn what she did to survive Nian.",
+          "image": "story_img_the_story_of_niana_9"
         },
         {
-          "text": "They hit their drums as loud as they could",
-          "image:": "happy_new_year_9"
+          "text": "The old woman told the villagers that Nian was afraid of loud noises and the color red.",
+          "image": "story_img_the_story_of_niana_10"
         },
         {
-          "text": "let every firecracker they had,",
-          "image:": "happy_new_year_10"
+          "text": "The next year, the villagers stayed up all night, lit firecrackers, lit red lanterns all around their houses, pasted red paper on their walls and doors, wore red clothing, danced to loud music, and banged loud gongs and drums.",
+          "image": "story_img_the_story_of_niana_11"
         },
         {
-          "text": "wear the color red from head to toe, hang red lanterns and spring couplets around the village.",
-          "image:": "happy_new_year_11"
-        },
-        {
-          "text": "Nian ran far away and never came back.",
-          "image:": "happy_new_year_12"
-        },
-        {
-          "text": "Since then, the villagers have been able to protect themselves from the Nian. Finally, people started celebrating the New moon instead of fearing it that celebration became a 15 days festival of family, food and good fortune called Chinese New Year. Since then, the villagers have been able to protect themselves from the Nian. And this is the story about the Chinese New Year.",
-          "image:": "happy_new_year_13"
+          "image": "story_img_the_story_of_niana_12",
+          "text": "That year and every year since, Nian has never returned. This eventually became a tradition and the way to celebrate Chinese New Year."
         }
       ]
     }
@@ -179,7 +171,7 @@
     "data": {
       "name": "Happy Halloween",
       "total": 2,
-      "stories": [
+      "pages": [
         {
           "text": "AAA",
           "image:": null
