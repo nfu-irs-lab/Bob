@@ -21,7 +21,7 @@ public class VocabularyFragment extends StaticFragment {
     @Override
     protected View[] getViews() {
         View[] views = new View[3];
-        views[0] = root.findViewById(R.id.vocabulary_imageview);
+        views[0] = root.findViewById(R.id.vocabulary_interactive_imageview);
         views[1] = root.findViewById(R.id.vocabulary_name);
         views[2] = root.findViewById(R.id.vocabulary_translated);
         return views;

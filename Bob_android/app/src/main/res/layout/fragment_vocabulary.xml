@@ -15,7 +15,7 @@
             android:textAlignment="center"
             android:textSize="35sp"
             app:layout_constraintBottom_toTopOf="@id/vocabulary_translated"
-            app:layout_constraintTop_toBottomOf="@id/vocabulary_imageview"
+            app:layout_constraintTop_toBottomOf="@id/vocabulary_interactive_imageview"
             app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent"/>
     <TextView
             android:id="@+id/vocabulary_translated"
@@ -29,7 +29,7 @@
             app:layout_constraintTop_toBottomOf="@id/vocabulary_name"
             app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent"/>
     <ImageView
-            android:id="@+id/vocabulary_imageview"
+            android:id="@+id/vocabulary_interactive_imageview"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:srcCompat="@drawable/face_smile"

@@ -20,10 +20,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.nio.charset.StandardCharsets;
+import java.util.LinkedList;
+import java.util.List;
 
 public class StoryActivity extends BluetoothCommunicationActivity {
 
     private JSONObject selectedObject;
+    private int groupA_score = 0;
+    private int groupB_score = 0;
 
     @Override
     protected void receive(byte[] data) {
@@ -38,10 +42,33 @@ public class StoryActivity extends BluetoothCommunicationActivity {
                 postFragment(fragment, "stories select");
             } else if (content.equals("story_content")) {
                 JSONObject dataObj = obj.getJSONObject("data");
-                StaticFragment vocabulariesFragment = getAllVocabulary(dataObj.getJSONArray("vocabularies"), null);
-//                postFragment(vocabulariesFragment, "vocabularies");
-                StaticFragment storyFragment = getAllStory(dataObj.getJSONArray("pages"),vocabulariesFragment);
-                postFragment(storyFragment, "story");
+//                StaticFragment vocabulariesFragment = getAllVocabulary(dataObj.getJSONArray("vocabularies"), null);
+//                StaticFragment storyFragment = getAllStory(dataObj.getJSONArray("pages"), vocabulariesFragment);
+//                postFragment(storyFragment, "story");
+
+
+                VocabularyInteractiveFragment aaa = new VocabularyInteractiveFragment();
+
+                JSONArray vocabularies = dataObj.getJSONArray("vocabularies");
+                aaa.initialize(this, vocabularies);
+                postFragment(aaa,"A");
+
+//                JSONObject[] chosen=new JSONObject[10];
+//                JSONArray rest_of_the_words=new JSONArray();
+//                for (int i=0;i<vocabularies.length();i++){
+//                    rest_of_the_words.put(vocabularies.get(i));
+//                }
+//
+//                for (int i=0;i<chosen.length;i++){
+//                    int chosen_index=(int)(Math.random()*rest_of_the_words.length());
+//                    chosen[i]=rest_of_the_words.getJSONObject(chosen_index);
+//                    rest_of_the_words.remove(chosen_index);
+//                }
+//
+//
+//                StaticFragment fragment = getVocabularyInteractiveFragment(chosen[0],vocabularies , null);
+//                StaticFragment fragment2 = getVocabularyInteractiveFragment(chosen[1], vocabularies, fragment);
+//                postFragment(fragment2, "story");
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -79,7 +106,7 @@ public class StoryActivity extends BluetoothCommunicationActivity {
 
     }
 
-    private StaticFragment getAllStory(JSONArray pages,StaticFragment external_next) throws JSONException {
+    private StaticFragment getAllStory(JSONArray pages, StaticFragment external_next) throws JSONException {
         StaticFragment next = external_next;
         for (int i = pages.length() - 1; i >= 0; i--) {
             JSONObject page = pages.getJSONObject(i);
@@ -96,6 +123,63 @@ public class StoryActivity extends BluetoothCommunicationActivity {
         }
         return next;
     }
+
+//    private StaticFragment getVocabularyInteractiveFragment(JSONObject vocabulary, JSONArray vocabularies, StaticFragment external_next) throws JSONException {
+//        VocabularyInteractiveFragment fragment = new VocabularyInteractiveFragment();
+//
+//        final int drawable_id = getResourceIDByString(vocabulary.getString("image"), "raw");
+//        final Drawable drawable = drawable_id <= 0 ? null : getDrawable(drawable_id);
+//
+//        String correct_name = vocabulary.getString("name");
+//
+//        List<String> wrong_options = new LinkedList<>();
+//        for (int i = 0; i < vocabularies.length(); i++) {
+//            String wrong_name = vocabularies.getJSONObject(i).getString("name");
+//            if (!wrong_name.equals(correct_name))
+//                wrong_options.add(wrong_name);
+//        }
+//
+//        String[] options = new String[4];
+//        int correct_index = (int) (Math.random() * 4);
+//        options[correct_index] = correct_name;
+//
+//        for (int i = 0; i < options.length; i++) {
+//            if (i == correct_index)
+//                continue;
+//
+//            int j = (int) (Math.random() * wrong_options.size());
+//            options[i] = wrong_options.get(j);
+//            wrong_options.remove(j);
+//        }
+//
+//
+//        fragment.initialize(groupA_score,drawable, options, correct_name);
+//        fragment.setListener(new VocabularyInteractiveFragment.AnswerListener() {
+//            @Override
+//            public void onAnswerCorrect(String selected) {
+//                Toast.makeText(StoryActivity.this, "Correct", Toast.LENGTH_SHORT).show();
+//                groupA_score++;
+//                end();
+//            }
+//
+//            @Override
+//            public void onAnswerIncorrect(String selected, String correct) {
+//                Toast.makeText(StoryActivity.this, "Incorrect ->" + correct, Toast.LENGTH_SHORT).show();
+//            }
+//
+//            @Override
+//            public void start() {
+//
+//            }
+//
+//            @Override
+//            public void end() {
+//                postFragment(external_next,correct_name);
+//            }
+//        });
+//
+//        return fragment;
+//    }
 
     private Fragment getSelectFragment(JSONArray array, Fragment next, String nextId) {
         StaticFragment selectFragment = new StoriesSelectFragment();
