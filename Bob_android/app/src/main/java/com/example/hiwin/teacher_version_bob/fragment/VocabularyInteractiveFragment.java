@@ -17,12 +17,20 @@ import org.json.JSONObject;
 
 public class VocabularyInteractiveFragment extends StaticFragment {
 
+    private int group_limit = 2;
+    private int group;
     private int groupA_score = 0;
     private int groupB_score = 0;
-    private int index=0;
+
     private int index_limit = 15;
+    private int index = 0;
+
+    private int game_limit = 3;
+    private int game = 0;
+
+
     private Button[] btns;
-    private TextView score,definition;
+    private TextView score, definition;
     private Context context;
     private JSONArray vocabularies;
     private JSONObject[] chosen;
@@ -50,12 +58,17 @@ public class VocabularyInteractiveFragment extends StaticFragment {
         definition = ((TextView) root.findViewById(R.id.vocabulary_interactive_definition));
         score = ((TextView) root.findViewById(R.id.vocabulary_interactive_score));
 
+        startNew();
+        return root;
+    }
+
+    private void startNew() {
         try {
+            chosen = chooseVocabulary();
             showProblem(chosen[0], generateOptions(chosen[0], vocabularies));
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return root;
     }
 
     @Override
@@ -66,7 +79,10 @@ public class VocabularyInteractiveFragment extends StaticFragment {
     public void initialize(Context context, JSONArray vocabularies) throws JSONException {
         this.context = context;
         this.vocabularies = vocabularies;
-        chosen = new JSONObject[index_limit];
+    }
+
+    private JSONObject[] chooseVocabulary() throws JSONException {
+        JSONObject[] chosen = new JSONObject[index_limit];
         JSONArray rest_of_the_words = new JSONArray();
         for (int i = 0; i < vocabularies.length(); i++) {
             rest_of_the_words.put(vocabularies.get(i));
@@ -77,14 +93,19 @@ public class VocabularyInteractiveFragment extends StaticFragment {
             chosen[i] = rest_of_the_words.getJSONObject(chosen_index);
             rest_of_the_words.remove(chosen_index);
         }
+        return chosen;
     }
+
 
     private void showProblem(JSONObject correct_vocabulary, JSONObject[] options) throws JSONException {
         for (int i = 0; i < options.length; i++) {
             btns[i].setText(options[i].getString("name"));
         }
         definition.setText(correct_vocabulary.getString("definition"));
-        score.setText("score:" + groupA_score);
+        if (group == 0)
+            score.setText(groupA_score + "/" + (index + 1) + "/" + index_limit);
+        else if (group == 1)
+            score.setText(groupB_score + "/" + (index + 1) + "/" + index_limit);
     }
 
     private JSONObject[] generateOptions(JSONObject correct_vocabulary, JSONArray vocabularies) throws JSONException {
@@ -112,18 +133,37 @@ public class VocabularyInteractiveFragment extends StaticFragment {
         return options;
     }
 
-    private final View.OnClickListener onClickListener= v -> {
+    private final View.OnClickListener onClickListener = v -> {
         try {
-            boolean correct=chosen[index].getString("name").equals(((Button)root.findViewById(v.getId())).getText().toString());
-            if(correct){
-                groupA_score++;
+            boolean correct = chosen[index].getString("name").equals(((Button) root.findViewById(v.getId())).getText().toString());
+            if (correct) {
+                if (group == 0)
+                    groupA_score++;
+                else if (group == 1)
+                    groupB_score++;
+
             }
 
             MediaPlayer mp = MediaPlayer.create(getContext(), correct ? R.raw.sound_correct : R.raw.sound_wrong);
             mp.start();
 
-            if (index < index_limit -1 && index >= 0) {
-                showProblem(chosen[++index],generateOptions(chosen[index],vocabularies));
+            if (index < index_limit - 1 && index >= 0) {
+                showProblem(chosen[++index], generateOptions(chosen[index], vocabularies));
+            } else {
+                if (group < group_limit - 1) {
+                    group++;
+                    index = 0;
+                    startNew();
+                } else {
+                    if (game < game_limit - 1) {
+                        game++;
+                        group = 0;
+                        index = 0;
+                        groupA_score=0;
+                        groupB_score=0;
+                        startNew();
+                    }
+                }
             }
 
         } catch (JSONException e) {
