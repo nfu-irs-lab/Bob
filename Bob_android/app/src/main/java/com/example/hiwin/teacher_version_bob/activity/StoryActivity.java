@@ -8,10 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 import com.example.hiwin.teacher_version_bob.R;
 import com.example.hiwin.teacher_version_bob.StoryAdapter;
 import com.example.hiwin.teacher_version_bob.fragment.*;
@@ -20,8 +17,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.nio.charset.StandardCharsets;
-import java.util.LinkedList;
-import java.util.List;
 
 public class StoryActivity extends BluetoothCommunicationActivity {
 
@@ -42,33 +37,16 @@ public class StoryActivity extends BluetoothCommunicationActivity {
                 postFragment(fragment, "stories select");
             } else if (content.equals("story_content")) {
                 JSONObject dataObj = obj.getJSONObject("data");
-//                StaticFragment vocabulariesFragment = getAllVocabulary(dataObj.getJSONArray("vocabularies"), null);
-//                StaticFragment storyFragment = getAllStory(dataObj.getJSONArray("pages"), vocabulariesFragment);
-//                postFragment(storyFragment, "story");
 
 
-                VocabularyInteractiveFragment aaa = new VocabularyInteractiveFragment();
+                StaticFragment vocabularyFragment=getAllVocabulary(dataObj.getJSONArray("vocabularies"),null);
+                StaticFragment storyFragment = getStoryPageFragment(dataObj.getJSONArray("pages"), vocabularyFragment, "vocabulary");
+                postFragment(storyFragment, "story");
+//                VocabularyInteractiveFragment aaa = new VocabularyInteractiveFragment();
+//                JSONArray vocabularies = dataObj.getJSONArray("vocabularies");
+//                aaa.initialize(this, vocabularies);
+//                postFragment(aaa, "A");
 
-                JSONArray vocabularies = dataObj.getJSONArray("vocabularies");
-                aaa.initialize(this, vocabularies);
-                postFragment(aaa,"A");
-
-//                JSONObject[] chosen=new JSONObject[10];
-//                JSONArray rest_of_the_words=new JSONArray();
-//                for (int i=0;i<vocabularies.length();i++){
-//                    rest_of_the_words.put(vocabularies.get(i));
-//                }
-//
-//                for (int i=0;i<chosen.length;i++){
-//                    int chosen_index=(int)(Math.random()*rest_of_the_words.length());
-//                    chosen[i]=rest_of_the_words.getJSONObject(chosen_index);
-//                    rest_of_the_words.remove(chosen_index);
-//                }
-//
-//
-//                StaticFragment fragment = getVocabularyInteractiveFragment(chosen[0],vocabularies , null);
-//                StaticFragment fragment2 = getVocabularyInteractiveFragment(chosen[1], vocabularies, fragment);
-//                postFragment(fragment2, "story");
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -106,14 +84,14 @@ public class StoryActivity extends BluetoothCommunicationActivity {
 
     }
 
-    private StaticFragment getAllStory(JSONArray pages, StaticFragment external_next) throws JSONException {
-        StaticFragment next = external_next;
-        for (int i = pages.length() - 1; i >= 0; i--) {
-            JSONObject page = pages.getJSONObject(i);
-            next = getStoryPageFragment(page, next, "page" + (i + 1));
-        }
-        return next;
-    }
+//    private StaticFragment getAllStory(JSONArray pages, StaticFragment external_next) throws JSONException {
+//        StaticFragment next = external_next;
+//        for (int i = pages.length() - 1; i >= 0; i--) {
+//            JSONObject page = pages.getJSONObject(i);
+//            next = getStoryPageFragment(page, next, "page" + (i + 1));
+//        }
+//        return next;
+//    }
 
     private StaticFragment getAllVocabulary(JSONArray vocabularies, StaticFragment external_next) throws JSONException {
         StaticFragment next = external_next;
@@ -248,29 +226,13 @@ public class StoryActivity extends BluetoothCommunicationActivity {
         return storyPageFragment;
     }
 
-    private StaticFragment getStoryPageFragment(JSONObject page, Fragment next, String nextId) throws JSONException {
+    private StaticFragment getStoryPageFragment(JSONArray pages, Fragment next, String nextId) throws JSONException {
         StoryPageFragment storyPageFragment = new StoryPageFragment();
-        final String text = page.getString("text");
-        final int audio_id = getResourceIDByString(page.getString("audio"), "raw");
-        final int drawable_id = getResourceIDByString(page.getString("image"), "raw");
-        final Drawable drawable = drawable_id <= 0 ? null : getDrawable(drawable_id);
-
-        storyPageFragment.setShowListener(views -> {
-            ((ImageView) views[0]).setImageDrawable(drawable);
-            ((TextView) views[1]).setText(text);
-        });
-
+        storyPageFragment.initialize(this, pages);
         storyPageFragment.setListener(new FragmentListener() {
             @Override
             public void start() {
-                final MediaPlayer player;
-                player = MediaPlayer.create(StoryActivity.this, audio_id);
-                player.start();
-                player.setOnCompletionListener(mp -> {
-                            player.release();
-                            end();
-                        }
-                );
+
             }
 
             @Override
