@@ -37,10 +37,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" android:layout_weight="1">
             <Button
-                    android:text="Next"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:id="@+id/story_page_next" android:layout_weight="1"/>
-            <Button
                     android:text="previous"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" android:id="@+id/story_page_previous"
@@ -49,6 +45,10 @@
                     android:text="Speak"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" android:id="@+id/story_page_speak" android:layout_weight="1"/>
+            <Button
+                    android:text="Next"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:id="@+id/story_page_next" android:layout_weight="1"/>
         </LinearLayout>
         <Button
                 android:text="Next session"
