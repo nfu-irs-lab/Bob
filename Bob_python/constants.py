@@ -123,6 +123,10 @@ class CommandControlListener(PackageListener):
                 jsonString = formatDataToJsonString(0, "json_object", "story_content", story_content['data'])
                 print("Send:", jsonString)
                 self.package_device.writePackage(Base64LinePackage(StringPackage(jsonString, "UTF-8")))
+        elif cmd.startswith("DO_ACTION"):
+            action = cmd[10:]
+            print("do action:", action)
+            robot.doAction(getActionFromFileName(action))
 
 
 class FaceDetectListener(DetectListener):

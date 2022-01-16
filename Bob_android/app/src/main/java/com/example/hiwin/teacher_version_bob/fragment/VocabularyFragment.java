@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.example.hiwin.teacher_version_bob.R;
@@ -19,13 +20,19 @@ import org.json.JSONObject;
 
 public class VocabularyFragment extends StaticFragment {
     private View root;
-    private int index=0;
+    private int index = 0;
     private ImageView image;
     private TextView name_text, translated_text, definition_text;
+    private Button action;
     private Context context;
     private JSONArray vocabularies;
     private MediaPlayer player;
-    private FragmentListener listener;
+    private ActionListener listener;
+    private boolean hasAction;
+
+    public interface ActionListener extends FragmentListener {
+        void onAction(String cmd);
+    }
 
     @Nullable
     @Override
@@ -40,6 +47,8 @@ public class VocabularyFragment extends StaticFragment {
         (root.findViewById(R.id.vocabulary_speak)).setOnClickListener(onClickListener);
         (root.findViewById(R.id.vocabulary_next)).setOnClickListener(onClickListener);
         (root.findViewById(R.id.vocabulary_next_session)).setOnClickListener(onClickListener);
+        action=(root.findViewById(R.id.vocabulary_do_action));
+        action.setOnClickListener(onClickListener);
 
         try {
             show(vocabularies.getJSONObject(index));
@@ -65,8 +74,11 @@ public class VocabularyFragment extends StaticFragment {
         final int audio_id = getResourceIDByString(vocabulary.getString("audio"), "raw");
         String name = vocabulary.getString("name");
         String translated = vocabulary.getString("translated");
-        String definition= vocabulary.getString("definition");
+        String definition = vocabulary.getString("definition");
         String part_of_speech = vocabulary.getString("part_of_speech");
+        hasAction=vocabularies.getJSONObject(index).has("action");
+        action.setEnabled(hasAction);
+
         player = MediaPlayer.create(context, audio_id);
         player.start();
 
@@ -85,7 +97,7 @@ public class VocabularyFragment extends StaticFragment {
                         , context.getPackageName());
     }
 
-    private final View.OnClickListener onClickListener= v -> {
+    private final View.OnClickListener onClickListener = v -> {
         try {
             if (v.getId() == R.id.vocabulary_previous) {
                 if (index < vocabularies.length() && index > 0) {
@@ -103,12 +115,15 @@ public class VocabularyFragment extends StaticFragment {
                     player.release();
                     show(vocabularies.getJSONObject(++index));
                 }
-            }else if(v.getId()==R.id.vocabulary_next_session){
+            } else if (v.getId() == R.id.vocabulary_next_session) {
                 player.stop();
                 player.release();
-                if(listener!=null)
+                if (listener != null)
                     listener.end();
-            }else
+            }else if(v.getId()==R.id.vocabulary_do_action){
+                if (listener != null)
+                    listener.onAction("DO_ACTION "+vocabularies.getJSONObject(index).getString("action"));
+            } else
                 throw new IllegalStateException();
 
         } catch (JSONException e) {
@@ -117,7 +132,7 @@ public class VocabularyFragment extends StaticFragment {
     };
 
     public <L extends FragmentListener> void setListener(L listener) {
-        this.listener= listener;
+        this.listener = (ActionListener) listener;
     }
 
 }

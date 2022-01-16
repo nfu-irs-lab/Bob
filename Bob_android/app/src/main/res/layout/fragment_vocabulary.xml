@@ -32,6 +32,11 @@
                     android:layout_height="wrap_content" android:id="@+id/vocabulary_previous"
                     android:layout_weight="1"/>
             <Button
+                    android:text="Action"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:id="@+id/vocabulary_do_action"
+                    android:layout_weight="1"/>
+            <Button
                     android:text="Speak"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" android:id="@+id/vocabulary_speak" android:layout_weight="1"/>

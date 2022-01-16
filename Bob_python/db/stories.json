@@ -78,7 +78,8 @@
           "definition": "a large, ugly, and frightening imaginary creature.",
           "part_of_speech": "n",
           "image": "vocabulary_img_monster",
-          "audio": "vocabulary_audio_monster"
+          "audio": "vocabulary_audio_monster",
+          "action": "monster.csv"
         },
         {
           "name": "Beast",

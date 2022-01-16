@@ -36,13 +36,13 @@ public class StoryActivity extends BluetoothCommunicationActivity {
                 JSONObject dataObj = obj.getJSONObject("data");
 
 
-//                StaticFragment vocabularyFragment=getVocabularyFragment(dataObj.getJSONArray("vocabularies"),null,null);
-//                StaticFragment storyFragment = getStoryPageFragment(dataObj.getJSONArray("pages"), vocabularyFragment, "vocabulary");
-//                postFragment(storyFragment, "story");
+                JSONArray vocabularies=dataObj.getJSONArray("vocabularies");
 
-                VocabularyInteractiveFragment vocabularyInteractiveFragment=new VocabularyInteractiveFragment();
-                vocabularyInteractiveFragment.initialize(this,dataObj.getJSONArray("vocabularies"));
-                postFragment(vocabularyInteractiveFragment,"vvvv");
+                StaticFragment  vocabularyInteractiveFragment=getVocabularyInteractiveFragment(vocabularies,null,null);
+                StaticFragment vocabularyFragment=getVocabularyFragment(vocabularies,vocabularyInteractiveFragment,"vocabularyInteractiveFragment");
+                StaticFragment storyFragment = getStoryPageFragment(dataObj.getJSONArray("pages"), vocabularyFragment, "vocabulary");
+                postFragment(storyFragment, "story");
+
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -116,7 +116,12 @@ public class StoryActivity extends BluetoothCommunicationActivity {
     private StaticFragment getVocabularyFragment(JSONArray vocabularies, Fragment next, String nextId){
         VocabularyFragment vocabularyFragment = new VocabularyFragment();
         vocabularyFragment.initialize(this,vocabularies);
-        vocabularyFragment.setListener(new FragmentListener() {
+        vocabularyFragment.setListener(new VocabularyFragment.ActionListener() {
+            @Override
+            public void onAction(String cmd) {
+                sendMessage(cmd);
+            }
+
             @Override
             public void start() {
 
@@ -145,6 +150,38 @@ public class StoryActivity extends BluetoothCommunicationActivity {
             }
         });
         return storyPageFragment;
+    }
+
+    private StaticFragment getVocabularyInteractiveFragment(JSONArray vocabularies, Fragment next, String nextId){
+        VocabularyInteractiveFragment vocabularyInteractiveFragment=new VocabularyInteractiveFragment();
+        try {
+            vocabularyInteractiveFragment.initialize(this,vocabularies);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        vocabularyInteractiveFragment.setListener(new VocabularyInteractiveFragment.AnswerListener() {
+            @Override
+            public void onAnswerCorrect() {
+                sendMessage("DO_ACTION correct.csv");
+            }
+
+            @Override
+            public void onAnswerIncorrect() {
+                sendMessage("DO_ACTION incorrect.csv");
+            }
+
+            @Override
+            public void start() {
+
+            }
+
+            @Override
+            public void end() {
+
+            }
+        });
+
+        return vocabularyInteractiveFragment;
     }
 
     private void postFragment(Fragment fragment, String id) {

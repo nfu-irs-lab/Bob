@@ -34,8 +34,15 @@ public class VocabularyInteractiveFragment extends StaticFragment {
     private Context context;
     private JSONArray vocabularies;
     private JSONObject[] chosen;
-    private FragmentListener listener;
     private View root;
+
+    public interface AnswerListener extends FragmentListener {
+        void onAnswerCorrect();
+
+        void onAnswerIncorrect();
+    }
+
+    private AnswerListener answerListener;
 
     @Nullable
     @Override
@@ -136,12 +143,18 @@ public class VocabularyInteractiveFragment extends StaticFragment {
     private final View.OnClickListener onClickListener = v -> {
         try {
             boolean correct = chosen[index].getString("name").equals(((Button) root.findViewById(v.getId())).getText().toString());
+
             if (correct) {
+                if (answerListener != null)
+                    answerListener.onAnswerCorrect();
                 if (group == 0)
                     groupA_score++;
                 else if (group == 1)
                     groupB_score++;
 
+            } else {
+                if (answerListener != null)
+                    answerListener.onAnswerIncorrect();
             }
 
             MediaPlayer mp = MediaPlayer.create(getContext(), correct ? R.raw.sound_correct : R.raw.sound_wrong);
@@ -159,8 +172,8 @@ public class VocabularyInteractiveFragment extends StaticFragment {
                         game++;
                         group = 0;
                         index = 0;
-                        groupA_score=0;
-                        groupB_score=0;
+                        groupA_score = 0;
+                        groupB_score = 0;
                         startNew();
                     }
                 }
@@ -173,6 +186,6 @@ public class VocabularyInteractiveFragment extends StaticFragment {
 
     @Override
     public <L extends FragmentListener> void setListener(L listener) {
-        this.listener = listener;
+        this.answerListener = (AnswerListener) listener;
     }
 }
