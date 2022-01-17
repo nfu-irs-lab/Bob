@@ -87,7 +87,8 @@
           "part_of_speech": "n",
           "image": "vocabulary_img_beast",
           "audio": "vocabulary_audio_beast",
-          "definition": "an animal, especially a large or wild one."
+          "definition": "an animal, especially a large or wild one.",
+          "action": "monster.csv"
         },
         {
           "name": "Except on",
@@ -136,7 +137,8 @@
           "part_of_speech": "phr",
           "image": "vocabulary_img_live_in_terror",
           "audio": "vocabulary_audio_live_in_terror",
-          "definition": "indicate that someone is always thinking about an unpleasant or scaring event, because they think that it might happen."
+          "definition": "indicate that someone is always thinking about an unpleasant or scaring event, because they think that it might happen.",
+          "action": "hide.csv"
         },
         {
           "name": "Power / Powerful",
@@ -153,7 +155,8 @@
           "part_of_speech": "v",
           "image": "vocabulary_img_defeat",
           "audio": "vocabulary_audio_defeat",
-          "definition": "to win against someone in a fight, war, or competition."
+          "definition": "to win against someone in a fight, war, or competition.",
+          "action": "powerful.csv"
         },
         {
           "name": "Village",
@@ -261,7 +264,8 @@
           "part_of_speech": "v",
           "image": "vocabulary_img_frighten",
           "audio": "vocabulary_audio_frighten",
-          "definition": "to make someone feel fear."
+          "definition": "to make someone feel fear.",
+          "action": "hide.csv"
         },
         {
           "name": "Return /Come back",
