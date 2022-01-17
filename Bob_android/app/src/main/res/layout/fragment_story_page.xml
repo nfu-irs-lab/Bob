@@ -32,34 +32,50 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/face_smile" />
+
     <LinearLayout
-            android:orientation="vertical"
+        android:id="@+id/linearLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="40dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/story_page_previous"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="previous" />
+
+            <Button
+                android:id="@+id/story_page_speak"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Speak" />
+
+            <Button
+                android:id="@+id/story_page_next"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Next" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/story_page_next_session"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" android:id="@+id/linearLayout2">
-        <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" android:layout_weight="1">
-            <Button
-                    android:text="previous"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:id="@+id/story_page_previous"
-                    android:layout_weight="1"/>
-            <Button
-                    android:text="Speak"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:id="@+id/story_page_speak" android:layout_weight="1"/>
-            <Button
-                    android:text="Next"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:id="@+id/story_page_next" android:layout_weight="1"/>
-        </LinearLayout>
-        <Button
-                android:text="Next session"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:id="@+id/story_page_next_session"
-                android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:text="Next session" />
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>
