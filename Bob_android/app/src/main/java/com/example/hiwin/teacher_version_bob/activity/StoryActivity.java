@@ -1,8 +1,6 @@
 package com.example.hiwin.teacher_version_bob.activity;
 
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -176,7 +174,7 @@ public class StoryActivity extends BluetoothCommunicationActivity {
 
             @Override
             public void end() {
-
+                StoryActivity.this.finish();
             }
         });
 
