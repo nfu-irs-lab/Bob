@@ -10,9 +10,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.ToggleButton;
+
 import com.example.hiwin.teacher_version_bob.R;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,6 +32,10 @@ public class StoryPageFragment extends StaticFragment {
     private FragmentListener listener;
 
     private Button previous, speak, next;
+
+    private boolean auto = true;
+
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -45,6 +53,10 @@ public class StoryPageFragment extends StaticFragment {
         next.setOnClickListener(onClickListener);
 
         (root.findViewById(R.id.story_page_next_session)).setOnClickListener(onClickListener);
+        ((ToggleButton) root.findViewById(R.id.story_page_auto)).setOnCheckedChangeListener(onCheckedChangeListener);
+        ((ToggleButton) root.findViewById(R.id.story_page_auto)).setChecked(auto);
+        ((ToggleButton) root.findViewById(R.id.story_page_auto)).setTextOn("Automatically");
+        ((ToggleButton) root.findViewById(R.id.story_page_auto)).setTextOff("Manually");
 
         try {
             show(pages.getJSONObject(index));
@@ -66,9 +78,23 @@ public class StoryPageFragment extends StaticFragment {
         final String text = page.getString("text");
         Drawable drawable = drawable_id <= 0 ? null : context.getDrawable(drawable_id);
         player = MediaPlayer.create(context, audio_id);
+        if (auto)
+            player.setOnCompletionListener(mp -> {
+                if (index < pages.length() - 1 && index >= 0) {
+                    player.stop();
+                    player.release();
+                    try {
+                        show(pages.getJSONObject(++index));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        else
+            player.setOnCompletionListener(null);
 
-        next.setEnabled(index<pages.length()-1);
-        previous.setEnabled(index>0);
+        next.setEnabled(index < pages.length() - 1);
+        previous.setEnabled(index > 0);
 
         imageview.setImageDrawable(drawable);
         story_text.setText(text);
@@ -84,33 +110,64 @@ public class StoryPageFragment extends StaticFragment {
 
         try {
             if (v.getId() == R.id.story_page_previous) {
-                if (index < pages.length() && index > 0) {
-                    player.stop();
-                    player.release();
-                    show(pages.getJSONObject(--index));
-                }
+                previousPage();
 
             } else if (v.getId() == R.id.story_page_speak) {
                 player.seekTo(0);
                 player.start();
             } else if (v.getId() == R.id.story_page_next) {
-                if (index < pages.length() - 1 && index >= 0) {
-                    player.stop();
-                    player.release();
-                    show(pages.getJSONObject(++index));
-                }
-            }else if(v.getId()==R.id.story_page_next_session){
+                nextPage();
+            } else if (v.getId() == R.id.story_page_next_session) {
                 player.stop();
                 player.release();
-                if(listener!=null)
+                if (listener != null)
                     listener.end();
-            }else
+            } else
                 throw new IllegalStateException();
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
     };
+
+    private final CompoundButton.OnCheckedChangeListener onCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            auto = isChecked;
+            if (player != null)
+                if (auto)
+                    player.setOnCompletionListener(mp -> {
+                        if (index < pages.length() - 1 && index >= 0) {
+                            player.stop();
+                            player.release();
+                            try {
+                                show(pages.getJSONObject(++index));
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                else
+                    player.setOnCompletionListener(null);
+        }
+    };
+
+
+    private void nextPage() throws JSONException {
+        if (index < pages.length() - 1 && index >= 0) {
+            player.stop();
+            player.release();
+            show(pages.getJSONObject(++index));
+        }
+    }
+
+    private void previousPage() throws JSONException {
+        if (index < pages.length() && index > 0) {
+            player.stop();
+            player.release();
+            show(pages.getJSONObject(--index));
+        }
+    }
 
     private int getResourceIDByString(String resName, String type) {
         return context.getApplicationContext().getResources()
@@ -121,7 +178,7 @@ public class StoryPageFragment extends StaticFragment {
 
 
     public <L extends FragmentListener> void setListener(L listener) {
-        this.listener= listener;
+        this.listener = listener;
     }
 
 }

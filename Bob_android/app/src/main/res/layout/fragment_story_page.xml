@@ -63,12 +63,20 @@
                 android:layout_weight="1"
                 android:text="Speak" />
 
+            <ToggleButton
+                android:id="@+id/story_page_auto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="ToggleButton" />
+
             <Button
                 android:id="@+id/story_page_next"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Next" />
+
         </LinearLayout>
 
         <Button
