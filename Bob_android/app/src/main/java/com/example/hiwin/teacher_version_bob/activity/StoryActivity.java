@@ -36,9 +36,10 @@ public class StoryActivity extends BluetoothCommunicationActivity {
                 JSONArray vocabularies=dataObj.getJSONArray("vocabularies");
 
                 StaticFragment  vocabularyInteractiveFragment=getVocabularyInteractiveFragment(vocabularies,null,null);
-                StaticFragment storyFragment = getStoryPageFragment(dataObj.getJSONArray("pages"), vocabularyInteractiveFragment, "vocabularyInteractiveFragment");
-                StaticFragment vocabularyFragment=getVocabularyFragment(vocabularies,storyFragment,"storyFragment");
-                postFragment(vocabularyFragment, "story");
+                StaticFragment storyFragment2 = getStoryPageFragment(dataObj.getJSONArray("pages"), vocabularyInteractiveFragment, "vocabularyInteractiveFragment");
+                StaticFragment vocabularyFragment=getVocabularyFragment(vocabularies,storyFragment2,"storyFragment2");
+                StaticFragment storyFragment = getStoryPageFragment(dataObj.getJSONArray("pages"), vocabularyFragment, "vocabularyFragment");
+                postFragment(storyFragment, "storyFragment");
 
             }
         } catch (JSONException e) {
