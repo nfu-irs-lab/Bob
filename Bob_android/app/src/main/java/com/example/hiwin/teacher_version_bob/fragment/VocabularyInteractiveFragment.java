@@ -12,7 +12,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+
 import com.example.hiwin.teacher_version_bob.R;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,7 +27,6 @@ public class VocabularyInteractiveFragment extends StaticFragment {
 
     private static final int group_count = 2;
     private int group = 0;
-    private int[] group_scores;
 
     private static final int index_limit = 15;
     private int index = 0;
@@ -35,7 +36,7 @@ public class VocabularyInteractiveFragment extends StaticFragment {
 
 
     private Button[] buttons;
-    private TextView score, definition;
+    private TextView definition;
     private Context context;
     private JSONArray vocabularies;
     private JSONObject[] chosen;
@@ -48,9 +49,6 @@ public class VocabularyInteractiveFragment extends StaticFragment {
         void onAnswerIncorrect();
     }
 
-    public VocabularyInteractiveFragment() {
-        initializeGroupScores(group_count);
-    }
 
     @Nullable
     @Override
@@ -71,7 +69,6 @@ public class VocabularyInteractiveFragment extends StaticFragment {
 
         buttons = new Button[]{btn1, btn2, btn3, btn4};
         definition = root.findViewById(R.id.vocabulary_interactive_definition);
-        score = root.findViewById(R.id.vocabulary_interactive_score);
 
         startNew();
         return root;
@@ -120,7 +117,6 @@ public class VocabularyInteractiveFragment extends StaticFragment {
         }
 
         definition.setText(correct_vocabulary.getString("definition"));
-        score.setText(group_scores[group] + "/" + (index + 1) + "/" + index_limit);
     }
 
     private JSONObject[] generateOptions(JSONObject correct_vocabulary) throws JSONException {
@@ -148,57 +144,41 @@ public class VocabularyInteractiveFragment extends StaticFragment {
         return options;
     }
 
-    boolean isTeaching = false;
     private final View.OnClickListener onClickListener = v -> {
         try {
             String correct_name = chosen[index].getString("name");
             boolean correct = correct_name.equals(((Button) root.findViewById(v.getId())).getText().toString());
-            if (!isTeaching)
-                MediaPlayer.create(getContext(), correct ? R.raw.sound_correct : R.raw.sound_wrong).start();
+            MediaPlayer.create(getContext(), correct ? R.raw.sound_correct : R.raw.sound_wrong).start();
 
             if (correct) {
-                if (!isTeaching&&answerListener != null)
+                if (answerListener != null)
                     answerListener.onAnswerCorrect();
-                group_scores[group]++;
-                isTeaching = false;
-//                MediaPlayer.create(getContext(), getResourceIDByString(chosen[index].getString("audio"), "raw")).start();
+
+                if (index < index_limit - 1 && index >= 0) {
+                    showProblem(chosen[++index], generateOptions(chosen[index]));
+                } else {
+                    if (group < group_count - 1) {
+                        group++;
+                        index = 0;
+                        startNew();
+                    } else {
+//                    Toast.makeText(context, group_scores[0] + "/" + group_scores[1], Toast.LENGTH_SHORT).show();
+
+                        if (game < game_limit - 1) {
+                            game++;
+                            group = 0;
+                            index = 0;
+                            startNew();
+                        } else if (answerListener != null)
+                            answerListener.end();
+                    }
+                }
+
             } else {
                 if (answerListener != null)
                     answerListener.onAnswerIncorrect();
-                group_scores[group]--;
-                Arrays.stream(buttons).forEach(button -> button.setEnabled(button.getText().toString().equals(correct_name)));
-                MediaPlayer.create(getContext(), getResourceIDByString(chosen[index].getString("audio"), "raw")).start();
-                definition.setText("The answer is: " + correct_name);
-                isTeaching = true;
-                return;
-            }
+                ((Button) v).setEnabled(false);
 
-            if (index < index_limit - 1 && index >= 0) {
-                showProblem(chosen[++index], generateOptions(chosen[index]));
-            } else {
-                if (group < group_scores.length - 1) {
-                    group++;
-                    index = 0;
-                    startNew();
-                } else {
-//                    Toast.makeText(context, group_scores[0] + "/" + group_scores[1], Toast.LENGTH_SHORT).show();
-
-                    initializeGroupScores(group_count);
-                    if (game < game_limit - 1) {
-                        showResult(null);
-                        game++;
-                        group = 0;
-                        index = 0;
-                        startNew();
-                    } else
-                        showResult(new DialogInterface.OnCancelListener() {
-                            @Override
-                            public void onCancel(DialogInterface dialog) {
-                                if (answerListener != null)
-                                    answerListener.end();
-                            }
-                        });
-                }
             }
 
         } catch (JSONException e) {
@@ -206,38 +186,10 @@ public class VocabularyInteractiveFragment extends StaticFragment {
         }
     };
 
-    private void showResult(DialogInterface.OnCancelListener onCancelListener) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Result");
-        int max_index = 0;
-        int max = group_scores[max_index];
-        for (int i = 1; i < group_scores.length; i++) {
-            if (max < group_scores[i]) {
-                max = group_scores[i];
-                max_index = i;
-            } else if (max == group_scores[i]) {
-                max_index = -1;
-            }
-        }
-        if (max_index != -1) {
-            char g = (char) (0x41 + max_index);
-            builder.setMessage("group " + g + " is winner.");
-        } else {
-            builder.setMessage("Tie.");
-        }
-        builder.setOnCancelListener(onCancelListener);
-        builder.show();
-    }
-
     @Override
     public <L extends FragmentListener> void setListener(L listener) {
         this.answerListener = (AnswerListener) listener;
     }
-
-    private void initializeGroupScores(int size) {
-        group_scores = new int[size];
-    }
-
 
     private int getResourceIDByString(String resName, String type) {
         return context.getApplicationContext().getResources()
