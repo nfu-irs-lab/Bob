@@ -310,7 +310,7 @@
           "image": "vocabulary_img_drum",
           "audio": "vocabulary_audio_drum",
           "definition": "a musical instrument, especially one made from a skin stretched over the end of a hollow tube or bowl, played by hitting with the hand or a stick.",
-          "action": "dru"
+          "action": "drum.csv"
         },
         {
           "name": "Tradition",
