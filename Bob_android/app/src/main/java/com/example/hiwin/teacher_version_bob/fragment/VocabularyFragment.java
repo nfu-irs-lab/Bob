@@ -129,6 +129,8 @@ public class VocabularyFragment extends StaticFragment {
                 if (listener != null)
                     listener.end();
             } else if (v.getId() == R.id.vocabulary_do_action) {
+                player.seekTo(0);
+                player.start();
                 if (listener != null)
                     listener.onAction("DO_ACTION " + vocabularies.getJSONObject(index).getString("action"));
             } else
