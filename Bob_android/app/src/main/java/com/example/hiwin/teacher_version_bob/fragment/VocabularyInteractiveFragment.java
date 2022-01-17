@@ -157,7 +157,7 @@ public class VocabularyInteractiveFragment extends StaticFragment {
                 MediaPlayer.create(getContext(), correct ? R.raw.sound_correct : R.raw.sound_wrong).start();
 
             if (correct) {
-                if (answerListener != null)
+                if (!isTeaching&&answerListener != null)
                     answerListener.onAnswerCorrect();
                 group_scores[group]++;
                 isTeaching = false;
