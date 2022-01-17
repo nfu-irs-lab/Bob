@@ -6,5 +6,5 @@ bot_description = ".*FT232R.*"
 
 robot = getRobotWithDescription(bot_description)
 # robot = getRobotWithName("/dev/ttyUSB0")
-robot.doAction(getActionFromFileName("bird.csv"))
+robot.doAction(getActionFromFileName("attack.csv"))
 robot.close()

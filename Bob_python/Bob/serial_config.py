@@ -13,13 +13,13 @@ from Bob.robot.framework.fw_robot import Robot
 
 def getBTSerial(device):
     return LocalSerialDevice(
-        serial.Serial(device, baudrate=38400, parity=serial.PARITY_NONE, timeout=0.5, write_timeout=1),
+        serial.Serial(device, baudrate=38400, parity=serial.PARITY_NONE, timeout=0.5, write_timeout=10000),
         write_delay_ms=0)
 
 
 def getRobotSerial(device):
-    return LocalSerialDevice(Serial(device, baudrate=57142, timeout=0.5, write_timeout=100),
-                             write_delay_ms=100)
+    return LocalSerialDevice(Serial(device, baudrate=57142, timeout=0.5, write_timeout=10000),
+                             write_delay_ms=50)
 
 
 def getBluetoothPackageDeviceWithDescription(description: str) -> PackageDevice:

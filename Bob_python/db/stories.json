@@ -127,7 +127,8 @@
           "part_of_speech": "v",
           "image": "vocabulary_img_attack",
           "audio": "vocabulary_audio_attack",
-          "definition": "to try to hurt or defeat using violence."
+          "definition": "to try to hurt or defeat using violence.",
+          "action": "attack.csv"
         },
         {
           "name": "Live in terror",
@@ -143,7 +144,8 @@
           "part_of_speech": "n / adj",
           "image": "vocabulary_img_power",
           "audio": "vocabulary_audio_power_powerful",
-          "definition": "ability to control people and events."
+          "definition": "ability to control people and events.",
+          "action": "powerful.csv"
         },
         {
           "name": "Defeat",
@@ -175,7 +177,8 @@
           "part_of_speech": "v",
           "image": "vocabulary_img_hide",
           "audio": "vocabulary_audio_hide",
-          "definition": "to put something or someone in a place where that thing or person cannot be seen or found, or to put yourself somewhere where you cannot be seen or found."
+          "definition": "to put something or someone in a place where that thing or person cannot be seen or found, or to put yourself somewhere where you cannot be seen or found.",
+          "action": "hide.csv"
         },
         {
           "name": "Travel",
@@ -199,7 +202,8 @@
           "part_of_speech": "phr",
           "image": "vocabulary_img_be_touched_by_something",
           "audio": "vocabulary_audio_be_touched_by_something",
-          "definition": "to be affected by a particular quality or feeling."
+          "definition": "to be affected by a particular quality or feeling.",
+          "action": "touched.csv"
         },
         {
           "name": "Generous/kind",
@@ -207,7 +211,8 @@
           "part_of_speech": "adj",
           "image": "vocabulary_img_kind",
           "audio": "vocabulary_audio_generous_kind",
-          "definition": "willing to give money, help, kindness, etc."
+          "definition": "willing to give money, help, kindness, etc.",
+          "action": "generosity.csv"
         },
         {
           "name": "generosity/kindness",
@@ -215,7 +220,8 @@
           "part_of_speech": "n",
           "image": "vocabulary_img_kind",
           "audio": "vocabulary_audio_generosity_kindness",
-          "definition": "the quality or condition of being generous."
+          "definition": "the quality or condition of being generous.",
+          "action": "generosity.csv"
         },
         {
           "name": "Secret",
@@ -303,7 +309,8 @@
           "part_of_speech": "n",
           "image": "vocabulary_img_drum",
           "audio": "vocabulary_audio_drum",
-          "definition": "a musical instrument, especially one made from a skin stretched over the end of a hollow tube or bowl, played by hitting with the hand or a stick."
+          "definition": "a musical instrument, especially one made from a skin stretched over the end of a hollow tube or bowl, played by hitting with the hand or a stick.",
+          "action": "dru"
         },
         {
           "name": "Tradition",
