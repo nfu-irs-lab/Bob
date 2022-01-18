@@ -36,7 +36,7 @@ public class VocabularyInteractiveFragment extends StaticFragment {
 
 
     private Button[] buttons;
-    private TextView definition;
+    private TextView definition,hint;
     private Context context;
     private JSONArray vocabularies;
     private JSONObject[] chosen;
@@ -70,6 +70,8 @@ public class VocabularyInteractiveFragment extends StaticFragment {
         buttons = new Button[]{btn1, btn2, btn3, btn4};
         definition = root.findViewById(R.id.vocabulary_interactive_definition);
 
+        hint= root.findViewById(R.id.vocabulary_interactive_hint);
+
         startNew();
         return root;
     }
@@ -91,7 +93,12 @@ public class VocabularyInteractiveFragment extends StaticFragment {
 
     public void initialize(Context context, JSONArray vocabularies) throws JSONException {
         this.context = context;
-        this.vocabularies = vocabularies;
+        JSONArray fixVocabulary=new JSONArray();
+        for(int i=0;i<15;i++){
+            fixVocabulary.put(vocabularies.get(i));
+        }
+
+        this.vocabularies = fixVocabulary;
     }
 
     private JSONObject[] chooseVocabulary() throws JSONException {
@@ -111,6 +118,7 @@ public class VocabularyInteractiveFragment extends StaticFragment {
 
 
     private void showProblem(JSONObject correct_vocabulary, JSONObject[] options) throws JSONException {
+        hint.setText(index+"/"+index_limit);
         for (int i = 0; i < options.length; i++) {
             buttons[i].setText(options[i].getString("name"));
             buttons[i].setEnabled(true);
@@ -163,7 +171,6 @@ public class VocabularyInteractiveFragment extends StaticFragment {
                         startNew();
                     } else {
 //                    Toast.makeText(context, group_scores[0] + "/" + group_scores[1], Toast.LENGTH_SHORT).show();
-
                         if (game < game_limit - 1) {
                             game++;
                             group = 0;
@@ -177,7 +184,7 @@ public class VocabularyInteractiveFragment extends StaticFragment {
             } else {
                 if (answerListener != null)
                     answerListener.onAnswerIncorrect();
-                ((Button) v).setEnabled(false);
+                (v).setEnabled(false);
 
             }
 
