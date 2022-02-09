@@ -78,7 +78,7 @@ public class VocabularyFragment extends StaticFragment {
     }
 
     private void show(JSONObject vocabulary) throws JSONException {
-        final int drawable_id = getResourceIDByString(context, vocabulary.getString("image"), "raw");
+        final int drawable_id = getResourceIDByString(context, vocabulary.getString("image"), "drawable");
         final Drawable drawable = drawable_id <= 0 ? null : context.getDrawable(drawable_id);
         final int audio_id = getResourceIDByString(context, vocabulary.getString("audio"), "raw");
         String name = vocabulary.getString("name");

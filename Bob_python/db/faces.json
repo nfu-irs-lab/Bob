@@ -5,6 +5,7 @@
       "name": "smile",
       "sentence": "She has a nice smile.",
       "face":  "face_gif_happy",
+      "image": "face_happy",
       "languages": [
         {
           "code": "zh_TW",
@@ -20,6 +21,7 @@
       "name": "sad",
       "sentence": "I am sad.",
       "face":  "face_gif_sad",
+      "image": "face_sad",
       "languages": [
         {
           "code": "zh_TW",

@@ -76,7 +76,7 @@ public class StoryPageFragment extends StaticFragment {
 
     private void show(JSONObject page) throws JSONException {
         final int audio_id = getResourceIDByString(context,page.getString("audio"), "raw");
-        final int drawable_id = getResourceIDByString(context,page.getString("image"), "raw");
+        final int drawable_id = getResourceIDByString(context,page.getString("image"), "drawable");
         final String text = page.getString("text");
         Drawable drawable = drawable_id <= 0 ? null : context.getDrawable(drawable_id);
         player = MediaPlayer.create(context, audio_id);

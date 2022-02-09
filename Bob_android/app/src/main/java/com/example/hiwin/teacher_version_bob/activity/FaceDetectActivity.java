@@ -74,11 +74,11 @@ public class FaceDetectActivity extends DetectActivity {
         postFragment(fragment, "default");
     }
 
-    private void showFace(int face_gif_id, String name, String tr_name, String sentence, String tr_sentence) throws IOException {
+    private void showFace(int face_gif_id, int img_id, String name, String tr_name, String sentence, String tr_sentence) throws IOException {
         Fragment finalFaceFragment = getFinalFaceFragment(face_gif_id, null, "null");
         Fragment exampleFragment = getExampleFragment(sentence, tr_sentence, finalFaceFragment, "face2");
         Fragment faceFragment = getFaceFragment(face_gif_id, name, tr_name, sentence, tr_sentence, exampleFragment, "example");
-        Fragment descriptionFragment = getDescriptionFragment(name, tr_name, faceFragment, "face");
+        Fragment descriptionFragment = getDescriptionFragment(name, tr_name, img_id, faceFragment, "face");
         postFragment(descriptionFragment, "description");
     }
 
@@ -110,13 +110,14 @@ public class FaceDetectActivity extends DetectActivity {
                 if (translated == null)
                     throw new RuntimeException("code not found");
 
-                int face_gif_id = getResourceIDByString(context, jdata.getString("face"), "raw");
+                int face_gif_id = getResourceIDByString(context, jdata.getString("face"), "drawable");
+                int img_id = getResourceIDByString(context, jdata.getString("image"), "drawable");
                 String name = jdata.getString("name");
                 String sentence = jdata.getString("sentence");
                 String tr_name = translated.getString("tr_name");
                 String tr_sentence = translated.getString("tr_sentence");
 
-                showFace(face_gif_id, name, tr_name, sentence, tr_sentence);
+                showFace(face_gif_id, img_id, name, tr_name, sentence, tr_sentence);
             } catch (Exception e) {
                 Log.e(THIS_LOG_TAG, e.getMessage());
             }
@@ -171,10 +172,10 @@ public class FaceDetectActivity extends DetectActivity {
         return faceFragment;
     }
 
-    public Fragment getDescriptionFragment(String name, String tr_name, Fragment next, String nextId) {
+    public Fragment getDescriptionFragment(String name, String tr_name, int img_id, Fragment next, String nextId) {
         final DescriptionFragment descriptionFragment = new DescriptionFragment();
         descriptionFragment.setShowListener((views) -> {
-            ((ImageView) views[0]).setImageDrawable(context.getDrawable(getResourceIDByString(context,"face_"+name,"raw")));
+            ((ImageView) views[0]).setImageDrawable(context.getDrawable(img_id));
             ((TextView) views[1]).setText(name);
             ((TextView) views[2]).setText(tr_name);
         });
