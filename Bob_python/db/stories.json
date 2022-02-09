@@ -1,0 +1,330 @@
+[
+  {
+    "id": "the_story_of_niana",
+    "data": {
+      "name": "THE STORY OF NIAN, A CHINESE NEW YEAR STORY",
+      "total": 13,
+      "pages": [
+        {
+          "text": "THE STORY OF NIAN, A CHINESE NEW YEAR STORY",
+          "audio": "story_audio_the_story_of_niana_title",
+          "image": null
+        },
+        {
+          "text": "Once upon a time, long long ago, there was a man-eating monster called \"Nian\". This beast lived deep in the ocean. It would sleep every day of the year, except on the last day of the Lunar Year, when the cold winter months would turn into Spring.",
+          "image": "story_img_the_story_of_niana_1",
+          "audio": "story_audio_the_story_of_niana_1"
+        },
+        {
+          "text": "Nian would come on land to attack, and eat whatever it could find and whatever lay in its path. This was the night everyone lived in terror!",
+          "image": "story_img_the_story_of_niana_2",
+          "audio": "story_audio_the_story_of_niana_2"
+        },
+        {
+          "text": "Year after year Nian returned, and this was such a powerful beast that no one can take on or defeat it. Many had tried but all had died. On New Year’s Eve, all the villagers would take their loved ones and family members, old and young, deep into the mountains to hide from the beast.",
+          "image": "story_img_the_story_of_niana_3",
+          "audio": "story_audio_the_story_of_niana_3"
+        },
+        {
+          "text": "One year on that night, a traveler came to town, looking for food and a place to stay overnight. Everyone was far too busy packing to leave for the mountains, so no one was kind to him. Only one old lady offered him a simple plate of dumplings and a place to sleep. After his meal, the traveler was so touched by the old lady's generosity and decided to tell a long-hidden secret of how to drive away the New Year beast.",
+          "image": "story_img_the_story_of_niana_4",
+          "audio": "story_audio_the_story_of_niana_4"
+        },
+        {
+          "text": "That evening when Nian arrived at their village, all the houses were dark, except the one where the old woman lived. As Nian saw the light, it licked its lips with eagerness and came near the house.",
+          "image": "story_img_the_story_of_niana_5",
+          "audio": "story_audio_the_story_of_niana_5"
+        },
+        {
+          "text": "Suddenly, it was greeted with deafening noises of firecrackers sounding endlessly. The monster was frightened! ",
+          "image": "story_img_the_story_of_niana_6",
+          "audio": "story_audio_the_story_of_niana_6"
+        },
+        {
+          "text": "Next, the beast saw that the house was covered in red paper. ",
+          "image": "story_img_the_story_of_niana_7",
+          "audio": "story_audio_the_story_of_niana_7"
+        },
+        {
+          "text": "That scared Nian even more, and it took off running back into the ocean.",
+          "image": "story_img_the_story_of_niana_8",
+          "audio": "story_audio_the_story_of_niana_8"
+        },
+        {
+          "text": "When the villagers returned, they saw that the old woman was unhurt! Everyone was eager to learn what she did to survive Nian.",
+          "image": "story_img_the_story_of_niana_9",
+          "audio": "story_audio_the_story_of_niana_9"
+        },
+        {
+          "text": "The old woman told the villagers that Nian was afraid of loud noises and the color red.",
+          "image": "story_img_the_story_of_niana_10",
+          "audio": "story_audio_the_story_of_niana_10"
+        },
+        {
+          "image": "story_img_the_story_of_niana_11",
+          "text": "The next year, the villagers stayed up all night, lit firecrackers, lit red lanterns all around their houses, pasted red paper on their walls and doors, wore red clothing, danced to loud music, and banged loud gongs and drums.",
+          "audio": "story_audio_the_story_of_niana_11"
+        },
+        {
+          "image": "story_img_the_story_of_niana_12",
+          "text": "That year and every year since, Nian has never returned. This eventually became a tradition and the way to celebrate Chinese New Year.",
+          "audio": "story_audio_the_story_of_niana_12"
+        }
+      ],
+      "vocabularies": [
+        {
+          "name": "Monster",
+          "translated": "（虛構的）怪物",
+          "definition": "a large, ugly, and frightening imaginary creature.",
+          "part_of_speech": "n",
+          "image": "vocabulary_img_monster",
+          "audio": "vocabulary_audio_monster",
+          "action": "monster.csv"
+        },
+        {
+          "name": "Beast",
+          "translated": "(尤指大型或野生的)動物；野獸",
+          "part_of_speech": "n",
+          "image": "vocabulary_img_beast",
+          "audio": "vocabulary_audio_beast",
+          "definition": "an animal, especially a large or wild one.",
+          "action": "monster.csv"
+        },
+        {
+          "name": "Except on",
+          "translated": "除了",
+          "part_of_speech": "phr",
+          "image": "vocabulary_img_except_on",
+          "audio": "vocabulary_audio_except_on",
+          "definition": "not including; other than."
+        },
+        {
+          "name": "Lunar Year",
+          "translated": "農曆年",
+          "part_of_speech": "n",
+          "image": "vocabulary_img_lunar_year",
+          "audio": "vocabulary_audio_lunar_year",
+          "definition": "a period of 12 lunar months"
+        },
+        {
+          "name": "Land",
+          "translated": "土地",
+          "part_of_speech": "n",
+          "image": "vocabulary_img_land",
+          "audio": "vocabulary_audio_land",
+          "definition": "an area of ground, especially when used for a particular purpose such as farming or building."
+        },
+        {
+          "name": "Ocean",
+          "translated": "海洋",
+          "part_of_speech": "n",
+          "image": "vocabulary_img_ocean",
+          "audio": "vocabulary_audio_ocean",
+          "definition": "a very large area of sea."
+        },
+        {
+          "name": "Attack",
+          "translated": "攻擊",
+          "part_of_speech": "v",
+          "image": "vocabulary_img_attack",
+          "audio": "vocabulary_audio_attack",
+          "definition": "to try to hurt or defeat using violence.",
+          "action": "attack.csv"
+        },
+        {
+          "name": "Live in terror",
+          "translated": "活在恐懼中",
+          "part_of_speech": "phr",
+          "image": "vocabulary_img_live_in_terror",
+          "audio": "vocabulary_audio_live_in_terror",
+          "definition": "indicate that someone is always thinking about an unpleasant or scaring event, because they think that it might happen.",
+          "action": "hide.csv"
+        },
+        {
+          "name": "Power / Powerful",
+          "translated": "影響力 操控力 / 強大的，有力量的",
+          "part_of_speech": "n / adj",
+          "image": "vocabulary_img_power",
+          "audio": "vocabulary_audio_power_powerful",
+          "definition": "ability to control people and events.",
+          "action": "powerful.csv"
+        },
+        {
+          "name": "Defeat",
+          "translated": "擊敗，打敗",
+          "part_of_speech": "v",
+          "image": "vocabulary_img_defeat",
+          "audio": "vocabulary_audio_defeat",
+          "definition": "to win against someone in a fight, war, or competition.",
+          "action": "powerful.csv"
+        },
+        {
+          "name": "Village",
+          "translated": "村莊",
+          "part_of_speech": "n",
+          "image": "vocabulary_img_village",
+          "audio": "vocabulary_audio_village",
+          "definition": "a group of houses and other buildings that is smaller than a town, usually in the countryside."
+        },
+        {
+          "name": "Villager",
+          "translated": "村民",
+          "part_of_speech": "n",
+          "image": "vocabulary_img_villager",
+          "audio": "vocabulary_audio_villager",
+          "definition": "a person who lives in a village."
+        },
+        {
+          "name": "Hide",
+          "translated": "躲藏；把…藏起來",
+          "part_of_speech": "v",
+          "image": "vocabulary_img_hide",
+          "audio": "vocabulary_audio_hide",
+          "definition": "to put something or someone in a place where that thing or person cannot be seen or found, or to put yourself somewhere where you cannot be seen or found.",
+          "action": "hide.csv"
+        },
+        {
+          "name": "Travel",
+          "translated": "旅行",
+          "part_of_speech": "v",
+          "image": "vocabulary_img_travel",
+          "audio": "vocabulary_audio_travel",
+          "definition": "to make a journey, usually over a long distance."
+        },
+        {
+          "name": "Traveler",
+          "translated": "旅行者",
+          "part_of_speech": "n",
+          "image": "vocabulary_img_traveler",
+          "audio": "vocabulary_audio_traveler",
+          "definition": "someone who travels."
+        },
+        {
+          "name": "Be touched by something",
+          "translated": "受到感動",
+          "part_of_speech": "phr",
+          "image": "vocabulary_img_be_touched_by_something",
+          "audio": "vocabulary_audio_be_touched_by_something",
+          "definition": "to be affected by a particular quality or feeling.",
+          "action": "touched.csv"
+        },
+        {
+          "name": "Generous/kind",
+          "translated": "慷慨的",
+          "part_of_speech": "adj",
+          "image": "vocabulary_img_kind",
+          "audio": "vocabulary_audio_generous_kind",
+          "definition": "willing to give money, help, kindness, etc.",
+          "action": "generosity.csv"
+        },
+        {
+          "name": "generosity/kindness",
+          "translated": "慷慨",
+          "part_of_speech": "n",
+          "image": "vocabulary_img_kind",
+          "audio": "vocabulary_audio_generosity_kindness",
+          "definition": "the quality or condition of being generous.",
+          "action": "generosity.csv"
+        },
+        {
+          "name": "Secret",
+          "translated": "秘密",
+          "part_of_speech": "n",
+          "image": "vocabulary_img_secret",
+          "audio": "vocabulary_audio_secret",
+          "definition": "something that is kept or meant to be kept unknown orunseen by others."
+        },
+        {
+          "name": "Drive away",
+          "translated": "趕走",
+          "part_of_speech": "phr",
+          "image": "vocabulary_img_drive_away",
+          "audio": "vocabulary_audio_drive_away",
+          "definition": "tomake them want to go away or stay away."
+        },
+        {
+          "name": "Lick its lips",
+          "translated": "舔嘴唇",
+          "part_of_speech": "phr",
+          "image": "vocabulary_img_lick_its_lips",
+          "audio": "vocabulary_audio_lick_its_lips",
+          "definition": "to move your tongue along your lips."
+        },
+        {
+          "name": "Eagerness / Eager to do something",
+          "translated": "渴望 / 渴望做某事",
+          "part_of_speech": "n / phr",
+          "image": "vocabulary_img_eagerness",
+          "audio": "vocabulary_audio_eagerness",
+          "definition": "the state of wanting to do or have something very much, especially something interesting or enjoyable."
+        },
+        {
+          "name": "Frighten",
+          "translated": "使害怕，使受驚",
+          "part_of_speech": "v",
+          "image": "vocabulary_img_frighten",
+          "audio": "vocabulary_audio_frighten",
+          "definition": "to make someone feel fear.",
+          "action": "hide.csv"
+        },
+        {
+          "name": "Return /Come back",
+          "translated": "回；返回",
+          "part_of_speech": "v",
+          "image": "vocabulary_img_return",
+          "audio": "vocabulary_audio_return",
+          "definition": "to come or go back to a previous place."
+        },
+        {
+          "name": "Hurt / Unhurt",
+          "translated": "（使）感到疼痛；弄傷 / 未受傷害的",
+          "part_of_speech": "v / adj",
+          "image": "vocabulary_img_hurt_unhurt",
+          "audio": "vocabulary_audio_hurt_unhurt",
+          "definition": "to feel pain in a part of your body, or to injure someone or cause them pain."
+        },
+        {
+          "name": "Survive",
+          "translated": "存活",
+          "part_of_speech": "v",
+          "image": "vocabulary_img_survive",
+          "audio": "vocabulary_audio_survive",
+          "definition": "to continue to live or exist."
+        },
+        {
+          "name": "Stay up all night",
+          "translated": "熬夜",
+          "part_of_speech": "phr",
+          "image": "vocabulary_img_stay_up_all_night",
+          "audio": "vocabulary_audio_stay_up_all_night",
+          "definition": "meansno sleep."
+        },
+        {
+          "name": "Gong",
+          "translated": "鑼",
+          "part_of_speech": "n",
+          "image": "vocabulary_img_gong",
+          "audio": "vocabulary_audio_gong",
+          "definition": "a round piece of metal that is hung in a frame and hit with a stick to produce a sound as a signal, also used as a musical instrument."
+        },
+        {
+          "name": "Drum",
+          "translated": "鼓",
+          "part_of_speech": "n",
+          "image": "vocabulary_img_drum",
+          "audio": "vocabulary_audio_drum",
+          "definition": "a musical instrument, especially one made from a skin stretched over the end of a hollow tube or bowl, played by hitting with the hand or a stick.",
+          "action": "drum.csv"
+        },
+        {
+          "name": "Tradition",
+          "translated": "傳統",
+          "part_of_speech": "n",
+          "image": "vocabulary_img_tradition",
+          "audio": "vocabulary_audio_tradition",
+          "definition": "the transmission of customs or beliefs from generationto generation, or the fact of being passed on in this way."
+        }
+      ]
+    }
+  }
+]

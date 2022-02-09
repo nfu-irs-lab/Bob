@@ -5,6 +5,7 @@
 
     <uses-permission android:name="android.permission.BLUETOOTH"/>
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
     <application
@@ -30,6 +31,8 @@
         <activity android:name=".activity.FaceDetectActivity"/>
 
         <activity android:name=".activity.InteractiveObjectDetectActivity"/>
+
+        <activity android:name=".activity.StoryActivity"/>
 
         <service android:name=".communication.service.SerialService"/>
 

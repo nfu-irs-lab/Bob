@@ -52,15 +52,7 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
 
         ModeDialogFragment newFragment = new ModeDialogFragment();
         newFragment.setListener(mode -> {
-            Intent it;
-            if (mode == ModeDialogFragment.Mode.face_detect)
-                it = new Intent(context, FaceDetectActivity.class);
-            else if (mode == ModeDialogFragment.Mode.object_detect)
-                it = new Intent(context, ObjectDetectActivity.class);
-            else if (mode == ModeDialogFragment.Mode.interactive_object_detect)
-                it = new Intent(context, InteractiveObjectDetectActivity.class);
-            else
-                throw new RuntimeException("unknown mode.");
+            Intent it=new Intent(context,mode.getSelectedClass());
             it.putExtra("address", selected_device.getAddress());
             startActivity(it);
 

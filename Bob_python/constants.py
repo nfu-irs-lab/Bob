@@ -17,17 +17,19 @@ from Bob.detector.framework.detector import DetectListener
 
 obj_db_location = f"db{os.path.sep}objects.json"
 face_db_location = f"db{os.path.sep}faces.json"
+stories_db_location = f"db{os.path.sep}stories.json"
 db_charset = 'UTF-8'
 
 object_db = JSONDatabase(open(obj_db_location, encoding=db_charset))
 face_db = JSONDatabase(open(face_db_location, encoding=db_charset))
+stories_db = JSONDatabase(open(stories_db_location, encoding=db_charset))
 
 bt_description = ".*CP2102.*"
 bot_description = ".*FT232R.*"
 
 # robot = getRobotWithName("COM1")
-# robot = getRobotWithDescription(bot_description)
-robot = getPrintedRobot()
+robot = getRobotWithDescription(bot_description)
+# robot = getPrintedRobot()
 
 detector = None
 monitor = None
@@ -35,6 +37,12 @@ monitor = None
 
 def getActionFromFileName(file: str) -> Action:
     return CSVAction(f'actions{os.path.sep}{file}')
+
+
+def formatDataToJsonString(id: int, type: str, content: str, data):
+    sendData = {"id": id, "response_type": type, "content": content,
+                "data": data}
+    return json.dumps(sendData, ensure_ascii=False)
 
 
 class CommandControlListener(PackageListener):
@@ -94,6 +102,31 @@ class CommandControlListener(PackageListener):
             print("Send:", jsonString)
             self.package_device.writePackage(Base64LinePackage(StringPackage(jsonString, "UTF-8")))
             self.__id_counter = self.__id_counter + 1
+
+        elif cmd.startswith("STORY_GET"):
+            l1 = cmd[10:]
+            if l1 == "LIST":
+                print("list all")
+                stories_list = []
+                all_data: json = stories_db.getAllData()
+                for story in all_data:
+                    stories_list.append(
+                        {"id": story['id'], "name": (story['data']['name']), "total": (story['data']['total'])})
+
+                jsonString = formatDataToJsonString(0, "json_array", "all_stories_info", stories_list)
+                print("Send:", jsonString)
+                self.package_device.writePackage(Base64LinePackage(StringPackage(jsonString, "UTF-8")))
+            elif l1.startswith("STORY"):
+                story_id = l1[6:]
+                print("get story", story_id)
+                story_content = stories_db.queryForId(story_id)
+                jsonString = formatDataToJsonString(0, "json_object", "story_content", story_content['data'])
+                print("Send:", jsonString)
+                self.package_device.writePackage(Base64LinePackage(StringPackage(jsonString, "UTF-8")))
+        elif cmd.startswith("DO_ACTION"):
+            action = cmd[10:]
+            print("do action:", action)
+            robot.doAction(getActionFromFileName(action))
 
 
 class FaceDetectListener(DetectListener):
