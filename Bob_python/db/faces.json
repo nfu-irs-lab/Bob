@@ -4,7 +4,7 @@
     "data": {
       "name": "smile",
       "sentence": "She has a nice smile.",
-      "face":  "happy",
+      "face":  "face_gif_happy",
       "languages": [
         {
           "code": "zh_TW",
@@ -18,9 +18,8 @@
     "id": "sad",
     "data": {
       "name": "sad",
-
       "sentence": "I am sad.",
-      "face":  "sad",
+      "face":  "face_gif_sad",
       "languages": [
         {
           "code": "zh_TW",

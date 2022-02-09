@@ -10,9 +10,7 @@ import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.example.hiwin.teacher_version_bob.communication.bluetooth.framework.SerialListener;
 import com.example.hiwin.teacher_version_bob.utils.DataSpeaker;
-import com.example.hiwin.teacher_version_bob.data.Face;
 import com.example.hiwin.teacher_version_bob.fragment.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -57,10 +55,10 @@ public class ObjectDetectActivity extends DetectActivity {
         showDefault();
     }
 
-    private void showFace(Face face, String name, String tr_name, String sentence, String tr_sentence) throws IOException {
-        Fragment finalFaceFragment = getFinalFaceFragment(face, null, "null");
+    private void showFace(int face_gif_id, String name, String tr_name, String sentence, String tr_sentence) throws IOException {
+        Fragment finalFaceFragment = getFinalFaceFragment(face_gif_id, null, "null");
         Fragment exampleFragment = getExampleFragment(sentence, tr_sentence, finalFaceFragment, "face2");
-        Fragment faceFragment = getFaceFragment(face, name, tr_name, sentence, tr_sentence, exampleFragment, "example");
+        Fragment faceFragment = getFaceFragment(face_gif_id, name, tr_name, sentence, tr_sentence, exampleFragment, "example");
         Fragment descriptionFragment = getDescriptionFragment(name, tr_name, faceFragment, "face");
         postFragment(descriptionFragment, "description");
     }
@@ -93,13 +91,13 @@ public class ObjectDetectActivity extends DetectActivity {
                 if (translated == null)
                     throw new RuntimeException("code not found");
 
-                Face face = Face.valueOf(jdata.getString("face"));
+                int face_gif_id = getResourceIDByString(context, jdata.getString("face"), "raw");
                 String name = jdata.getString("name");
                 String sentence = jdata.getString("sentence");
                 String tr_name = translated.getString("tr_name");
                 String tr_sentence = translated.getString("tr_sentence");
 
-                showFace(face, name, tr_name, sentence, tr_sentence);
+                showFace(face_gif_id, name, tr_name, sentence, tr_sentence);
             } catch (Exception e) {
                 Log.e(THIS_LOG_TAG, e.getMessage());
             }
@@ -132,9 +130,9 @@ public class ObjectDetectActivity extends DetectActivity {
     }
 
 
-    private Fragment getFinalFaceFragment(Face face, Fragment next, String nextId) throws IOException {
+    private Fragment getFinalFaceFragment(int face_gif_id, Fragment next, String nextId) throws IOException {
         FaceFragment faceFragment = new FaceFragment();
-        faceFragment.warp(context, face, 2, true);
+        faceFragment.warp(context, face_gif_id, 2, true);
         faceFragment.setListener(new FragmentFlowListener(next, nextId) {
             @Override
             protected void postFragment(Fragment next, String nextId) {
@@ -150,7 +148,7 @@ public class ObjectDetectActivity extends DetectActivity {
         return faceFragment;
     }
 
-    private Fragment getFaceFragment(Face face, String name, String tr_name, String sentence, String tr_sentence, Fragment next, String nextId) throws IOException {
+    private Fragment getFaceFragment(int face, String name, String tr_name, String sentence, String tr_sentence, Fragment next, String nextId) throws IOException {
 
         FaceFragment faceFragment = new FaceFragment();
         faceFragment.warp(context, face, 5, false);

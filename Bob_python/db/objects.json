@@ -5,7 +5,7 @@
       "name": "bird",
       "group": "creature",
       "sentence": "The bird is flying in the sky.",
-      "face": "happy",
+      "face": "face_gif_happy",
       "action": "bird.csv",
       "languages": [
         {
@@ -22,7 +22,7 @@
       "name": "bottle",
       "group": "creature",
       "sentence": "His bottle is very big",
-      "face": "love_eyes",
+      "face": "face_gif_love_eyes",
       "action": "bottle.csv",
       "languages": [
         {
@@ -39,7 +39,7 @@
       "name": "bowl",
       "group": "tool",
       "sentence": "That bowl is really beautiful.",
-      "face": "love_eyes",
+      "face": "face_gif_love_eyes",
       "action": "bowl.csv",
       "languages": [
         {
@@ -56,7 +56,7 @@
       "name": "cake",
       "group": "food",
       "sentence": "This cake is delicious",
-      "face": "happy",
+      "face": "face_gif_happy",
       "action": "cake.csv",
       "languages": [
         {
@@ -72,7 +72,7 @@
     "data": {
       "group": "transportation",
       "sentence": "My new car is broken.",
-      "face": "sad",
+      "face": "face_gif_sad",
       "action": "car.csv",
       "name": "car",
       "languages": [
@@ -90,7 +90,7 @@
       "name": "cat",
       "group": "creature",
       "sentence": "The cat is very cute",
-      "face": "love_eyes",
+      "face": "face_gif_love_eyes",
       "action": "cat.csv",
       "languages": [
         {
@@ -107,7 +107,7 @@
       "name": "knife",
       "group": "tool",
       "sentence": "Don't point the knife at me.",
-      "face": "sad",
+      "face": "face_gif_sad",
       "action": "knife.csv",
       "languages": [
         {
