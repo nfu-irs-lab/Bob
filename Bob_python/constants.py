@@ -159,17 +159,7 @@ class ObjectDetectListener(DetectListener):
                 sendData = {"id": -1, "response_type": "json_object", "content": "single_object", "data": data}
                 jsonString = json.dumps(sendData, ensure_ascii=False)
                 print("Send:", jsonString)
-
                 self.device.writePackage(Base64LinePackage(StringPackage(jsonString, "UTF-8")))
-
-                if robot.isOpen():
-                    try:
-                        robot.doAction(getActionFromFileName(data['action']))
-                        robot.doAction(getActionFromFileName("reset.csv"))
-                    except SerialTimeoutException:
-                        print("robot serial timeout")
-
-                break
 
 
 class InteractiveObjectDetectListener(DetectListener):
@@ -188,4 +178,3 @@ class InteractiveObjectDetectListener(DetectListener):
                 jsonString = json.dumps(sendData, ensure_ascii=False)
                 print("Send:", jsonString)
                 self.device.writePackage(Base64LinePackage(StringPackage(jsonString, "UTF-8")))
-                break

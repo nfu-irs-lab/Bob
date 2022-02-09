@@ -12,7 +12,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.example.hiwin.teacher_version_bob.utils.DataSpeaker;
 import com.example.hiwin.teacher_version_bob.fragment.*;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -74,12 +73,13 @@ public class FaceDetectActivity extends DetectActivity {
         postFragment(fragment, "default");
     }
 
-    private void showFace(int face_gif_id, int img_id, String name, String tr_name, String sentence, String tr_sentence) throws IOException {
+    private void showFace(int face_gif_id, int img_id, String name, String tr_name, String sentence, String tr_sentence, String action) throws IOException {
         Fragment finalFaceFragment = getFinalFaceFragment(face_gif_id, null, "null");
         Fragment exampleFragment = getExampleFragment(sentence, tr_sentence, finalFaceFragment, "face2");
         Fragment faceFragment = getFaceFragment(face_gif_id, name, tr_name, sentence, tr_sentence, exampleFragment, "example");
         Fragment descriptionFragment = getDescriptionFragment(name, tr_name, img_id, faceFragment, "face");
         postFragment(descriptionFragment, "description");
+        sendMessage("DO_ACTION "+action);
     }
 
     @Override
@@ -105,8 +105,9 @@ public class FaceDetectActivity extends DetectActivity {
                 String sentence = jdata.getString("sentence");
                 String tr_name = jdata.getString("tr_name");
                 String tr_sentence = jdata.getString("tr_sentence");
+                String action= jdata.getString("action");
 
-                showFace(face_gif_id, img_id, name, tr_name, sentence, tr_sentence);
+                showFace(face_gif_id, img_id, name, tr_name, sentence, tr_sentence,action);
             } catch (Exception e) {
                 Log.e(THIS_LOG_TAG, e.getMessage());
             }
