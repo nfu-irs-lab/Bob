@@ -95,7 +95,7 @@
             android:id="@+id/vocabulary_interactive_imageview"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:srcCompat="@drawable/face_smile"
+            app:srcCompat="@drawable/face_happy"
             app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toTopOf="@+id/vocabulary_name"
             app:layout_constraintHorizontal_bias="0.0" android:layout_marginTop="40dp"/>

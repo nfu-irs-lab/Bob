@@ -197,11 +197,4 @@ public class VocabularyInteractiveFragment extends StaticFragment {
     public <L extends FragmentListener> void setListener(L listener) {
         this.answerListener = (AnswerListener) listener;
     }
-
-    private int getResourceIDByString(String resName, String type) {
-        return context.getApplicationContext().getResources()
-                .getIdentifier(resName
-                        , type
-                        , context.getPackageName());
-    }
 }

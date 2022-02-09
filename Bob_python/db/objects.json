@@ -5,15 +5,11 @@
       "name": "bird",
       "group": "creature",
       "sentence": "The bird is flying in the sky.",
-      "face": "happy",
+      "face": "face_gif_happy",
+      "image": "object_bird",
       "action": "bird.csv",
-      "languages": [
-        {
-          "code": "zh_TW",
-          "tr_name": "鳥",
-          "tr_sentence": "鳥兒在天上飛。"
-        }
-      ]
+      "tr_name": "鳥",
+      "tr_sentence": "鳥兒在天上飛。"
     }
   },
   {
@@ -22,15 +18,11 @@
       "name": "bottle",
       "group": "creature",
       "sentence": "His bottle is very big",
-      "face": "love_eyes",
+      "face": "face_gif_love_eyes",
+      "image": "object_bottle",
       "action": "bottle.csv",
-      "languages": [
-        {
-          "code": "zh_TW",
-          "tr_name": "瓶子",
-          "tr_sentence": "她的瓶子非常大。"
-        }
-      ]
+      "tr_name": "瓶子",
+      "tr_sentence": "她的瓶子非常大。"
     }
   },
   {
@@ -39,15 +31,11 @@
       "name": "bowl",
       "group": "tool",
       "sentence": "That bowl is really beautiful.",
-      "face": "love_eyes",
+      "face": "face_gif_love_eyes",
+      "image": "object_bowl",
       "action": "bowl.csv",
-      "languages": [
-        {
-          "code": "zh_TW",
-          "tr_name": "碗",
-          "tr_sentence": "那碗真漂亮。"
-        }
-      ]
+      "tr_name": "碗",
+      "tr_sentence": "那碗真漂亮。"
     }
   },
   {
@@ -56,15 +44,11 @@
       "name": "cake",
       "group": "food",
       "sentence": "This cake is delicious",
-      "face": "happy",
+      "face": "face_gif_happy",
+      "image": "object_cake",
       "action": "cake.csv",
-      "languages": [
-        {
-          "code": "zh_TW",
-          "tr_name": "蛋糕",
-          "tr_sentence": "這個蛋糕很好吃。"
-        }
-      ]
+      "tr_name": "蛋糕",
+      "tr_sentence": "這個蛋糕很好吃。"
     }
   },
   {
@@ -72,16 +56,12 @@
     "data": {
       "group": "transportation",
       "sentence": "My new car is broken.",
-      "face": "sad",
+      "face": "face_gif_sad",
+      "image": "object_car",
       "action": "car.csv",
       "name": "car",
-      "languages": [
-        {
-          "code": "zh_TW",
-          "tr_name": "車子",
-          "tr_sentence": "我的新車壞掉了。"
-        }
-      ]
+      "tr_name": "車子",
+      "tr_sentence": "我的新車壞掉了。"
     }
   },
   {
@@ -90,15 +70,11 @@
       "name": "cat",
       "group": "creature",
       "sentence": "The cat is very cute",
-      "face": "love_eyes",
+      "face": "face_gif_love_eyes",
+      "image": "object_cat",
       "action": "cat.csv",
-      "languages": [
-        {
-          "code": "zh_TW",
-          "tr_name": "貓",
-          "tr_sentence": "貓很可愛"
-        }
-      ]
+      "tr_name": "貓",
+      "tr_sentence": "貓很可愛"
     }
   },
   {
@@ -107,15 +83,11 @@
       "name": "knife",
       "group": "tool",
       "sentence": "Don't point the knife at me.",
-      "face": "sad",
+      "face": "face_gif_sad",
+      "image": "object_knife",
       "action": "knife.csv",
-      "languages": [
-        {
-          "code": "zh_TW",
-          "tr_name": "刀",
-          "tr_sentence": "不要用刀子指著我。"
-        }
-      ]
+      "tr_name": "刀",
+      "tr_sentence": "不要用刀子指著我。"
     }
   }
 ]

@@ -10,17 +10,14 @@ import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.example.hiwin.teacher_version_bob.communication.bluetooth.framework.SerialListener;
 import com.example.hiwin.teacher_version_bob.utils.DataSpeaker;
-import com.example.hiwin.teacher_version_bob.data.Face;
 import com.example.hiwin.teacher_version_bob.fragment.*;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-import static com.example.hiwin.teacher_version_bob.Constants.getFaceDrawableId;
+import static com.example.hiwin.teacher_version_bob.Constants.getResourceIDByString;
 
 public class FaceDetectActivity extends DetectActivity {
     private static final String THIS_LOG_TAG = "FaceDetectActivity";
@@ -76,12 +73,13 @@ public class FaceDetectActivity extends DetectActivity {
         postFragment(fragment, "default");
     }
 
-    private void showFace(Face face, String name, String tr_name, String sentence, String tr_sentence) throws IOException {
-        Fragment finalFaceFragment = getFinalFaceFragment(face, null, "null");
+    private void showFace(int face_gif_id, int img_id, String name, String tr_name, String sentence, String tr_sentence, String action) throws IOException {
+        Fragment finalFaceFragment = getFinalFaceFragment(face_gif_id, null, "null");
         Fragment exampleFragment = getExampleFragment(sentence, tr_sentence, finalFaceFragment, "face2");
-        Fragment faceFragment = getFaceFragment(face, name, tr_name, sentence, tr_sentence, exampleFragment, "example");
-        Fragment descriptionFragment = getDescriptionFragment(name, tr_name, faceFragment, "face");
+        Fragment faceFragment = getFaceFragment(face_gif_id, name, tr_name, sentence, tr_sentence, exampleFragment, "example");
+        Fragment descriptionFragment = getDescriptionFragment(name, tr_name, img_id, faceFragment, "face");
         postFragment(descriptionFragment, "description");
+        sendMessage("DO_ACTION "+action);
     }
 
     @Override
@@ -101,24 +99,15 @@ public class FaceDetectActivity extends DetectActivity {
 
                 JSONObject jdata = object.getJSONObject("data");
 
-                JSONArray languages = jdata.getJSONArray("languages");
-
-                JSONObject translated = null;
-                for (int i = 0; i < languages.length(); i++) {
-                    if (languages.getJSONObject(i).get("code").equals("zh_TW"))
-                        translated = languages.getJSONObject(i);
-                }
-
-                if (translated == null)
-                    throw new RuntimeException("code not found");
-
-                Face face = Face.valueOf(jdata.getString("face"));
+                int face_gif_id = getResourceIDByString(context, jdata.getString("face"), "drawable");
+                int img_id = getResourceIDByString(context, jdata.getString("image"), "drawable");
                 String name = jdata.getString("name");
                 String sentence = jdata.getString("sentence");
-                String tr_name = translated.getString("tr_name");
-                String tr_sentence = translated.getString("tr_sentence");
+                String tr_name = jdata.getString("tr_name");
+                String tr_sentence = jdata.getString("tr_sentence");
+                String action= jdata.getString("action");
 
-                showFace(face, name, tr_name, sentence, tr_sentence);
+                showFace(face_gif_id, img_id, name, tr_name, sentence, tr_sentence,action);
             } catch (Exception e) {
                 Log.e(THIS_LOG_TAG, e.getMessage());
             }
@@ -128,9 +117,9 @@ public class FaceDetectActivity extends DetectActivity {
 
     }
 
-    private Fragment getFinalFaceFragment(Face face, Fragment next, String nextId) throws IOException {
+    private Fragment getFinalFaceFragment(int face_gif_id, Fragment next, String nextId) throws IOException {
         FaceFragment faceFragment = new FaceFragment();
-        faceFragment.warp(context, face, 2, true);
+        faceFragment.warp(context, face_gif_id, 2, true);
         faceFragment.setListener(new FragmentFlowListener(next, nextId) {
             @Override
             protected void postFragment(Fragment next, String nextId) {
@@ -146,10 +135,10 @@ public class FaceDetectActivity extends DetectActivity {
         return faceFragment;
     }
 
-    private Fragment getFaceFragment(Face face, String name, String tr_name, String sentence, String tr_sentence, Fragment next, String nextId) throws IOException {
+    private Fragment getFaceFragment(int face_gif_id, String name, String tr_name, String sentence, String tr_sentence, Fragment next, String nextId) throws IOException {
 
         FaceFragment faceFragment = new FaceFragment();
-        faceFragment.warp(context, face, 5, false);
+        faceFragment.warp(context, face_gif_id, 5, false);
 
         faceFragment.setListener(new FragmentFlowListener(next, nextId) {
             @Override
@@ -173,10 +162,10 @@ public class FaceDetectActivity extends DetectActivity {
         return faceFragment;
     }
 
-    public Fragment getDescriptionFragment(String name, String tr_name, Fragment next, String nextId) {
+    public Fragment getDescriptionFragment(String name, String tr_name, int img_id, Fragment next, String nextId) {
         final DescriptionFragment descriptionFragment = new DescriptionFragment();
         descriptionFragment.setShowListener((views) -> {
-            ((ImageView) views[0]).setImageDrawable(context.getDrawable(getFaceDrawableId(name)));
+            ((ImageView) views[0]).setImageDrawable(context.getDrawable(img_id));
             ((TextView) views[1]).setText(name);
             ((TextView) views[2]).setText(tr_name);
         });
@@ -233,7 +222,7 @@ public class FaceDetectActivity extends DetectActivity {
     public void onStop() {
         speaker.shutdown();
 //        sendMessage("PAUSE_DETECT");
-        if(isConnected())
+        if (isConnected())
             sendMessage("STOP_DETECT");
         super.onStop();
     }

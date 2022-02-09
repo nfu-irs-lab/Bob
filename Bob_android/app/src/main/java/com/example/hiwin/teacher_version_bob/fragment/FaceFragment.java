@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import com.example.hiwin.teacher_version_bob.R;
-import com.example.hiwin.teacher_version_bob.data.Face;
 import pl.droidsonroids.gif.GifDrawable;
 
 import java.io.IOException;
@@ -36,23 +35,21 @@ public class FaceFragment extends Fragment {
         start();
     }
 
-    public void warp(Context context, Face face, int loopCount, boolean endByAnimation) throws IOException {
-        drawable = new GifDrawable(context.getResources(), face.getGifId());
+    public void warp(Context context, int face_gif_id, int loopCount, boolean endByAnimation) throws IOException {
+        drawable = new GifDrawable(context.getResources(), face_gif_id);
         drawable.setLoopCount(loopCount);
         drawable.stop();
-        if (endByAnimation)
-            drawable.addAnimationListener(i -> {
-                if (listener != null && i + 1 == drawable.getLoopCount()) {
-                    listener.end();
-                }
-            });
+        if (endByAnimation) drawable.addAnimationListener(i -> {
+            if (listener != null && i + 1 == drawable.getLoopCount()) {
+                listener.end();
+            }
+        });
     }
 
     private void start() {
         imageView.setImageDrawable(drawable);
         drawable.start();
-        if (listener != null)
-            listener.start();
+        if (listener != null) listener.start();
     }
 
     public void setListener(FragmentListener listener) {

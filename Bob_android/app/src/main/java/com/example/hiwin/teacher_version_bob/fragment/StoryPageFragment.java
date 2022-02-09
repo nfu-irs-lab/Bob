@@ -21,6 +21,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import static com.example.hiwin.teacher_version_bob.Constants.getResourceIDByString;
+
 public class StoryPageFragment extends StaticFragment {
     private View root;
     private ImageView imageview;
@@ -73,8 +75,8 @@ public class StoryPageFragment extends StaticFragment {
     }
 
     private void show(JSONObject page) throws JSONException {
-        final int audio_id = getResourceIDByString(page.getString("audio"), "raw");
-        final int drawable_id = getResourceIDByString(page.getString("image"), "raw");
+        final int audio_id = getResourceIDByString(context,page.getString("audio"), "raw");
+        final int drawable_id = getResourceIDByString(context,page.getString("image"), "drawable");
         final String text = page.getString("text");
         Drawable drawable = drawable_id <= 0 ? null : context.getDrawable(drawable_id);
         player = MediaPlayer.create(context, audio_id);
@@ -168,14 +170,6 @@ public class StoryPageFragment extends StaticFragment {
             show(pages.getJSONObject(--index));
         }
     }
-
-    private int getResourceIDByString(String resName, String type) {
-        return context.getApplicationContext().getResources()
-                .getIdentifier(resName
-                        , type
-                        , context.getPackageName());
-    }
-
 
     public <L extends FragmentListener> void setListener(L listener) {
         this.listener = listener;
