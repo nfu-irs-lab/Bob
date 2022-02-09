@@ -18,6 +18,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import static com.example.hiwin.teacher_version_bob.Constants.getResourceIDByString;
+
 public class VocabularyFragment extends StaticFragment {
     private View root;
     private int index = 0;
@@ -76,17 +78,17 @@ public class VocabularyFragment extends StaticFragment {
     }
 
     private void show(JSONObject vocabulary) throws JSONException {
-        final int drawable_id = getResourceIDByString(vocabulary.getString("image"), "raw");
+        final int drawable_id = getResourceIDByString(context, vocabulary.getString("image"), "raw");
         final Drawable drawable = drawable_id <= 0 ? null : context.getDrawable(drawable_id);
-        final int audio_id = getResourceIDByString(vocabulary.getString("audio"), "raw");
+        final int audio_id = getResourceIDByString(context, vocabulary.getString("audio"), "raw");
         String name = vocabulary.getString("name");
         String translated = vocabulary.getString("translated");
         String definition = vocabulary.getString("definition");
         String part_of_speech = vocabulary.getString("part_of_speech");
         hasAction = vocabularies.getJSONObject(index).has("action");
         action.setEnabled(hasAction);
-        next.setEnabled(index<vocabularies.length()-1);
-        previous.setEnabled(index>0);
+        next.setEnabled(index < vocabularies.length() - 1);
+        previous.setEnabled(index > 0);
 
         player = MediaPlayer.create(context, audio_id);
         player.start();
@@ -97,13 +99,6 @@ public class VocabularyFragment extends StaticFragment {
         definition_text.setText(definition);
     }
 
-
-    private int getResourceIDByString(String resName, String type) {
-        return context.getApplicationContext().getResources()
-                .getIdentifier(resName
-                        , type
-                        , context.getPackageName());
-    }
 
     private final View.OnClickListener onClickListener = v -> {
         try {

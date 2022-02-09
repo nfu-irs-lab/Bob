@@ -20,7 +20,8 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-import static com.example.hiwin.teacher_version_bob.Constants.getObjectDrawableId;
+import static com.example.hiwin.teacher_version_bob.Constants.getResourceIDByString;
+
 
 public class ObjectDetectActivity extends DetectActivity {
     private static final String THIS_LOG_TAG = "ObjectDetectActivity";
@@ -179,7 +180,7 @@ public class ObjectDetectActivity extends DetectActivity {
     public Fragment getDescriptionFragment(String name, String tr_name, Fragment next, String nextId) {
         final DescriptionFragment descriptionFragment = new DescriptionFragment();
         descriptionFragment.setShowListener((views) -> {
-            ((ImageView) views[0]).setImageDrawable(context.getDrawable(getObjectDrawableId(name)));
+            ((ImageView) views[0]).setImageDrawable(context.getDrawable(getResourceIDByString(context,"object_"+name,"drawable")));
             ((TextView) views[1]).setText(name);
             ((TextView) views[2]).setText(tr_name);
         });

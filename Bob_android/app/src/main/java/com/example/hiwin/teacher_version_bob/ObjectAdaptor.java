@@ -11,7 +11,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static com.example.hiwin.teacher_version_bob.Constants.getObjectDrawableId;
+import static com.example.hiwin.teacher_version_bob.Constants.getResourceIDByString;
 
 /*
     reference:
@@ -61,7 +61,7 @@ public class ObjectAdaptor extends BaseAdapter {
 
             String name = object.getString("name");
             viewHolder.img = (ImageView) convertView.findViewById(R.id.object_row_img);
-            viewHolder.img.setImageDrawable(context.getDrawable(getObjectDrawableId(name)));
+            viewHolder.img.setImageDrawable(context.getDrawable(getResourceIDByString(context, "object_" + name, "drawable")));
             viewHolder.name = (TextView) convertView.findViewById(R.id.object_row_name);
             viewHolder.name.setText(name);
         } catch (JSONException e) {

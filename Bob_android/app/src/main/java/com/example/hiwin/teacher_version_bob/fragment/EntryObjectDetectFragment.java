@@ -12,7 +12,8 @@ import android.widget.*;
 import com.example.hiwin.teacher_version_bob.R;
 import com.example.hiwin.teacher_version_bob.activity.InteractiveObjectDetectActivity;
 
-import static com.example.hiwin.teacher_version_bob.Constants.getObjectDrawableId;
+import static com.example.hiwin.teacher_version_bob.Constants.getResourceIDByString;
+
 
 public class EntryObjectDetectFragment extends StaticFragment {
 
@@ -48,7 +49,7 @@ public class EntryObjectDetectFragment extends StaticFragment {
     public void setAnswer(String name) {
         answer = name;
         text_answer.setText(name);
-        img_answer.setImageDrawable(getContext().getDrawable(getObjectDrawableId(name)));
+        img_answer.setImageDrawable(getContext().getDrawable(getResourceIDByString(getContext(), "object_" + name, "drawable")));
     }
 
     public final InteractiveObjectDetectActivity.DetectedListener getListener() {
@@ -57,7 +58,7 @@ public class EntryObjectDetectFragment extends StaticFragment {
 
                 boolean correct = answer.equals(str);
                 text_detect.setText(str);
-                img_detect.setImageDrawable(getContext().getDrawable(getObjectDrawableId(str)));
+                img_detect.setImageDrawable(getContext().getDrawable(getResourceIDByString(getContext(), "object_" + str, "drawable")));
                 hint.setText(correct ? "答對了" : "答錯了");
                 MediaPlayer mp = MediaPlayer.create(getContext(), correct ? R.raw.sound_correct : R.raw.sound_wrong);
                 mp.start();
