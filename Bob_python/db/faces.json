@@ -4,15 +4,11 @@
     "data": {
       "name": "smile",
       "sentence": "She has a nice smile.",
-      "face":  "face_gif_happy",
+      "face": "face_gif_happy",
       "image": "face_happy",
-      "languages": [
-        {
-          "code": "zh_TW",
-          "tr_name": "微笑",
-          "tr_sentence": "她笑得很開心。"
-        }
-      ]
+      "action": "bird.csv",
+      "tr_name": "微笑",
+      "tr_sentence": "她笑得很開心。"
     }
   },
   {
@@ -20,15 +16,12 @@
     "data": {
       "name": "sad",
       "sentence": "I am sad.",
-      "face":  "face_gif_sad",
+      "face": "face_gif_sad",
       "image": "face_sad",
-      "languages": [
-        {
-          "code": "zh_TW",
-          "tr_name": "難過",
-          "tr_sentence": "我很難過。"
-        }
-      ]
+      "action": "car.csv",
+      "code": "zh_TW",
+      "tr_name": "難過",
+      "tr_sentence": "我很難過。"
     }
   }
 ]

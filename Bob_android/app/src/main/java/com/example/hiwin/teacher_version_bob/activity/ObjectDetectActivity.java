@@ -74,27 +74,14 @@ public class ObjectDetectActivity extends DetectActivity {
                 detect_pause();
                 JSONObject object = new JSONObject(content);
 
-//                builder.setId(json.getInt("id"));
-//                builder.setResponseType(json.getString("response_type"));
-//                builder.setContent(json.getString("content"));
-
                 JSONObject jdata = object.getJSONObject("data");
-
-                JSONArray languages = jdata.getJSONArray("languages");
-
-                JSONObject translated = null;
-                for (int i = 0; i < languages.length(); i++) {
-                    if (languages.getJSONObject(i).get("code").equals("zh_TW")) translated = languages.getJSONObject(i);
-                }
-
-                if (translated == null) throw new RuntimeException("code not found");
 
                 int face_gif_id = getResourceIDByString(context, jdata.getString("face"), "drawable");
                 int img_id = getResourceIDByString(context, jdata.getString("image"), "drawable");
                 String name = jdata.getString("name");
                 String sentence = jdata.getString("sentence");
-                String tr_name = translated.getString("tr_name");
-                String tr_sentence = translated.getString("tr_sentence");
+                String tr_name = jdata.getString("tr_name");
+                String tr_sentence = jdata.getString("tr_sentence");
 
                 showFace(face_gif_id, img_id, name, tr_name, sentence, tr_sentence);
             } catch (Exception e) {
