@@ -138,7 +138,12 @@ public class StoryActivity extends BluetoothCommunicationActivity {
     private StaticFragment getStoryPageFragment(JSONArray pages, Fragment next, String nextId) throws JSONException {
         StoryPageFragment storyPageFragment = new StoryPageFragment();
         storyPageFragment.initialize(this, pages);
-        storyPageFragment.setListener(new FragmentListener() {
+        storyPageFragment.setListener(new StoryPageFragment.ActionListener() {
+            @Override
+            public void onAction(String cmd) {
+                sendMessage(cmd);
+            }
+
             @Override
             public void start() {
 
@@ -159,6 +164,7 @@ public class StoryActivity extends BluetoothCommunicationActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
         vocabularyInteractiveFragment.setListener(new VocabularyInteractiveFragment.AnswerListener() {
             @Override
             public void onAnswerCorrect() {

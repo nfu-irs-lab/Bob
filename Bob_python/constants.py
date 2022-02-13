@@ -1,4 +1,5 @@
 import os
+import threading
 
 from Bob.detector.concrete.object_detect_yolov5 import ObjectDetector
 from Bob.detector.concrete.face_detect_deepface import FaceDetector
@@ -43,6 +44,11 @@ def formatDataToJsonString(id: int, type: str, content: str, data):
     sendData = {"id": id, "response_type": type, "content": content,
                 "data": data}
     return json.dumps(sendData, ensure_ascii=False)
+
+
+def doAction(action):
+    print("do action:", action)
+    robot.doAction(getActionFromFileName(action))
 
 
 class CommandControlListener(PackageListener):
@@ -125,8 +131,10 @@ class CommandControlListener(PackageListener):
                 self.package_device.writePackage(Base64LinePackage(StringPackage(jsonString, "UTF-8")))
         elif cmd.startswith("DO_ACTION"):
             action = cmd[10:]
-            print("do action:", action)
-            robot.doAction(getActionFromFileName(action))
+            threading.Thread(target=doAction, args=(action,)).start()
+            # doAction(action)
+        elif cmd == "STOP_ALL_ACTION":
+            robot.stopAllAction()
 
 
 class FaceDetectListener(DetectListener):
