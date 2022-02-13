@@ -29,17 +29,19 @@ import static com.example.hiwin.teacher_version_bob.Constants.getResourceIDByStr
 public class StoryPageFragment extends StaticFragment {
     private View root;
     private ImageView imageview;
-//    private TextView story_text;
+    //    private TextView story_text;
     private Context context;
     private JSONArray pages;
     private int index = 0;
     private MediaPlayer player;
-    private FragmentListener listener;
-
     private Button previous, speak, next;
-
     private boolean auto = true;
+    private StoryPageFragment.ActionListener listener;
 
+
+    public interface ActionListener extends FragmentListener {
+        void onAction(String cmd);
+    }
 
     @Nullable
     @Override
@@ -82,22 +84,13 @@ public class StoryPageFragment extends StaticFragment {
         final int audio_id = getResourceIDByString(context, page.getString("audio"), "raw");
         final int drawable_id = getResourceIDByString(context, page.getString("image"), "drawable");
         final String text = page.getString("text");
+
+        if (listener != null)
+            listener.onAction("DO_ACTION " + page.getString("action"));
 //        Drawable drawable = drawable_id <= 0 ? null : context.getDrawable(drawable_id);
         player = MediaPlayer.create(context, audio_id);
-        if (auto)
-            player.setOnCompletionListener(mp -> {
-                if (index < pages.length() - 1 && index >= 0) {
-                    player.stop();
-                    player.release();
-                    try {
-                        show(pages.getJSONObject(++index));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-        else
-            player.setOnCompletionListener(null);
+        if (player != null)
+            player.setOnCompletionListener(getSpeakerListener());
 
         next.setEnabled(index < pages.length() - 1);
         previous.setEnabled(index > 0);
@@ -120,27 +113,27 @@ public class StoryPageFragment extends StaticFragment {
     }
 
     final View.OnClickListener onClickListener = v -> {
+        if (v.getId() == R.id.story_page_previous) {
+            player.release();
+            previousPage();
+        } else if (v.getId() == R.id.story_page_speak) {
+            player.seekTo(0);
+            player.start();
+        } else if (v.getId() == R.id.story_page_next) {
+            player.stop();
+            player.release();
+            nextPage();
+        } else if (v.getId() == R.id.story_page_next_session) {
+            player.stop();
+            player.release();
+            if (listener != null)
+                listener.end();
 
-        try {
-            if (v.getId() == R.id.story_page_previous) {
-                previousPage();
+            if (listener != null)
+                listener.onAction("STOP_ALL_ACTION");
 
-            } else if (v.getId() == R.id.story_page_speak) {
-                player.seekTo(0);
-                player.start();
-            } else if (v.getId() == R.id.story_page_next) {
-                nextPage();
-            } else if (v.getId() == R.id.story_page_next_session) {
-                player.stop();
-                player.release();
-                if (listener != null)
-                    listener.end();
-            } else
-                throw new IllegalStateException();
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        } else
+            throw new IllegalStateException();
     };
 
     private final CompoundButton.OnCheckedChangeListener onCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
@@ -148,42 +141,47 @@ public class StoryPageFragment extends StaticFragment {
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
             auto = isChecked;
             if (player != null)
-                if (auto)
-                    player.setOnCompletionListener(mp -> {
-                        if (index < pages.length() - 1 && index >= 0) {
-                            player.stop();
-                            player.release();
-                            try {
-                                show(pages.getJSONObject(++index));
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
-                else
-                    player.setOnCompletionListener(null);
+                player.setOnCompletionListener(getSpeakerListener());
         }
     };
 
 
-    private void nextPage() throws JSONException {
+    private void nextPage() {
         if (index < pages.length() - 1 && index >= 0) {
-            player.stop();
-            player.release();
-            show(pages.getJSONObject(++index));
+            if (listener != null)
+                listener.onAction("STOP_ALL_ACTION");
+            try {
+                show(pages.getJSONObject(++index));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    private void previousPage() throws JSONException {
+    private void previousPage() {
         if (index < pages.length() && index > 0) {
-            player.stop();
-            player.release();
-            show(pages.getJSONObject(--index));
+            if (listener != null)
+                listener.onAction("STOP_ALL_ACTION");
+            try {
+                show(pages.getJSONObject(--index));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
+    }
+
+    private MediaPlayer.OnCompletionListener getSpeakerListener() {
+        return mp -> {
+            if (auto) {
+                nextPage();
+            } else if (this.listener != null)
+                this.listener.onAction("STOP_ALL_ACTION");
+        };
+
     }
 
     public <L extends FragmentListener> void setListener(L listener) {
-        this.listener = listener;
+        this.listener = (StoryPageFragment.ActionListener) listener;
     }
 
 }
