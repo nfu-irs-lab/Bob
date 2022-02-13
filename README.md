@@ -118,6 +118,25 @@ sudo systemctl restart bluetooth
 sudo hciconfig hci0 piscan
 ```
 
+#### 藍芽sp無裝置
+
+```
+Traceback (most recent call last):
+  File "/mnt/EAFC7A87FC7A4E37/git_projects/Linux/Bob/Bob_python/bt_main.py", line 19, in <module>
+    server = BluetoothServer(ConnectListener())
+  File "/mnt/EAFC7A87FC7A4E37/git_projects/Linux/Bob/Bob_python/Bob/bluetooth_utils/utils.py", line 28, in __init__
+    profiles=[bluetooth.SERIAL_PORT_PROFILE],
+  File "/home/vincent/PyEnv/bob/lib/python3.6/site-packages/bluetooth/bluez.py", line 275, in advertise_service
+    raise BluetoothError (*e.args)
+bluetooth.btcommon.BluetoothError: no advertisable device
+```
+
+```shell
+sudo sdptool add SP
+```
+
+
+
 #### 藍芽sp權限遭拒
 
 ```
@@ -149,6 +168,39 @@ sudo chmod 666 /var/run/sdp
 
 ## Linux
 ### Bluetooth
+
+#### 更改藍芽成相容模式
+
+2-1. Open Bluetooth service configuration file.
+
+```shell
+sudo nano /etc/systemd/system/dbus-org.bluez.service
+```
+
+2-2. Look for a line starts with “ExecStart” and add compatibility flag ‘-C’ at the end of the line.
+
+```
+ExecStart=/usr/lib/bluetooth/bluetoothd -C
+```
+
+2-3. Add a line below immediately after “ExecStart” line, then save and close the file.
+
+```
+ExecStartPost=/usr/bin/sdptool add SP
+```
+
+2-4. Reload the configuration file.
+
+```
+sudo systemctl daemon-reload
+```
+
+2-5. Restart the service.
+
+```
+sudo systemctl restart bluetooth.service
+```
+
 - https://scribles.net/setting-up-bluetooth-serial-port-profile-on-raspberry-pi/
 - https://blog.csdn.net/Adrian503/article/details/110947477
 - https://blog.csdn.net/XiaoXiaoPengBo/article/details/108125755
