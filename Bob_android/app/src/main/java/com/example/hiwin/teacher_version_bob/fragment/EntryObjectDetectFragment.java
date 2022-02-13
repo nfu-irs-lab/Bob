@@ -4,7 +4,6 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,7 +59,7 @@ public class EntryObjectDetectFragment extends StaticFragment {
                 text_detect.setText(str);
                 img_detect.setImageDrawable(getContext().getDrawable(getResourceIDByString(getContext(), "object_" + str, "drawable")));
                 hint.setText(correct ? "答對了" : "答錯了");
-                MediaPlayer mp = MediaPlayer.create(getContext(), correct ? R.raw.sound_correct : R.raw.sound_wrong);
+                MediaPlayer mp = MediaPlayer.create(getContext(), correct ? R.raw.sound_correct : R.raw.sound_incorrect);
                 mp.start();
                 previous_detect = str;
             }

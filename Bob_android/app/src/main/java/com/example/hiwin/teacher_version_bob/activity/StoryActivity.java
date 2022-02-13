@@ -1,6 +1,7 @@
 package com.example.hiwin.teacher_version_bob.activity;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -14,6 +15,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 public class StoryActivity extends BluetoothCommunicationActivity {
@@ -33,11 +35,11 @@ public class StoryActivity extends BluetoothCommunicationActivity {
             } else if (content.equals("story_content")) {
                 JSONObject dataObj = obj.getJSONObject("data");
 
-                JSONArray vocabularies=dataObj.getJSONArray("vocabularies");
+                JSONArray vocabularies = dataObj.getJSONArray("vocabularies");
 
-                StaticFragment  vocabularyInteractiveFragment=getVocabularyInteractiveFragment(vocabularies,null,null);
+                StaticFragment vocabularyInteractiveFragment = getVocabularyInteractiveFragment(vocabularies, null, null);
                 StaticFragment storyFragment2 = getStoryPageFragment(dataObj.getJSONArray("pages"), vocabularyInteractiveFragment, "vocabularyInteractiveFragment");
-                StaticFragment vocabularyFragment=getVocabularyFragment(vocabularies,storyFragment2,"storyFragment2");
+                StaticFragment vocabularyFragment = getVocabularyFragment(vocabularies, storyFragment2, "storyFragment2");
                 StaticFragment storyFragment = getStoryPageFragment(dataObj.getJSONArray("pages"), vocabularyFragment, "vocabularyFragment");
                 postFragment(storyFragment, "storyFragment");
 
@@ -111,9 +113,9 @@ public class StoryActivity extends BluetoothCommunicationActivity {
         return selectFragment;
     }
 
-    private StaticFragment getVocabularyFragment(JSONArray vocabularies, Fragment next, String nextId){
+    private StaticFragment getVocabularyFragment(JSONArray vocabularies, Fragment next, String nextId) {
         VocabularyFragment vocabularyFragment = new VocabularyFragment();
-        vocabularyFragment.initialize(this,vocabularies);
+        vocabularyFragment.initialize(this, vocabularies);
         vocabularyFragment.setListener(new VocabularyFragment.ActionListener() {
             @Override
             public void onAction(String cmd) {
@@ -127,7 +129,7 @@ public class StoryActivity extends BluetoothCommunicationActivity {
 
             @Override
             public void end() {
-                postFragment(next,nextId);
+                postFragment(next, nextId);
             }
         });
         return vocabularyFragment;
@@ -150,10 +152,10 @@ public class StoryActivity extends BluetoothCommunicationActivity {
         return storyPageFragment;
     }
 
-    private StaticFragment getVocabularyInteractiveFragment(JSONArray vocabularies, Fragment next, String nextId){
-        VocabularyInteractiveFragment vocabularyInteractiveFragment=new VocabularyInteractiveFragment();
+    private StaticFragment getVocabularyInteractiveFragment(JSONArray vocabularies, Fragment next, String nextId) {
+        VocabularyInteractiveFragment vocabularyInteractiveFragment = new VocabularyInteractiveFragment();
         try {
-            vocabularyInteractiveFragment.initialize(this,vocabularies);
+            vocabularyInteractiveFragment.initialize(this, vocabularies);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -181,6 +183,7 @@ public class StoryActivity extends BluetoothCommunicationActivity {
 
         return vocabularyInteractiveFragment;
     }
+
 
     private void postFragment(Fragment fragment, String id) {
         if (fragment == null || id == null)

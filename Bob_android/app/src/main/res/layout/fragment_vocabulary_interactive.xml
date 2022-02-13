@@ -17,36 +17,36 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <Button
-            android:id="@+id/vocabulary_interactive_answer_1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:onClick="answer"
-            android:text="Button" />
+                android:id="@+id/vocabulary_interactive_answer_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="answer"
+                android:text="Button" android:textSize="34sp"/>
 
         <Button
-            android:id="@+id/vocabulary_interactive_answer_2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:onClick="answer"
-            android:text="Button" />
+                android:id="@+id/vocabulary_interactive_answer_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="answer"
+                android:text="Button" android:textSize="34sp"/>
 
         <Button
-            android:id="@+id/vocabulary_interactive_answer_3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:onClick="answer"
-            android:text="Button" />
+                android:id="@+id/vocabulary_interactive_answer_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="answer"
+                android:text="Button" android:textSize="34sp"/>
 
         <Button
-            android:id="@+id/vocabulary_interactive_answer_4"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:onClick="answer"
-            android:text="Button" />
+                android:id="@+id/vocabulary_interactive_answer_4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="answer"
+                android:text="Button" android:textSize="34sp"/>
     </LinearLayout>
 
     <TextView
@@ -69,4 +69,11 @@
             app:layout_constraintStart_toStartOf="parent" android:layout_marginTop="20dp"
             android:layout_marginStart="20dp"
     />
+    <ImageView
+            android:layout_width="0dp"
+            android:layout_height="0dp" app:srcCompat="@drawable/face_default" android:id="@+id/vocabulary_interactive_face"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
 </android.support.constraint.ConstraintLayout>
