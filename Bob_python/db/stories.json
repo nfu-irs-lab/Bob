@@ -16,7 +16,7 @@
           "audio": "story_audio_the_story_of_niana_1"
         },
         {
-          "text": "Nian would come on land to attack, and eat whatever he  could find and whatever lay in I his path. This was the night everyone lived in terror!",
+          "text": "Nian would come on land to attack, and eat whatever he could find and whatever lay in I his path. This was the night everyone lived in terror!",
           "image": "story_img_the_story_of_niana_2",
           "audio": "story_audio_the_story_of_niana_2"
         },
@@ -61,13 +61,13 @@
           "audio": "story_audio_the_story_of_niana_10"
         },
         {
-          "image": "story_img_the_story_of_niana_11",
           "text": "The next year, the villagers stayed up all night, lit firecrackers, lit red lanterns all around their houses, pasted red paper on their doors and walls, wore red clothing, danced to loud music, and banged loud gongs and drums.",
+          "image": "story_img_the_story_of_niana_11",
           "audio": "story_audio_the_story_of_niana_11"
         },
         {
-          "image": "story_img_the_story_of_niana_12",
           "text": "That year and every year since, Nian has never returned. This eventually became a tradition and the way to celebrate Chinese New Year.",
+          "image": "story_img_the_story_of_niana_12",
           "audio": "story_audio_the_story_of_niana_12"
         }
       ],
@@ -155,7 +155,7 @@
           "translated": "旅行 / 旅行者",
           "part_of_speech": "v / n",
           "image": "vocabulary_img_travel_traveler",
-          "audio": "x_vocabulary_audio_travel_traveler",
+          "audio": "vocabulary_audio_travel_traveler",
           "definition": "to make a journey, usually over a long distance. / someone who travels."
         },
         {
@@ -163,7 +163,7 @@
           "translated": "慷慨",
           "part_of_speech": "n",
           "image": "vocabulary_img_kind",
-          "audio": "x_vocabulary_audio_kindness_generosity",
+          "audio": "vocabulary_audio_kindness_generosity",
           "definition": "the quality or condition of being generous.",
           "action": "generosity.csv"
         },
@@ -279,8 +279,8 @@
           "name": "Lick his lips",
           "translated": "舔嘴唇",
           "part_of_speech": "phr",
-          "image": "vocabulary_img_lick_its_lips",
-          "audio": "vocabulary_audio_lick_its_lips",
+          "image": "vocabulary_img_lick_his_lips",
+          "audio": "vocabulary_audio_lick_his_lips",
           "definition": "to move your tongue along your lips."
         },
         {
