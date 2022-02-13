@@ -20,13 +20,16 @@ import com.example.hiwin.teacher_version_bob.R;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import pl.droidsonroids.gif.GifDrawable;
+
+import java.io.IOException;
 
 import static com.example.hiwin.teacher_version_bob.Constants.getResourceIDByString;
 
 public class StoryPageFragment extends StaticFragment {
     private View root;
     private ImageView imageview;
-    private TextView story_text;
+//    private TextView story_text;
     private Context context;
     private JSONArray pages;
     private int index = 0;
@@ -43,7 +46,7 @@ public class StoryPageFragment extends StaticFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         root = inflater.inflate(R.layout.fragment_story_page, container, false);
         imageview = root.findViewById(R.id.story_page_imageview);
-        story_text = root.findViewById(R.id.story_page_text);
+//        story_text = root.findViewById(R.id.story_page_text);
 
         previous = root.findViewById(R.id.story_page_previous);
         previous.setOnClickListener(onClickListener);
@@ -60,6 +63,7 @@ public class StoryPageFragment extends StaticFragment {
         ((ToggleButton) root.findViewById(R.id.story_page_auto)).setTextOn("Automatically");
         ((ToggleButton) root.findViewById(R.id.story_page_auto)).setTextOff("Manually");
 
+
         try {
             show(pages.getJSONObject(index));
         } catch (JSONException e) {
@@ -75,10 +79,10 @@ public class StoryPageFragment extends StaticFragment {
     }
 
     private void show(JSONObject page) throws JSONException {
-        final int audio_id = getResourceIDByString(context,page.getString("audio"), "raw");
-        final int drawable_id = getResourceIDByString(context,page.getString("image"), "drawable");
+        final int audio_id = getResourceIDByString(context, page.getString("audio"), "raw");
+        final int drawable_id = getResourceIDByString(context, page.getString("image"), "drawable");
         final String text = page.getString("text");
-        Drawable drawable = drawable_id <= 0 ? null : context.getDrawable(drawable_id);
+//        Drawable drawable = drawable_id <= 0 ? null : context.getDrawable(drawable_id);
         player = MediaPlayer.create(context, audio_id);
         if (auto)
             player.setOnCompletionListener(mp -> {
@@ -98,8 +102,15 @@ public class StoryPageFragment extends StaticFragment {
         next.setEnabled(index < pages.length() - 1);
         previous.setEnabled(index > 0);
 
-        imageview.setImageDrawable(drawable);
-        story_text.setText(text);
+        try {
+            GifDrawable gifDrawable = new GifDrawable(getResources(), drawable_id);
+            gifDrawable.setLoopCount(10);
+            imageview.setImageDrawable(gifDrawable);
+            gifDrawable.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+//        story_text.setText(text);
         player.start();
     }
 

@@ -18,7 +18,6 @@ import com.example.hiwin.teacher_version_bob.R;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import pl.droidsonroids.gif.AnimationListener;
 import pl.droidsonroids.gif.GifDrawable;
 
 import java.io.IOException;
