@@ -1,3 +1,5 @@
+from typing import List
+
 from Bob.device.framework.fw_device import SerialDevice, Device
 import os
 
@@ -26,18 +28,13 @@ else:
 
 from dynamixel_sdk import *  # Uses Dynamixel SDK library
 
-# Default setting
-BAUDRATE = 57600  # Dynamixel default baudrate : 57600
-
-# Protocol version
-PROTOCOL_VERSION1 = 1.0  # See which protocol version is used in the Dynamixel
-PROTOCOL_VERSION2 = 2.0
-
+PROTOCOL_1 = 1
+PROTOCOL_2 = 2
 # Initialize PacketHandler instance
 # Set the protocol version
 # Get methods and members of Protocol1PacketHandler or Protocol2PacketHandler
-packetHandler1 = PacketHandler(PROTOCOL_VERSION1)
-packetHandler2 = PacketHandler(PROTOCOL_VERSION2)
+packetHandler1 = PacketHandler(1.0)
+packetHandler2 = PacketHandler(2.0)
 
 
 class DynamixelRobot(Device):
@@ -45,20 +42,28 @@ class DynamixelRobot(Device):
     def __init__(self, device_name: str, baudrate: int):
         self._baudrate = baudrate
         self._portHandler = PortHandler(device_name)
+        self.servos: List[DynamixelServo] = []
+
+    def _findServoById(self, id: int):
+        for servo in self.servos:
+            if id == servo.getId():
+                return servo
+        raise Exception("Servo#%d not found" % id)
+
+    def appendServo(self, servo: DynamixelServo):
+        self.servos.append(servo)
 
     def open(self):
         if self._portHandler.openPort():
             print("Succeeded to open the port")
         else:
-            print("Failed to open the port")
-            exit(1)
+            raise Exception("Failed to open the port")
 
         # Set port baudrate
         if self._portHandler.setBaudRate(self._baudrate):
             print("Succeeded to change the baudrate")
         else:
-            print("Failed to change the baudrate")
-            exit(2)
+            raise Exception("Failed to change the baudrate")
 
     def close(self):
         self._portHandler.closePort()
@@ -66,11 +71,15 @@ class DynamixelRobot(Device):
     def isOpen(self) -> bool:
         return self._portHandler.is_open
 
-    # def write(self, protocol: int, id: int, address: int, value, byte_num: int):
-    #     if protocol == 1:
-    #         self._write_proto_1(id, address, value, byte_num)
-    #     elif protocol == 2:
-    #         self._write_proto_2(id, address, value, byte_num)
+    def writeServoById(self, servoId: int, address: int, value, byte_num: int):
+        servo = self._findServoById(servoId)
+        self._write(servo.getProtocol(), servo.getId(), address, value, byte_num)
+
+    def _write(self, protocol: int, id: int, address: int, value, byte_num: int):
+        if protocol == PROTOCOL_1:
+            self._write_proto_1(id, address, value, byte_num)
+        elif protocol == PROTOCOL_2:
+            self._write_proto_2(id, address, value, byte_num)
 
     def _write_proto_1(self, id: int, address: int, value, byte_num: int):
         if byte_num == 4:
@@ -132,29 +141,18 @@ class DynamixelRobot(Device):
             print("%s" % packetHandler1.getRxPacketError(dxl_error))
         return value
 
-    def enableToque(self, servo: DynamixelServo, enable: bool):
-        servoId = servo.getId()
+    def enableToque(self, servoId: int, enable: bool):
+        servo = self._findServoById(servoId)
         if enable:
             value = 1
         else:
             value = 0
+        self._write(servo.getProtocol(), servo.getId(), servo.getTorqueEnableAddress(), value, 1)
 
-        if servo.getProtocol() == 1:
-            self._write_proto_1(servoId, servo.getTorqueEnableAddress(), value, 1)
+    def setGoalPosition(self, servoId: int, position: int):
+        servo = self._findServoById(servoId)
+        self._write(servo.getProtocol(), servo.getId(), servo.getGoalPositionAddress(), position, 4)
 
-        if servo.getProtocol() == 2:
-            self._write_proto_2(servoId, servo.getTorqueEnableAddress(), value, 1)
-
-    def setGoalPosition(self, servo: DynamixelServo, position: int):
-        servoId = servo.getId()
-        if servo.getProtocol() == 1:
-            self._write_proto_1(servoId, servo.getGoalPositionAddress(), position, 4)
-        if servo.getProtocol() == 2:
-            self._write_proto_2(servoId, servo.getGoalPositionAddress(), position, 4)
-
-    def setVelocity(self, servo: DynamixelServo, velocity: int):
-        servoId = servo.getId()
-        if servo.getProtocol() == 1:
-            self._write_proto_1(servoId, servo.getGoalPositionAddress(), velocity, 4)
-        if servo.getProtocol() == 2:
-            self._write_proto_2(servoId, servo.getGoalPositionAddress(), velocity, 4)
+    def setVelocity(self, servoId: int, velocity: int):
+        servo = self._findServoById(servoId)
+        self._write(servo.getProtocol(), servo.getId(), servo.getGoalPositionAddress(), velocity, 4)
