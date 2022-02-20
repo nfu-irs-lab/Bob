@@ -33,6 +33,7 @@
         <activity android:name=".activity.InteractiveObjectDetectActivity"/>
 
         <activity android:name=".activity.StoryActivity"/>
+        <activity android:name=".activity.ActionButtonActivity"/>
 
         <service android:name=".communication.service.SerialService"/>
 
