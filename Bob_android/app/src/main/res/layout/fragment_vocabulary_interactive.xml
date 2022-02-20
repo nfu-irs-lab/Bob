@@ -76,4 +76,35 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/vocabulary_interactive_face"
+            app:layout_constraintTop_toTopOf="@+id/vocabulary_interactive_face">
+        <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" app:srcCompat="@drawable/gesture_paper"
+                android:id="@+id/vocabulary_interactive_gesture"
+                android:layout_gravity="center_horizontal"/>
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/linearLayout3">
+            <Button
+                    android:text="Paper"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:id="@+id/button2" android:layout_weight="1"/>
+            <Button
+                    android:text="scissor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:id="@+id/button3" android:layout_weight="1"/>
+            <Button
+                    android:text="stone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:id="@+id/button4" android:layout_weight="1"/>
+        </LinearLayout>
+    </LinearLayout>
 </android.support.constraint.ConstraintLayout>
