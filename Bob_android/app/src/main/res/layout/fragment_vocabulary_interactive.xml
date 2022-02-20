@@ -6,69 +6,74 @@
                                              android:layout_height="match_parent"
                                              android:id="@+id/object_root">
 
-    <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="40dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+    <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" android:id="@+id/vocabulary_interactive_game_layout">
 
-        <Button
-                android:id="@+id/vocabulary_interactive_answer_1"
-                android:layout_width="match_parent"
+        <TextView
+                android:id="@+id/vocabulary_interactive_definition"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:onClick="answer"
-                android:text="Button" android:textSize="34sp"/>
+                android:text="TextView"
+                android:textSize="34sp"
+                app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintVertical_bias="0.25"
+                app:layout_constraintTop_toBottomOf="@+id/vocabulary_interactive_hint"/>
 
-        <Button
-                android:id="@+id/vocabulary_interactive_answer_2"
-                android:layout_width="match_parent"
+        <TextView
+                android:text="TextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:id="@+id/vocabulary_interactive_hint"
+                android:textSize="48sp" app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent" android:layout_marginTop="20dp"
+                android:layout_marginStart="20dp"
+        />
+        <LinearLayout
+                android:id="@+id/linearLayout"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:onClick="answer"
-                android:text="Button" android:textSize="34sp"/>
+                android:layout_marginBottom="40dp"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
 
-        <Button
-                android:id="@+id/vocabulary_interactive_answer_3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:onClick="answer"
-                android:text="Button" android:textSize="34sp"/>
+            <Button
+                    android:id="@+id/vocabulary_interactive_answer_1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="answer"
+                    android:text="Button" android:textSize="34sp"/>
 
-        <Button
-                android:id="@+id/vocabulary_interactive_answer_4"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:onClick="answer"
-                android:text="Button" android:textSize="34sp"/>
-    </LinearLayout>
+            <Button
+                    android:id="@+id/vocabulary_interactive_answer_2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="answer"
+                    android:text="Button" android:textSize="34sp"/>
 
-    <TextView
-            android:id="@+id/vocabulary_interactive_definition"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="TextView"
-            android:textSize="34sp"
-            app:layout_constraintBottom_toTopOf="@+id/linearLayout"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintVertical_bias="0.25"
-            app:layout_constraintTop_toBottomOf="@+id/vocabulary_interactive_hint"/>
+            <Button
+                    android:id="@+id/vocabulary_interactive_answer_3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="answer"
+                    android:text="Button" android:textSize="34sp"/>
 
-    <TextView
-            android:text="TextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:id="@+id/vocabulary_interactive_hint"
-            android:textSize="48sp" app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent" android:layout_marginTop="20dp"
-            android:layout_marginStart="20dp"
-    />
+            <Button
+                    android:id="@+id/vocabulary_interactive_answer_4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="answer"
+                    android:text="Button" android:textSize="34sp"/>
+        </LinearLayout>
+    </android.support.constraint.ConstraintLayout>
+
     <ImageView
             android:layout_width="0dp"
             android:layout_height="0dp" app:srcCompat="@drawable/face_default" android:id="@+id/vocabulary_interactive_face"
@@ -82,7 +87,8 @@
             android:layout_height="wrap_content" app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="@+id/vocabulary_interactive_face"
-            app:layout_constraintTop_toTopOf="@+id/vocabulary_interactive_face">
+            app:layout_constraintTop_toTopOf="@+id/vocabulary_interactive_face"
+            android:id="@+id/vocabulary_interactive_paper_scissor_stone">
         <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" app:srcCompat="@drawable/gesture_paper"
@@ -96,15 +102,15 @@
             <Button
                     android:text="Paper"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:id="@+id/button2" android:layout_weight="1"/>
+                    android:layout_height="wrap_content" android:id="@+id/vocabulary_interactive_btn_paper" android:layout_weight="1"/>
             <Button
                     android:text="scissor"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:id="@+id/button3" android:layout_weight="1"/>
+                    android:layout_height="wrap_content" android:id="@+id/vocabulary_interactive_btn_scissor" android:layout_weight="1"/>
             <Button
                     android:text="stone"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:id="@+id/button4" android:layout_weight="1"/>
+                    android:layout_height="wrap_content" android:id="@+id/vocabulary_interactive_btn_stone" android:layout_weight="1"/>
         </LinearLayout>
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>
