@@ -1,6 +1,31 @@
 from Bob.robot.framework.fw_servo import DynamixelServo
 
 
+class H42_20_S300_R(DynamixelServo):
+
+    def __init__(self, servoId: int, protocol: int):
+        self._servoId = servoId
+        self._protocol = protocol
+
+    def getId(self):
+        return self._servoId
+
+    def getProtocol(self):
+        return self._protocol
+
+    def getGoalPositionAddress(self):
+        return 596
+
+    def getPresentPositionAddress(self):
+        return 611
+
+    def getGoalVelocityAddress(self):
+        return 600
+
+    def getTorqueEnableAddress(self):
+        return 562
+
+
 class RX_64(DynamixelServo):
 
     def __init__(self, servoId: int, protocol: int):
@@ -14,13 +39,13 @@ class RX_64(DynamixelServo):
         return self._protocol
 
     def getGoalPositionAddress(self):
-        pass
+        return 30
 
     def getPresentPositionAddress(self):
-        pass
+        return 36
 
     def getGoalVelocityAddress(self):
-        pass
+        return 32
 
     def getTorqueEnableAddress(self):
-        pass
+        return 24
