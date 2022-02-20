@@ -66,6 +66,12 @@ class DynamixelRobot(Device):
     def isOpen(self) -> bool:
         return self._portHandler.is_open
 
+    # def write(self, protocol: int, id: int, address: int, value, byte_num: int):
+    #     if protocol == 1:
+    #         self._write_proto_1(id, address, value, byte_num)
+    #     elif protocol == 2:
+    #         self._write_proto_2(id, address, value, byte_num)
+
     def _write_proto_1(self, id: int, address: int, value, byte_num: int):
         if byte_num == 4:
             dxl_comm_result, dxl_error = packetHandler1.write4ByteTxRx(self._portHandler, id, address, value)
@@ -75,9 +81,9 @@ class DynamixelRobot(Device):
             raise Exception("byte_num=" + byte_num)
 
         if dxl_comm_result != COMM_SUCCESS:
-            print("%s" % packetHandler1.getTxRxResult(dxl_comm_result))
+            raise Exception("%s" % packetHandler1.getTxRxResult(dxl_comm_result))
         elif dxl_error != 0:
-            print("%s" % packetHandler1.getRxPacketError(dxl_error))
+            raise Exception("%s" % packetHandler1.getRxPacketError(dxl_error))
 
     def _write_proto_2(self, id: int, address: int, value, byte_num: int):
         if byte_num == 4:
@@ -90,7 +96,8 @@ class DynamixelRobot(Device):
         if dxl_comm_result != COMM_SUCCESS:
             print("%s" % packetHandler2.getTxRxResult(dxl_comm_result))
         elif dxl_error != 0:
-            print("%s" % packetHandler2.getRxPacketError(dxl_error))
+            print(dxl_error)
+            raise Exception("%s" % packetHandler2.getRxPacketError(dxl_error))
 
     def _read_proto_1(self, id: int, address: int, byte_num: int):
         if byte_num == 4:
@@ -133,10 +140,10 @@ class DynamixelRobot(Device):
             value = 0
 
         if servo.getProtocol() == 1:
-            self._write_proto_1(servoId, servo.getGoalPositionAddress(), value, 1)
+            self._write_proto_1(servoId, servo.getTorqueEnableAddress(), value, 1)
 
         if servo.getProtocol() == 2:
-            self._write_proto_2(servoId, servo.getGoalPositionAddress(), value, 1)
+            self._write_proto_2(servoId, servo.getTorqueEnableAddress(), value, 1)
 
     def setGoalPosition(self, servo: DynamixelServo, position: int):
         servoId = servo.getId()
@@ -151,16 +158,3 @@ class DynamixelRobot(Device):
             self._write_proto_1(servoId, servo.getGoalPositionAddress(), velocity, 4)
         if servo.getProtocol() == 2:
             self._write_proto_2(servoId, servo.getGoalPositionAddress(), velocity, 4)
-
-    def enableToque(self, servo: DynamixelServo, enable: bool):
-        servoId = servo.getId()
-        if enable:
-            value = 1
-        else:
-            value = 0
-
-        if servo.getProtocol() == 1:
-            self._write_proto_1(servoId, servo.getGoalPositionAddress(), value, 1)
-
-        if servo.getProtocol() == 2:
-            self._write_proto_2(servoId, servo.getGoalPositionAddress(), value, 1)
