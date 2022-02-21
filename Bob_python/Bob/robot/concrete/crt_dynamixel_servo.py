@@ -4,14 +4,7 @@ from Bob.robot.framework.fw_servo import DynamixelServo
 class H42_20_S300_R(DynamixelServo):
 
     def __init__(self, servoId: int, protocol: int):
-        self._servoId = servoId
-        self._protocol = protocol
-
-    def getId(self):
-        return self._servoId
-
-    def getProtocol(self):
-        return self._protocol
+        super().__init__(servoId, protocol)
 
     def getGoalPositionAddressLength(self):
         return {'address': 596, 'length': 4}
@@ -32,14 +25,7 @@ class H42_20_S300_R(DynamixelServo):
 class RX_64(DynamixelServo):
 
     def __init__(self, servoId: int, protocol: int):
-        self._servoId = servoId
-        self._protocol = protocol
-
-    def getId(self):
-        return self._servoId
-
-    def getProtocol(self):
-        return self._protocol
+        super().__init__(servoId, protocol)
 
     def getGoalPositionAddressLength(self):
         return {'address': 30, 'length': 2}
@@ -58,16 +44,6 @@ class RX_64(DynamixelServo):
 
 
 class MX_106(DynamixelServo):
-
-    def __init__(self, servoId: int, protocol: int):
-        self._servoId = servoId
-        self._protocol = protocol
-
-    def getId(self):
-        return self._servoId
-
-    def getProtocol(self):
-        return self._protocol
 
     def getGoalPositionAddressLength(self):
         return {'address': 30, 'length': 2}

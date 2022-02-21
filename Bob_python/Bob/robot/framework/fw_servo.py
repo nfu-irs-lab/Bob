@@ -6,13 +6,15 @@ from Bob.robot.framework.fw_action import Action
 
 class DynamixelServo(abc.ABC):
 
-    @abc.abstractmethod
-    def getId(self):
-        pass
+    def __init__(self, servoId: int, protocol: int):
+        self._servoId = servoId
+        self._protocol = protocol
 
-    @abc.abstractmethod
+    def getId(self):
+        return self._servoId
+
     def getProtocol(self):
-        pass
+        return self._protocol
 
     @abc.abstractmethod
     def getGoalPositionAddressLength(self):
