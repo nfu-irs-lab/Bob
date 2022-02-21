@@ -155,4 +155,4 @@ class DynamixelRobot(Device):
 
     def setVelocity(self, servoId: int, velocity: int):
         servo = self._findServoById(servoId)
-        self._write(servo.getProtocol(), servo.getId(), servo.getGoalPositionAddress(), velocity, 4)
+        self._write(servo.getProtocol(), servo.getId(), servo.getGoalVelocityAddress(), velocity, 4)
