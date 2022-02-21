@@ -71,6 +71,62 @@ class DynamixelRobot(Device):
     def isOpen(self) -> bool:
         return self._portHandler.is_open
 
+    def enableToque(self, servoId: int, enable: bool):
+        servo = self._findServoById(servoId)
+        address: int = servo.getTorqueEnableAddressLength()['address']
+        length: int = servo.getTorqueEnableAddressLength()['length']
+        if enable:
+            value = 1
+        else:
+            value = 0
+        self._write(servo.getProtocol(), servo.getId(), address, length, 1)
+
+    def setGoalPosition(self, servoId: int, position: int):
+        servo = self._findServoById(servoId)
+        address: int = servo.getGoalPositionAddressLength()['address']
+        length: int = servo.getGoalPositionAddressLength()['length']
+        self._write(servo.getProtocol(), servo.getId(), address, position, length)
+
+    def setVelocity(self, servoId: int, velocity: int):
+        servo = self._findServoById(servoId)
+        address: int = servo.getGoalVelocityAddressLength()['address']
+        length: int = servo.getGoalVelocityAddressLength()['length']
+        self._write(servo.getProtocol(), servo.getId(), address, velocity, length)
+
+    def getPresentPosition(self, servoId: int):
+        servo = self._findServoById(servoId)
+        address: int = servo.getPresentPositionAddressLength()['address']
+        length: int = servo.getPresentPositionAddressLength()['length']
+        return self._read(servo.getProtocol(), servo.getId(), address, length)
+
+    def isMoving(self, servoId: int) -> bool:
+        servo = self._findServoById(servoId)
+        address: int = servo.getMovingAddressLength()['address']
+        length: int = servo.getMovingAddressLength()['length']
+        return self._read(servo.getProtocol(), servo.getId(), address, length) == 1
+
+    def ping(self, servoId: int):
+        servo = self._findServoById(servoId)
+        if servo.getProtocol() == PROTOCOL_1:
+            model, dxl_comm_result, dxl_error = packetHandler1.ping(self._portHandler, servo.getId())
+            if dxl_comm_result != COMM_SUCCESS:
+                # print("%s" % packetHandler1.getTxRxResult(dxl_comm_result))
+                return False
+            elif dxl_error != 0:
+                # print("%s" % packetHandler1.getRxPacketError(dxl_error))
+                return False
+
+        elif servo.getProtocol() == PROTOCOL_2:
+            model, dxl_comm_result, dxl_error = packetHandler2.ping(self._portHandler, servo.getId())
+            if dxl_comm_result != COMM_SUCCESS:
+                # print("%s" % packetHandler2.getTxRxResult(dxl_comm_result))
+                return False
+            elif dxl_error != 0:
+                # print("%s" % packetHandler2.getRxPacketError(dxl_error))
+                return False
+
+        return True
+
     def writeServoById(self, servoId: int, address: int, value, byte_num: int):
         servo = self._findServoById(servoId)
         self._write(servo.getProtocol(), servo.getId(), address, value, byte_num)
@@ -162,37 +218,3 @@ class DynamixelRobot(Device):
         elif dxl_error != 0:
             print("%s" % packetHandler1.getRxPacketError(dxl_error))
         return value
-
-    def enableToque(self, servoId: int, enable: bool):
-        servo = self._findServoById(servoId)
-        address: int = servo.getTorqueEnableAddressLength()['address']
-        length: int = servo.getTorqueEnableAddressLength()['length']
-        if enable:
-            value = 1
-        else:
-            value = 0
-        self._write(servo.getProtocol(), servo.getId(), address, length, 1)
-
-    def setGoalPosition(self, servoId: int, position: int):
-        servo = self._findServoById(servoId)
-        address: int = servo.getGoalPositionAddressLength()['address']
-        length: int = servo.getGoalPositionAddressLength()['length']
-        self._write(servo.getProtocol(), servo.getId(), address, position, length)
-
-    def setVelocity(self, servoId: int, velocity: int):
-        servo = self._findServoById(servoId)
-        address: int = servo.getGoalVelocityAddressLength()['address']
-        length: int = servo.getGoalVelocityAddressLength()['length']
-        self._write(servo.getProtocol(), servo.getId(), address, velocity, length)
-
-    def getPresentPosition(self, servoId: int):
-        servo = self._findServoById(servoId)
-        address: int = servo.getPresentPositionAddressLength()['address']
-        length: int = servo.getPresentPositionAddressLength()['length']
-        return self._read(servo.getProtocol(), servo.getId(), address, length)
-
-    def isMoving(self, servoId: int) -> bool:
-        servo = self._findServoById(servoId)
-        address: int = servo.getMovingAddressLength()['address']
-        length: int = servo.getMovingAddressLength()['length']
-        return self._read(servo.getProtocol(), servo.getId(), address, length) == 1
