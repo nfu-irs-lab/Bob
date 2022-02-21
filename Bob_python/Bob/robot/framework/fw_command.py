@@ -5,10 +5,7 @@ from typing import Optional
 
 
 class Command(ABC):
-
-    @abc.abstractmethod
-    def doCommand(self) -> Optional:
-        pass
+    pass
 
 
 class BytesCommand(Command, ABC):

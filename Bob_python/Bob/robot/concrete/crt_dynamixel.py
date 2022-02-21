@@ -36,8 +36,7 @@ PROTOCOL_2 = 2
 packetHandler1 = PacketHandler(1.0)
 packetHandler2 = PacketHandler(2.0)
 
-
-class DynamixelRobot(Device):
+class Dynamixel(Device):
 
     def __init__(self, device_name: str, baudrate: int):
         self._baudrate = baudrate

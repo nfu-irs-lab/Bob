@@ -1,7 +1,7 @@
 import csv
 from typing import List
 
-from Bob.robot.concrete.crt_command import RoboticsBytesCommand
+from Bob.robot.concrete.crt_command import DynamixelCommand
 from Bob.robot.framework.fw_action import Action
 from Bob.robot.framework.fw_command import Command, SleepCommand
 
@@ -31,7 +31,7 @@ class CSVAction(Action):
                     delay = row[3]
 
                     if empty(delay) and (not empty(_id)) and (not empty(position)) and (not empty(speed)):
-                        cmdList.append(RoboticsBytesCommand(id=int(_id), position=int(position), speed=int(speed)))
+                        cmdList.append(DynamixelCommand(id=int(_id), position=int(position), speed=int(speed)))
                     elif not empty(delay):
                         cmdList.append(SleepCommand(float(delay)))
 

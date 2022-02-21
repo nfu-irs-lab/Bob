@@ -1,6 +1,8 @@
 import time
 
 from Bob.device.framework.fw_device import SerialDevice
+from Bob.robot.concrete.crt_command import DynamixelCommand
+from Bob.robot.concrete.crt_dynamixel import Dynamixel
 from Bob.robot.framework.fw_command import BytesCommand, Command
 from Bob.robot.framework.fw_robot import Robot
 
@@ -48,3 +50,27 @@ class BytePrintedRobot(Robot):
                 string = string + str(b) + ","
             string = string + "]"
             print(string)
+
+
+class DynamixelRobotAdaptor(Robot):
+
+    def __init__(self, dynamixel: Dynamixel):
+        super().__init__()
+        self.dynamixel = dynamixel
+
+    def open(self):
+        self.dynamixel.open()
+
+    def init(self):
+        for servo in self.dynamixel.servos:
+            self.dynamixel.enableToque(servo.getId(), True)
+
+    def close(self):
+        self.dynamixel.close()
+
+    def isOpen(self) -> bool:
+        return self.isOpen()
+
+    def doCommand(self, cmd: DynamixelCommand):
+        self.dynamixel.setVelocity(cmd.id, cmd.speed)
+        self.dynamixel.setGoalPosition(cmd.id, cmd.position)
