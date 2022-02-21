@@ -37,6 +37,8 @@ class CSVServoAgent:
     def _getModel(self, model: str, _id: int, protocol: int) -> DynamixelServo:
         if model == "RX-64":
             return RX_64(_id, protocol)
+        elif model == "MX-106":
+            return MX_106(_id, protocol)
         elif model == "H42-20-S300-R":
             return H42_20_S300_R(_id, protocol)
         else:
