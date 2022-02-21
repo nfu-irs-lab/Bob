@@ -15,21 +15,25 @@ class DynamixelServo(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def getGoalPositionAddress(self):
+    def getGoalPositionAddressLength(self):
         pass
 
     @abc.abstractmethod
-    def getPresentPositionAddress(self):
+    def getPresentPositionAddressLength(self):
         pass
 
     @abc.abstractmethod
-    def getGoalVelocityAddress(self):
+    def getGoalVelocityAddressLength(self):
         pass
 
     @abc.abstractmethod
-    def getTorqueEnableAddress(self):
+    def getTorqueEnableAddressLength(self):
         pass
 
     @abc.abstractmethod
-    def getMovingAddress(self):
+    def getMovingAddressLength(self):
         pass
+
+    # @abc.abstractmethod
+    # def getToqueLimitAddress(self):
+    #     pass

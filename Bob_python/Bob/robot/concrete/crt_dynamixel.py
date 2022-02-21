@@ -85,6 +85,8 @@ class DynamixelRobot(Device):
     def _write_proto_1(self, id: int, address: int, value, byte_num: int):
         if byte_num == 4:
             dxl_comm_result, dxl_error = packetHandler1.write4ByteTxRx(self._portHandler, id, address, value)
+        elif byte_num == 2:
+            dxl_comm_result, dxl_error = packetHandler1.write2ByteTxRx(self._portHandler, id, address, value)
         elif byte_num == 1:
             dxl_comm_result, dxl_error = packetHandler1.write1ByteTxRx(self._portHandler, id, address, value)
         else:
@@ -98,6 +100,8 @@ class DynamixelRobot(Device):
     def _write_proto_2(self, id: int, address: int, value, byte_num: int):
         if byte_num == 4:
             dxl_comm_result, dxl_error = packetHandler2.write4ByteTxRx(self._portHandler, id, address, value)
+        elif byte_num == 2:
+            dxl_comm_result, dxl_error = packetHandler2.write2ByteTxRx(self._portHandler, id, address, value)
         elif byte_num == 1:
             dxl_comm_result, dxl_error = packetHandler2.write1ByteTxRx(self._portHandler, id, address, value)
         else:
@@ -124,9 +128,12 @@ class DynamixelRobot(Device):
         if byte_num == 4:
             value, dxl_comm_result, dxl_error = packetHandler1.packetHandler1.read4ByteTxRx(self._portHandler, id,
                                                                                             address)
-        elif byte_num == 1:
-            value, dxl_comm_result, dxl_error = packetHandler1.packetHandler1.read1ByteTxRx(self._portHandler, id,
+        elif byte_num == 2:
+            value, dxl_comm_result, dxl_error = packetHandler1.packetHandler1.read2ByteTxRx(self._portHandler, id,
                                                                                             address)
+        elif byte_num == 1:
+            value, dxl_comm_result, dxl_error = packetHandler1.read1ByteTxRx(self._portHandler, id,
+                                                                             address)
         else:
             raise Exception("byte_num=" + byte_num)
 
@@ -140,6 +147,9 @@ class DynamixelRobot(Device):
     def _read_proto_2(self, id: int, address: int, byte_num: int):
         if byte_num == 4:
             value, dxl_comm_result, dxl_error = packetHandler2.read4ByteTxRx(self._portHandler, id,
+                                                                             address)
+        elif byte_num == 2:
+            value, dxl_comm_result, dxl_error = packetHandler2.read2ByteTxRx(self._portHandler, id,
                                                                              address)
         elif byte_num == 1:
             value, dxl_comm_result, dxl_error = packetHandler2.read1ByteTxRx(self._portHandler, id,
@@ -155,24 +165,34 @@ class DynamixelRobot(Device):
 
     def enableToque(self, servoId: int, enable: bool):
         servo = self._findServoById(servoId)
+        address: int = servo.getTorqueEnableAddressLength()['address']
+        length: int = servo.getTorqueEnableAddressLength()['length']
         if enable:
             value = 1
         else:
             value = 0
-        self._write(servo.getProtocol(), servo.getId(), servo.getTorqueEnableAddress(), value, 1)
+        self._write(servo.getProtocol(), servo.getId(), address, length, 1)
 
     def setGoalPosition(self, servoId: int, position: int):
         servo = self._findServoById(servoId)
-        self._write(servo.getProtocol(), servo.getId(), servo.getGoalPositionAddress(), position, 4)
+        address: int = servo.getGoalPositionAddressLength()['address']
+        length: int = servo.getGoalPositionAddressLength()['length']
+        self._write(servo.getProtocol(), servo.getId(), address, position, length)
 
     def setVelocity(self, servoId: int, velocity: int):
         servo = self._findServoById(servoId)
-        self._write(servo.getProtocol(), servo.getId(), servo.getGoalVelocityAddress(), velocity, 4)
+        address: int = servo.getGoalVelocityAddressLength()['address']
+        length: int = servo.getGoalVelocityAddressLength()['length']
+        self._write(servo.getProtocol(), servo.getId(), address, velocity, length)
 
     def getPresentPosition(self, servoId: int):
         servo = self._findServoById(servoId)
-        return self._read(servo.getProtocol(), servo.getId(), servo.getPresentPositionAddress(), 4)
+        address: int = servo.getPresentPositionAddressLength()['address']
+        length: int = servo.getPresentPositionAddressLength()['length']
+        return self._read(servo.getProtocol(), servo.getId(), address, length)
 
     def isMoving(self, servoId: int) -> bool:
         servo = self._findServoById(servoId)
-        return self._read(servo.getProtocol(), servo.getId(), servo.getMovingAddress(), 1) == 1
+        address: int = servo.getMovingAddressLength()['address']
+        length: int = servo.getMovingAddressLength()['length']
+        return self._read(servo.getProtocol(), servo.getId(), address, length) == 1

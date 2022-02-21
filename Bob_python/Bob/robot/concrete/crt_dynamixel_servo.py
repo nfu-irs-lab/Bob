@@ -13,20 +13,20 @@ class H42_20_S300_R(DynamixelServo):
     def getProtocol(self):
         return self._protocol
 
-    def getGoalPositionAddress(self):
-        return 596
+    def getGoalPositionAddressLength(self):
+        return {'address': 596, 'length': 4}
 
-    def getPresentPositionAddress(self):
-        return 611
+    def getPresentPositionAddressLength(self):
+        return {'address': 611, 'length': 4}
 
-    def getGoalVelocityAddress(self):
-        return 600
+    def getGoalVelocityAddressLength(self):
+        return {'address': 600, 'length': 4}
 
-    def getTorqueEnableAddress(self):
-        return 562
+    def getTorqueEnableAddressLength(self):
+        return {'address': 562, 'length': 1}
 
-    def getMovingAddress(self):
-        return 610
+    def getMovingAddressLength(self):
+        return {'address': 610, 'length': 1}
 
 
 class RX_64(DynamixelServo):
@@ -41,20 +41,20 @@ class RX_64(DynamixelServo):
     def getProtocol(self):
         return self._protocol
 
-    def getGoalPositionAddress(self):
-        return 30
+    def getGoalPositionAddressLength(self):
+        return {'address': 30, 'length': 2}
 
-    def getPresentPositionAddress(self):
-        return 36
+    def getPresentPositionAddressLength(self):
+        return {'address': 36, 'length': 2}
 
-    def getGoalVelocityAddress(self):
-        return 32
+    def getGoalVelocityAddressLength(self):
+        return {'address': 32, 'length': 2}
 
-    def getTorqueEnableAddress(self):
-        return 24
+    def getTorqueEnableAddressLength(self):
+        return {'address': 24, 'length': 1}
 
-    def getMovingAddress(self):
-        return 46
+    def getMovingAddressLength(self):
+        return {'address': 46, 'length': 1}
 
 
 class MX_106(DynamixelServo):
@@ -69,17 +69,17 @@ class MX_106(DynamixelServo):
     def getProtocol(self):
         return self._protocol
 
-    def getGoalPositionAddress(self):
-        return 30
+    def getGoalPositionAddressLength(self):
+        return {'address': 30, 'length': 2}
 
-    def getPresentPositionAddress(self):
-        return 36
+    def getPresentPositionAddressLength(self):
+        return {'address': 36, 'length': 2}
 
-    def getGoalVelocityAddress(self):
-        return 32
+    def getGoalVelocityAddressLength(self):
+        return {'address': 32, 'length': 2}
 
-    def getTorqueEnableAddress(self):
-        return 24
+    def getTorqueEnableAddressLength(self):
+        return {'address': 24, 'length': 1}
 
-    def getMovingAddress(self):
-        return 46
+    def getMovingAddressLength(self):
+        return {'address': 46, 'length': 1}
