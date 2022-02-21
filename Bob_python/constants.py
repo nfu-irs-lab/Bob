@@ -36,6 +36,25 @@ detector = None
 monitor = None
 
 
+def keyboard_ctrl():
+    while True:
+        i = input()
+        if i == "w":
+            print("walk forward")
+        if i == "s":
+            print("walk backward")
+        if i == "d":
+            print("turn right")
+        if i == "a":
+            print("turn left")
+        if i == "q":
+            break
+
+
+th = threading.Thread(target=keyboard_ctrl)
+th.start()
+
+
 def getActionFromFileName(file: str) -> Action:
     return CSVAction(f'actions{os.path.sep}{file}')
 
