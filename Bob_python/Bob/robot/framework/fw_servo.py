@@ -29,3 +29,7 @@ class DynamixelServo(abc.ABC):
     @abc.abstractmethod
     def getTorqueEnableAddress(self):
         pass
+
+    @abc.abstractmethod
+    def getMovingAddress(self):
+        pass

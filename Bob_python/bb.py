@@ -10,12 +10,19 @@ for servo in agent.getDefinedServos():
 
 robot.open()
 
-robot.enableToque(1, True)
-robot.setVelocity(1, 3000)
-# robot.enableToque(2, True)
-robot.setGoalPosition(1, 70000)
-# robot.setGoalPosition(2, 1023)
+# robot.enableToque(1, True)
+# robot.setVelocity(1, 5000)
+# robot.setGoalPosition(1, 70000)
+# time.sleep(3)
+# robot.setGoalPosition(1, 3500)
+# print(robot.isMoving(1))
+# time.sleep(3)
+# print(robot.getPresentPosition(1))
+# robot.enableToque(1, False)
+# print(robot.isMoving(1))
+
+robot.setGoalPosition(2,1023)
 time.sleep(3)
-robot.setGoalPosition(1, 0)
-# robot.setGoalPosition(2, 0)
+robot.setGoalPosition(2,0)
+
 robot.close()
