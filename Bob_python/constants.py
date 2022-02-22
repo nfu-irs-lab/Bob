@@ -4,13 +4,12 @@ import threading
 from Bob.detector.concrete.object_detect_yolov5 import ObjectDetector
 from Bob.detector.concrete.face_detect_deepface import FaceDetector
 from Bob.dbctrl.concrete.crt_database import JSONDatabase
-from Bob.robot.concrete.crt_action import CSVAction
-from Bob.robot.framework.fw_action import Action
+from Bob.robot.concrete.crt_command import CSVCommandFactory
+from Bob.robot.framework.fw_command import Command
 from Bob.serial_config import *
 import base64
 import json
 from typing import List, Optional
-from serial import SerialTimeoutException
 from Bob.communication.concrete.crt_package import StringPackage, Base64LinePackage
 from Bob.communication.framework.fw_listener import PackageListener
 from Bob.communication.framework.fw_package_device import PackageDevice
@@ -36,8 +35,10 @@ detector = None
 monitor = None
 
 
-def getActionFromFileName(file: str) -> Action:
-    return CSVAction(f'actions{os.path.sep}{file}')
+def getCommandsFromFileName(file: str) -> List[Command]:
+    factory = CSVCommandFactory(f'actions{os.path.sep}{file}')
+    return factory.createList()
+    # return CSVAction(f'actions{os.path.sep}{file}')
 
 
 def formatDataToJsonString(id: int, type: str, content: str, data):
@@ -48,7 +49,7 @@ def formatDataToJsonString(id: int, type: str, content: str, data):
 
 def doAction(action):
     print("do action:", action)
-    robot.doAction(getActionFromFileName(action))
+    robot.doCommands(getCommandsFromFileName(action))
 
 
 class CommandControlListener(PackageListener):

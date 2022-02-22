@@ -1,8 +1,5 @@
 import abc
 
-from Bob.device.framework.fw_device import Device
-from Bob.robot.framework.fw_action import Action
-
 
 class DynamixelServo(abc.ABC):
 

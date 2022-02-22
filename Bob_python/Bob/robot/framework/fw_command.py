@@ -1,7 +1,7 @@
 import abc
 import time
 from abc import ABC
-from typing import Optional
+from typing import Optional, List
 
 
 class Command(ABC):
@@ -17,6 +17,17 @@ class BytesCommand(Command, ABC):
 
     @abc.abstractmethod
     def getBytes(self) -> bytes:
+        pass
+
+
+class CommandFactory(ABC):
+
+    @abc.abstractmethod
+    def create(self) -> Optional[Command]:
+        return None
+
+    @abc.abstractmethod
+    def createList(self) -> Optional[List[Command]]:
         pass
 
 

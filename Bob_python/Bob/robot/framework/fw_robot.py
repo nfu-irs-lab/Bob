@@ -1,7 +1,7 @@
 import abc
+from typing import List
 
 from Bob.device.framework.fw_device import Device
-from Bob.robot.framework.fw_action import Action
 from Bob.robot.framework.fw_command import Command
 
 
@@ -16,11 +16,11 @@ class Robot(Device, abc.ABC):
     def stopAllAction(self):
         self._FlagStop = True
 
-    def doAction(self, action: Action):
+    def doCommands(self, commands: List[Command]):
         if self._FlagStop:
             self._FlagStop = False
 
-        for cmd in action.getList():
+        for cmd in commands:
             if self._FlagStop:
                 return
             self.doCommand(cmd)

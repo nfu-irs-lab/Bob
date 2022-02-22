@@ -1,6 +1,6 @@
 from typing import List
 
-from Bob.device.framework.fw_device import SerialDevice, Device
+from Bob.device.framework.fw_device import Device
 import os
 
 from Bob.robot.framework.fw_servo import DynamixelServo
@@ -35,6 +35,7 @@ PROTOCOL_2 = 2
 # Get methods and members of Protocol1PacketHandler or Protocol2PacketHandler
 packetHandler1 = PacketHandler(1.0)
 packetHandler2 = PacketHandler(2.0)
+
 
 class Dynamixel(Device):
 
