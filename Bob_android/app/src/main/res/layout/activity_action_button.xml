@@ -36,19 +36,19 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/action_button_face"
-                android:orientation="vertical" android:layout_marginBottom="20dp" android:layout_marginEnd="10dp"
+                android:orientation="vertical" android:layout_marginBottom="50dp" android:layout_marginEnd="10dp"
                 android:layout_marginStart="10dp">
             <Button
                     android:text="correct"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" android:id="@+id/action_button_correct"
-                    android:onClick="action"/>
+                    android:onClick="action" android:textSize="24sp" android:textAllCaps="false"/>
 
             <Button
                     android:text="Incorrect"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" android:id="@+id/action_button_incorrect"
-                    android:onClick="action"/>
+                    android:onClick="action" android:textSize="24sp" android:textAllCaps="false"/>
 
 
         </LinearLayout>
