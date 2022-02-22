@@ -72,7 +72,7 @@ public class ActionButtonActivity extends BluetoothCommunicationActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        MediaPlayer.create(this, correct ? R.raw.sound_correct_2 : R.raw.sound_incorrect_2).start();
+        MediaPlayer.create(this, correct ? R.raw.sound_good_job: R.raw.sound_try_again).start();
         Handler handler = new Handler();
         new Thread(() -> {
             try {
