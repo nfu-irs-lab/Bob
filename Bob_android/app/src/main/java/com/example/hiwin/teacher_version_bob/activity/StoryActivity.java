@@ -1,7 +1,6 @@
 package com.example.hiwin.teacher_version_bob.activity;
 
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -15,7 +14,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 public class StoryActivity extends BluetoothCommunicationActivity {
@@ -165,15 +163,10 @@ public class StoryActivity extends BluetoothCommunicationActivity {
             e.printStackTrace();
         }
 
-        vocabularyInteractiveFragment.setListener(new VocabularyInteractiveFragment.AnswerListener() {
+        vocabularyInteractiveFragment.setListener(new VocabularyInteractiveFragment.CommandListener() {
             @Override
-            public void onAnswerCorrect() {
-                sendMessage("DO_ACTION correct.csv");
-            }
-
-            @Override
-            public void onAnswerIncorrect() {
-                sendMessage("DO_ACTION incorrect.csv");
+            public void onCommand(String cmd) {
+                sendMessage(cmd);
             }
 
             @Override

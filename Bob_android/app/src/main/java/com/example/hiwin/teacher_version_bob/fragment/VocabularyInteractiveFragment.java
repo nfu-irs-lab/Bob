@@ -42,7 +42,7 @@ public class VocabularyInteractiveFragment extends StaticFragment {
     private JSONArray vocabularies;
     private JSONObject[] chosen;
     private View root;
-    private AnswerListener answerListener;
+    private CommandListener commandListener;
     private View game_layout;
     private View paper_scissor_stone_layout;
     private Handler handler;
@@ -50,10 +50,8 @@ public class VocabularyInteractiveFragment extends StaticFragment {
     private GestureHandler gestureHandler;
 //    private int result = -100;
 
-    public interface AnswerListener extends FragmentListener {
-        void onAnswerCorrect();
-
-        void onAnswerIncorrect();
+    public interface CommandListener extends FragmentListener {
+        void onCommand(String cmd);
     }
 
 
@@ -143,39 +141,37 @@ public class VocabularyInteractiveFragment extends StaticFragment {
         gestureHandler = new GestureHandler(new GestureListener() {
             @Override
             public void onWin() {
-                MediaPlayer.create(context,R.raw.sound_correct_2).start();
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
+                MediaPlayer.create(context, R.raw.sound_correct_2).start();
+                new Thread(() -> {
+
+                    try {
+                        Thread.sleep(7000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    handler.post(() -> {
                         try {
-                            Thread.sleep(3000);
-                        } catch (InterruptedException e) {
+                            paper_scissor_stone_layout.setVisibility(View.INVISIBLE);
+                            game_layout.setVisibility(View.VISIBLE);
+                            hint.setText(index + "/" + index_limit);
+                            for (int i = 0; i < options.length; i++) {
+                                buttons[i].setText(options[i].getString("name"));
+                                buttons[i].setEnabled(true);
+                            }
+                            definition.setText(correct_vocabulary.getString("definition"));
+                        } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        handler.post(() -> {
-                            try {
-                                paper_scissor_stone_layout.setVisibility(View.INVISIBLE);
-                                game_layout.setVisibility(View.VISIBLE);
-                                hint.setText(index + "/" + index_limit);
-                                for (int i = 0; i < options.length; i++) {
-                                    buttons[i].setText(options[i].getString("name"));
-                                    buttons[i].setEnabled(true);
-                                }
-                                definition.setText(correct_vocabulary.getString("definition"));
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        });
-                    }
+                    });
                 }).start();
             }
 
             @Override
             public void onLoss() {
-                MediaPlayer.create(context,R.raw.sound_incorrect_2).start();
+                MediaPlayer.create(context, R.raw.sound_incorrect_2).start();
                 new Thread(() -> {
                     try {
-                        Thread.sleep(3000);
+                        Thread.sleep(7000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -185,12 +181,12 @@ public class VocabularyInteractiveFragment extends StaticFragment {
 
             @Override
             public void onPeace() {
-                MediaPlayer.create(context,R.raw.sound_incorrect_2).start();
+                MediaPlayer.create(context, R.raw.sound_incorrect_2).start();
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
                         try {
-                            Thread.sleep(3000);
+                            Thread.sleep(7000);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
@@ -247,7 +243,21 @@ public class VocabularyInteractiveFragment extends StaticFragment {
             gesture = Gesture.stone;
         } else
             throw new RuntimeException();
-        gestureHandler.compare(gesture);
+
+        gestureHandler.stop();
+
+        int result = gesture.compare(gestureHandler.getValue());
+
+        if (commandListener != null)
+            if (gestureHandler.getValue() == Gesture.paper) {
+                commandListener.onCommand("DO_ACTION gesture_paper.csv");
+            } else if (gestureHandler.getValue() == Gesture.scissor) {
+                commandListener.onCommand("DO_ACTION gesture_scissor.csv");
+            } else if (gestureHandler.getValue() == Gesture.stone) {
+                commandListener.onCommand("DO_ACTION gesture_stone.csv");
+            }
+        gestureHandler.doResult(result);
+
     };
 
     private final View.OnClickListener gameOnClickListener = v -> {
@@ -289,10 +299,9 @@ public class VocabularyInteractiveFragment extends StaticFragment {
             });
 
             player.start();
-            if (correct) {
-                if (answerListener != null) answerListener.onAnswerCorrect();
-            } else if (answerListener != null) {
-                answerListener.onAnswerIncorrect();
+            if (commandListener != null)
+                commandListener.onCommand("DO_ACTION " + (correct ? "correct.csv" : "incorrect.csv"));
+            if (!correct) {
                 v.setEnabled(false);
             }
 
@@ -320,7 +329,7 @@ public class VocabularyInteractiveFragment extends StaticFragment {
                         group = 0;
                         index = 0;
                         startNew();
-                    } else if (answerListener != null) answerListener.end();
+                    } else if (commandListener != null) commandListener.end();
                 }
             }
 
@@ -395,22 +404,27 @@ public class VocabularyInteractiveFragment extends StaticFragment {
             run();
         }
 
-        public void compare(Gesture gesture) {
+        public void stop() {
             run = false;
-            int result = gesture.compare(value);
+        }
+
+        public Gesture getValue() {
+            return value;
+        }
+
+        public void doResult(int result) {
             if (result == 1) {
                 listener.onWin();
             } else if (result == -1) {
                 listener.onPeace();
             } else if (result == 0) {
                 listener.onLoss();
-
             }
         }
     }
 
     @Override
     public <L extends FragmentListener> void setListener(L listener) {
-        this.answerListener = (AnswerListener) listener;
+        this.commandListener = (CommandListener) listener;
     }
 }
