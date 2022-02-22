@@ -71,6 +71,9 @@ class DynamixelRobotAdaptor(Robot):
     def isOpen(self) -> bool:
         return self.isOpen()
 
-    def doCommand(self, cmd: DynamixelCommand):
-        self.dynamixel.setVelocity(cmd.id, cmd.speed)
-        self.dynamixel.setGoalPosition(cmd.id, cmd.position)
+    def doCommand(self, cmd: Command):
+        if type(cmd) == DynamixelCommand:
+            self.dynamixel.setVelocity(cmd.id, cmd.speed)
+            self.dynamixel.setGoalPosition(cmd.id, cmd.position)
+        else:
+            cmd.doCommand()

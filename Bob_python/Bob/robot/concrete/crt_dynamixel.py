@@ -135,7 +135,7 @@ class Dynamixel(Device):
             self._write_proto_1(id, address, value, byte_num)
         elif protocol == PROTOCOL_2:
             self._write_proto_2(id, address, value, byte_num)
-        time.sleep(0.1)
+        time.sleep(0.05)
 
     def _write_proto_1(self, id: int, address: int, value, byte_num: int):
         if byte_num == 4:

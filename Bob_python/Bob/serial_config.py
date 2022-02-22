@@ -22,6 +22,12 @@ def getRobotSerial(device):
                              write_delay_ms=50)
 
 
+def getSerialNameByDescription(description: str):
+    for port in comports():
+        if re.search(description, port.description):
+            return port.device
+
+
 def getBluetoothPackageDeviceWithDescription(description: str) -> PackageDevice:
     for port in comports():
         if re.search(description, port.description):
