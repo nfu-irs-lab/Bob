@@ -46,7 +46,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="answer"
-                    android:text="Button" android:textSize="34sp"/>
+                    android:text="Button" android:textSize="34sp" android:textAllCaps="false"/>
 
             <Button
                     android:id="@+id/vocabulary_interactive_answer_2"
@@ -54,7 +54,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="answer"
-                    android:text="Button" android:textSize="34sp"/>
+                    android:text="Button" android:textSize="34sp" android:textAllCaps="false"/>
 
             <Button
                     android:id="@+id/vocabulary_interactive_answer_3"
@@ -62,7 +62,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="answer"
-                    android:text="Button" android:textSize="34sp"/>
+                    android:text="Button" android:textSize="34sp" android:textAllCaps="false"/>
 
             <Button
                     android:id="@+id/vocabulary_interactive_answer_4"
@@ -70,7 +70,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="answer"
-                    android:text="Button" android:textSize="34sp"/>
+                    android:text="Button" android:textSize="34sp" android:textAllCaps="false"/>
         </LinearLayout>
     </android.support.constraint.ConstraintLayout>
 
@@ -102,15 +102,18 @@
             <Button
                     android:text="Paper"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:id="@+id/vocabulary_interactive_btn_paper" android:layout_weight="1"/>
+                    android:layout_height="wrap_content" android:id="@+id/vocabulary_interactive_btn_paper"
+                    android:layout_weight="1" android:textAllCaps="false" android:textSize="20sp"/>
             <Button
-                    android:text="scissor"
+                    android:text="Scissor"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:id="@+id/vocabulary_interactive_btn_scissor" android:layout_weight="1"/>
+                    android:layout_height="wrap_content" android:id="@+id/vocabulary_interactive_btn_scissor"
+                    android:layout_weight="1" android:textAllCaps="false" android:textSize="20sp"/>
             <Button
-                    android:text="stone"
+                    android:text="Stone"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:id="@+id/vocabulary_interactive_btn_stone" android:layout_weight="1"/>
+                    android:layout_height="wrap_content" android:id="@+id/vocabulary_interactive_btn_stone"
+                    android:layout_weight="1" android:textAllCaps="false" android:textSize="20sp"/>
         </LinearLayout>
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>
