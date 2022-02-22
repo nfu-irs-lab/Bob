@@ -1,10 +1,17 @@
-from Bob.serial_config import getRobotWithDescription, getRobotWithName
-from constants import getActionFromFileName
+from Bob.robot.concrete.crt_robot import DynamixelRobotAdaptor, VirtualDynamixelRobotAdaptor
+from constants import getCommandsFromFileName
 
 bt_description = ".*CP2102.*"
 bot_description = ".*FT232R.*"
 
-robot = getRobotWithDescription(bot_description)
-# robot = getRobotWithName("/dev/ttyUSB0")
-robot.doAction(getActionFromFileName("storyaction_2.csv"))
+
+# agent = CSVServoAgent("servos.csv")
+# dynamixel = Dynamixel(getSerialNameByDescription(bot_description), 115200)
+# for servo in agent.getDefinedServos():
+#     dynamixel.appendServo(servo)
+# robot = DynamixelRobotAdaptor(dynamixel)
+robot = VirtualDynamixelRobotAdaptor()
+robot.open()
+robot.init()
+robot.doCommands(getCommandsFromFileName("attack.csv"))
 robot.close()

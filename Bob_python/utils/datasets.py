@@ -192,7 +192,7 @@ class LoadImages:  # for inference
         if self.video_flag[self.count]:
             # Read video
             self.mode = 'video'
-            ret_val, img0 = self.cap.read()
+            ret_val, img0 = self.cap._read()
             if not ret_val:
                 self.count += 1
                 self.cap.release()
@@ -201,7 +201,7 @@ class LoadImages:  # for inference
                 else:
                     path = self.files[self.count]
                     self.new_video(path)
-                    ret_val, img0 = self.cap.read()
+                    ret_val, img0 = self.cap._read()
 
             self.frame += 1
             print(f'video {self.count + 1}/{self.nf} ({self.frame}/{self.frames}) {path}: ', end='')

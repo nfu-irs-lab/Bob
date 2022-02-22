@@ -4,17 +4,19 @@ import threading
 from Bob.detector.concrete.object_detect_yolov5 import ObjectDetector
 from Bob.detector.concrete.face_detect_deepface import FaceDetector
 from Bob.dbctrl.concrete.crt_database import JSONDatabase
-from Bob.robot.concrete.crt_action import CSVAction
-from Bob.robot.framework.fw_action import Action
-from Bob.serial_config import *
+from Bob.robot.concrete.crt_command import CSVCommandFactory
+from Bob.robot.concrete.crt_dynamixel import Dynamixel
+from Bob.robot.concrete.crt_robot import DynamixelRobotAdaptor, VirtualDynamixelRobotAdaptor
+from Bob.robot.concrete.servo_agent import CSVServoAgent
+from Bob.robot.framework.fw_command import Command
 import base64
 import json
 from typing import List, Optional
-from serial import SerialTimeoutException
 from Bob.communication.concrete.crt_package import StringPackage, Base64LinePackage
 from Bob.communication.framework.fw_listener import PackageListener
 from Bob.communication.framework.fw_package_device import PackageDevice
 from Bob.detector.framework.detector import DetectListener
+from Bob.serial_config import getSerialNameByDescription
 
 obj_db_location = f"db{os.path.sep}objects.json"
 face_db_location = f"db{os.path.sep}faces.json"
@@ -28,35 +30,31 @@ stories_db = JSONDatabase(open(stories_db_location, encoding=db_charset))
 bt_description = ".*CP2102.*"
 bot_description = ".*FT232R.*"
 
-# robot = getRobotWithName("COM1")
-# robot = getRobotWithDescription(bot_description)
-robot = getPrintedRobot()
-
 detector = None
 monitor = None
 
 
-def keyboard_ctrl():
-    while True:
-        i = input()
-        if i == "w":
-            print("walk forward")
-        if i == "s":
-            print("walk backward")
-        if i == "d":
-            print("turn right")
-        if i == "a":
-            print("turn left")
-        if i == "q":
-            break
+def getDynamixelRobot():
+    agent = CSVServoAgent("servos.csv")
+    dynamixel = Dynamixel(getSerialNameByDescription(bot_description), 57600)
+    for servo in agent.getDefinedServos():
+        dynamixel.appendServo(servo)
+    robot = DynamixelRobotAdaptor(dynamixel)
+    robot.open()
+    robot.init()
+    return robot
 
 
-th = threading.Thread(target=keyboard_ctrl)
-th.start()
+def getVirtualDynamixelRobot():
+    return VirtualDynamixelRobotAdaptor()
 
 
-def getActionFromFileName(file: str) -> Action:
-    return CSVAction(f'actions{os.path.sep}{file}')
+robot = getVirtualDynamixelRobot()
+
+
+def getCommandsFromFileName(file: str) -> List[Command]:
+    factory = CSVCommandFactory(f'actions{os.path.sep}{file}')
+    return factory.createList()
 
 
 def formatDataToJsonString(id: int, type: str, content: str, data):
@@ -67,7 +65,7 @@ def formatDataToJsonString(id: int, type: str, content: str, data):
 
 def doAction(action):
     print("do action:", action)
-    robot.doAction(getActionFromFileName(action))
+    robot.doCommands(getCommandsFromFileName(action))
 
 
 class CommandControlListener(PackageListener):
