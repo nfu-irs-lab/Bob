@@ -1,7 +1,7 @@
 import csv
 from typing import Optional, List
 
-from Bob.robot.framework.fw_command import BytesCommand, Command, CommandFactory, SleepCommand
+from Bob.robot.framework.fw_command import Command, CommandFactory
 
 
 def empty(content: str):
@@ -30,19 +30,21 @@ class CSVCommandFactory(CommandFactory):
                     delay = row[3]
 
                     if empty(delay) and (not empty(_id)) and (not empty(position)) and (not empty(speed)):
-                        cmdList.append(DynamixelCommand(id=int(_id), position=int(position), speed=int(speed)))
+                        cmdList.append(DynamixelCommand(servoId=int(_id), position=int(position), speed=int(speed)))
                     elif not empty(delay):
                         cmdList.append(SleepCommand(float(delay)))
                 line = line + 1
             return cmdList
 
 
+class SleepCommand(Command):
+    def __init__(self, duration: float):
+        self.duration = duration
+
+
 class DynamixelCommand(Command):
 
-    def __init__(self, id: int, position: int, speed: int):
+    def __init__(self, servoId: int, position: int, speed: int):
         self.speed = speed
         self.position = position
-        self.id = id
-
-    def doCommand(self) -> Optional:
-        return self.id, self.position, self.speed
+        self.servoId = servoId

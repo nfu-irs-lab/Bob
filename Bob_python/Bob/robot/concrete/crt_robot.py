@@ -1,55 +1,9 @@
 import time
 
-from Bob.device.framework.fw_device import SerialDevice
-from Bob.robot.concrete.crt_command import DynamixelCommand
+from Bob.robot.concrete.crt_command import DynamixelCommand, SleepCommand
 from Bob.robot.concrete.crt_dynamixel import Dynamixel
-from Bob.robot.framework.fw_command import BytesCommand, Command
+from Bob.robot.framework.fw_command import Command
 from Bob.robot.framework.fw_robot import Robot
-
-
-class SerialRobot(Robot):
-    def __init__(self, device: SerialDevice):
-        super().__init__()
-        self.serial = device
-
-    def doCommand(self, cmd: Command):
-        do = cmd.doCommand()
-        if do is not None:
-            self.serial.write(do)
-
-    def isOpen(self):
-        return self.serial.isOpen()
-
-    def open(self):
-        self.serial.open()
-
-    def close(self):
-        self.serial.close()
-        pass
-
-
-class BytePrintedRobot(Robot):
-
-    def open(self):
-        pass
-
-    def isOpen(self) -> bool:
-        return True
-
-    def close(self):
-        pass
-
-    def __init__(self):
-        super().__init__()
-
-    def doCommand(self, cmd: BytesCommand):
-        do = cmd.doCommand()
-        if do is not None:
-            string = "["
-            for b in cmd.getBytes():
-                string = string + str(b) + ","
-            string = string + "]"
-            print(string)
 
 
 class DynamixelRobotAdaptor(Robot):
@@ -73,7 +27,34 @@ class DynamixelRobotAdaptor(Robot):
 
     def doCommand(self, cmd: Command):
         if type(cmd) == DynamixelCommand:
-            self.dynamixel.setVelocity(cmd.id, cmd.speed)
-            self.dynamixel.setGoalPosition(cmd.id, cmd.position)
-        else:
-            cmd.doCommand()
+            self.dynamixel.setVelocity(cmd.servoId, cmd.speed)
+            self.dynamixel.setGoalPosition(cmd.servoId, cmd.position)
+        elif type(cmd) == SleepCommand:
+            time.sleep(cmd.duration)
+
+
+class VirtualDynamixelRobotAdaptor(Robot):
+
+    def __init__(self):
+        super().__init__()
+        self._is_open = False
+
+    def open(self):
+        print("Robot has been opened.")
+        self._is_open = True
+
+    def init(self):
+        print("Robot has been initialized.")
+
+    def close(self):
+        self._is_open = False
+        print("Robot has been closed.")
+
+    def isOpen(self) -> bool:
+        return self._is_open
+
+    def doCommand(self, cmd: Command):
+        if type(cmd) == DynamixelCommand:
+            print(f'ID: {cmd.servoId}\tVelocity: {cmd.speed}\tPosition: {cmd.position}')
+        elif type(cmd) == SleepCommand:
+            print(f'Sleep: {cmd.duration}')
