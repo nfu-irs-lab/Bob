@@ -44,11 +44,17 @@ class Dynamixel(Device):
         self._portHandler = PortHandler(device_name)
         self.servos: List[DynamixelServo] = []
 
-    def _findServoById(self, id: int):
+    def findServoById(self, id: int):
         for servo in self.servos:
             if id == servo.getId():
                 return servo
         raise Exception("Servo#%d not found" % id)
+
+    def getAllServosId(self):
+        lt: List[int] = []
+        for servo in self.servos:
+            lt.append(servo.getId())
+        return lt
 
     def appendServo(self, servo: DynamixelServo):
         self.servos.append(servo)
@@ -72,7 +78,7 @@ class Dynamixel(Device):
         return self._portHandler.is_open
 
     def enableTorque(self, servoId: int, enable: bool):
-        servo = self._findServoById(servoId)
+        servo = self.findServoById(servoId)
         address: int = servo.getTorqueEnableAddressLength()['address']
         length: int = servo.getTorqueEnableAddressLength()['length']
         if enable:
@@ -82,31 +88,31 @@ class Dynamixel(Device):
         self._write(servo.getProtocol(), servo.getId(), address, value, length)
 
     def setGoalPosition(self, servoId: int, position: int):
-        servo = self._findServoById(servoId)
+        servo = self.findServoById(servoId)
         address: int = servo.getGoalPositionAddressLength()['address']
         length: int = servo.getGoalPositionAddressLength()['length']
         self._write(servo.getProtocol(), servo.getId(), address, position, length)
 
     def setVelocity(self, servoId: int, velocity: int):
-        servo = self._findServoById(servoId)
+        servo = self.findServoById(servoId)
         address: int = servo.getGoalVelocityAddressLength()['address']
         length: int = servo.getGoalVelocityAddressLength()['length']
         self._write(servo.getProtocol(), servo.getId(), address, velocity, length)
 
     def getPresentPosition(self, servoId: int):
-        servo = self._findServoById(servoId)
+        servo = self.findServoById(servoId)
         address: int = servo.getPresentPositionAddressLength()['address']
         length: int = servo.getPresentPositionAddressLength()['length']
         return self._read(servo.getProtocol(), servo.getId(), address, length)
 
     def isMoving(self, servoId: int) -> bool:
-        servo = self._findServoById(servoId)
+        servo = self.findServoById(servoId)
         address: int = servo.getMovingAddressLength()['address']
         length: int = servo.getMovingAddressLength()['length']
         return self._read(servo.getProtocol(), servo.getId(), address, length) == 1
 
     def ping(self, servoId: int):
-        servo = self._findServoById(servoId)
+        servo = self.findServoById(servoId)
         if servo.getProtocol() == PROTOCOL_1:
             model, dxl_comm_result, dxl_error = packetHandler1.ping(self._portHandler, servo.getId())
             if dxl_comm_result != COMM_SUCCESS:
@@ -128,7 +134,7 @@ class Dynamixel(Device):
         return True
 
     def writeServoById(self, servoId: int, address: int, value, byte_num: int):
-        servo = self._findServoById(servoId)
+        servo = self.findServoById(servoId)
         self._write(servo.getProtocol(), servo.getId(), address, value, byte_num)
 
     def _write(self, protocol: int, id: int, address: int, value, byte_num: int):
@@ -170,7 +176,7 @@ class Dynamixel(Device):
             raise Exception("%s" % packetHandler2.getRxPacketError(dxl_error))
 
     def readServoById(self, servoId: int, address: int, byte_num: int):
-        servo = self._findServoById(servoId)
+        servo = self.findServoById(servoId)
         time.sleep(0.1)
         return self._read(servo.getProtocol(), servo.getId(), address, byte_num)
 
@@ -183,10 +189,10 @@ class Dynamixel(Device):
     def _read_proto_1(self, id: int, address: int, byte_num: int):
         if byte_num == 4:
             value, dxl_comm_result, dxl_error = packetHandler1.read4ByteTxRx(self._portHandler, id,
-                                                                                            address)
+                                                                             address)
         elif byte_num == 2:
             value, dxl_comm_result, dxl_error = packetHandler1.read2ByteTxRx(self._portHandler, id,
-                                                                                            address)
+                                                                             address)
         elif byte_num == 1:
             value, dxl_comm_result, dxl_error = packetHandler1.read1ByteTxRx(self._portHandler, id,
                                                                              address)
