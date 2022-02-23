@@ -79,7 +79,7 @@ class Dynamixel(Device):
             value = 1
         else:
             value = 0
-        self._write(servo.getProtocol(), servo.getId(), address, length, 1)
+        self._write(servo.getProtocol(), servo.getId(), address, value, length)
 
     def setGoalPosition(self, servoId: int, position: int):
         servo = self._findServoById(servoId)
@@ -146,7 +146,7 @@ class Dynamixel(Device):
         elif byte_num == 1:
             dxl_comm_result, dxl_error = packetHandler1.write1ByteTxRx(self._portHandler, id, address, value)
         else:
-            raise Exception("byte_num=" + byte_num)
+            raise Exception("byte_num=" + str(byte_num))
 
         if dxl_comm_result != COMM_SUCCESS:
             raise Exception("%s" % packetHandler1.getTxRxResult(dxl_comm_result))
@@ -161,7 +161,7 @@ class Dynamixel(Device):
         elif byte_num == 1:
             dxl_comm_result, dxl_error = packetHandler2.write1ByteTxRx(self._portHandler, id, address, value)
         else:
-            raise Exception("byte_num=" + byte_num)
+            raise Exception("byte_num=" + str(byte_num))
 
         if dxl_comm_result != COMM_SUCCESS:
             print("%s" % packetHandler2.getTxRxResult(dxl_comm_result))
@@ -182,16 +182,16 @@ class Dynamixel(Device):
 
     def _read_proto_1(self, id: int, address: int, byte_num: int):
         if byte_num == 4:
-            value, dxl_comm_result, dxl_error = packetHandler1.packetHandler1.read4ByteTxRx(self._portHandler, id,
+            value, dxl_comm_result, dxl_error = packetHandler1.read4ByteTxRx(self._portHandler, id,
                                                                                             address)
         elif byte_num == 2:
-            value, dxl_comm_result, dxl_error = packetHandler1.packetHandler1.read2ByteTxRx(self._portHandler, id,
+            value, dxl_comm_result, dxl_error = packetHandler1.read2ByteTxRx(self._portHandler, id,
                                                                                             address)
         elif byte_num == 1:
             value, dxl_comm_result, dxl_error = packetHandler1.read1ByteTxRx(self._portHandler, id,
                                                                              address)
         else:
-            raise Exception("byte_num=" + byte_num)
+            raise Exception("byte_num=" + str(byte_num))
 
         if dxl_comm_result != COMM_SUCCESS:
             print("%s" % packetHandler1.getTxRxResult(dxl_comm_result))
@@ -211,7 +211,7 @@ class Dynamixel(Device):
             value, dxl_comm_result, dxl_error = packetHandler2.read1ByteTxRx(self._portHandler, id,
                                                                              address)
         else:
-            raise Exception("byte_num=" + byte_num)
+            raise Exception("byte_num=" + str(byte_num))
 
         if dxl_comm_result != COMM_SUCCESS:
             print("%s" % packetHandler1.getTxRxResult(dxl_comm_result))
