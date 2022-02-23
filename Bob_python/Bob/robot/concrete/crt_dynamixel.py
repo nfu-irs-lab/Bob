@@ -71,7 +71,7 @@ class Dynamixel(Device):
     def isOpen(self) -> bool:
         return self._portHandler.is_open
 
-    def enableToque(self, servoId: int, enable: bool):
+    def enableTorque(self, servoId: int, enable: bool):
         servo = self._findServoById(servoId)
         address: int = servo.getTorqueEnableAddressLength()['address']
         length: int = servo.getTorqueEnableAddressLength()['length']

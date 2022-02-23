@@ -17,7 +17,7 @@ class DynamixelRobotAdaptor(Robot):
 
     def init(self):
         for servo in self.dynamixel.servos:
-            self.dynamixel.enableToque(servo.getId(), True)
+            self.dynamixel.enableTorque(servo.getId(), True)
 
     def close(self):
         self.dynamixel.close()

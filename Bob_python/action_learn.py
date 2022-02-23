@@ -11,11 +11,11 @@ for servo in agent.getDefinedServos():
 
 dynamixel.open()
 for servo in agent.getDefinedServos():
-    dynamixel.enableToque(servo.getId(), False)
+    dynamixel.enableTorque(servo.getId(), False)
 print("Enable torque")
 input()
 for servo in agent.getDefinedServos():
-    dynamixel.enableToque(servo.getId(), True)
+    dynamixel.enableTorque(servo.getId(), True)
 
 for servo in agent.getDefinedServos():
     pos = dynamixel.getPresentPosition(servo.getId())
