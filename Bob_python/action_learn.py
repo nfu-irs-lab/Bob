@@ -34,8 +34,8 @@ def lock():
 
 
 def readPosition():
-
-    pass
+    for _id in robot.getAllServosId():
+        print(f'ID#{_id}\tPosition:{robot.readPosition(_id)}')
 
 
 try:

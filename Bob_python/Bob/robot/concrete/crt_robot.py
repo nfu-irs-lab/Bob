@@ -38,6 +38,9 @@ class DynamixelRobotAdaptor(Robot):
     def getAllServosId(self):
         return self.dynamixel.getAllServosId()
 
+    def readPosition(self, servoId: int) -> int:
+        return self.dynamixel.getPresentPosition(servoId)
+
 
 class VirtualDynamixelRobotAdaptor(Robot):
 
