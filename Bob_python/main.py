@@ -6,10 +6,10 @@ Usage:
 
 import time
 from Bob.communication.concrete.crt_strategy import ReadLineStrategy
-from constants import bt_description, CommandControlListener, detector
-from Bob.serial_config import getBluetoothPackageDeviceWithDescription
+from constants import CommandControlListener, detector
+from device_config import getSerialBluetooth
 
-package_device = getBluetoothPackageDeviceWithDescription(bt_description)
+package_device = getSerialBluetooth()
 monitor = package_device.getMonitor(CommandControlListener(package_device), ReadLineStrategy())
 monitor.start()
 

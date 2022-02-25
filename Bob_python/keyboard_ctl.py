@@ -1,22 +1,11 @@
 import keyboard  # using module keyboard
 
 from Bob.robot.concrete.crt_command import *
-from Bob.robot.concrete.crt_dynamixel import Dynamixel
-from Bob.robot.concrete.crt_robot import DynamixelRobotAdaptor
-from Bob.robot.concrete.servo_agent import CSVServoAgent
-from Bob.serial_config import getSerialNameByDescription
+from device_config import getRobot
 
-bot_description = ".*FT232R.*"
-agent = CSVServoAgent("servos.csv")
-dynamixel = Dynamixel(getSerialNameByDescription(bot_description), 115200)
-for servo in agent.getDefinedServos():
-    dynamixel.appendServo(servo)
-
-robot = DynamixelRobotAdaptor(dynamixel)
+robot = getRobot()
 robot.open()
-
 robot.enableAllServos(True)
-
 keyboard.on_press_key("w", lambda _: walk(1))
 keyboard.on_press_key("s", lambda _: walk(2))
 keyboard.on_press_key("d", lambda _: walk(3))

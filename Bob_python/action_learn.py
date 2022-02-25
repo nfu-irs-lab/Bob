@@ -1,28 +1,47 @@
-from Bob.robot.concrete.crt_dynamixel import Dynamixel
-from Bob.robot.concrete.crt_robot import DynamixelRobotAdaptor
-from Bob.robot.concrete.servo_agent import CSVServoAgent
-from Bob.serial_config import getSerialNameByDescription
-from constants import getCommandsFromFileName
+import time
 
-bot_description = ".*FT232R.*"
-agent = CSVServoAgent("servos.csv")
-dynamixel = Dynamixel(getSerialNameByDescription(bot_description), 115200)
-for servo in agent.getDefinedServos():
-    dynamixel.appendServo(servo)
+from command_utils import getCommandsFromFileName
+from device_config import getRobot
+import keyboard  # using module keyboard
 
-dynamixel.open()
-robot = DynamixelRobotAdaptor(dynamixel)
-robot.doCommands(getCommandsFromFileName('reset.csv'))
 
-for servo in agent.getDefinedServos():
-    dynamixel.enableTorque(servo.getId(), False)
-print("Enable torque")
-input()
-for servo in agent.getDefinedServos():
-    dynamixel.enableTorque(servo.getId(), True)
+def reset():
+    robot.doCommands(getCommandsFromFileName("reset.csv"))
 
-for servo in agent.getDefinedServos():
-    pos = dynamixel.getPresentPosition(servo.getId())
-    print(f"ID#{servo.getId()} Position:{pos}")
 
-dynamixel.close()
+robot = getRobot()
+robot.open()
+print("Reset.....")
+reset()
+print("Unlock")
+robot.enableAllServos(False)
+
+keyboard.on_press_key("j", lambda _: lock())
+keyboard.on_press_key("k", lambda _: unlock())
+keyboard.on_press_key("i", lambda _: reset())
+
+keyboard.on_press_key("l", lambda _: readPosition())
+
+
+def unlock():
+    print("Unlock")
+    robot.enableAllServos(False)
+
+
+def lock():
+    print("Lock")
+    robot.enableAllServos(True)
+
+
+def readPosition():
+
+    pass
+
+
+try:
+    while True:
+        time.sleep(0.05)
+except KeyboardInterrupt:
+    pass
+
+robot.close()
