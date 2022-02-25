@@ -23,6 +23,10 @@ class DynamixelRobotAdaptor(Robot):
     def isOpen(self) -> bool:
         return self.isOpen()
 
+    def enableAllServos(self, enable: bool):
+        for servo in self.dynamixel.servos:
+            self.doCommand(DynamixelTorqueEnableCommand(servo.getId(), enable))
+
     def doCommand(self, cmd: Command):
         if type(cmd) == DynamixelVelocityCommand:
             self.dynamixel.setVelocity(cmd.servoId, cmd.velocity)
