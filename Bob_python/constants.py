@@ -36,12 +36,11 @@ monitor = None
 
 def getDynamixelRobot():
     agent = CSVServoAgent("servos.csv")
-    dynamixel = Dynamixel(getSerialNameByDescription(bot_description), 57600)
+    dynamixel = Dynamixel(getSerialNameByDescription(bot_description), 115200)
     for servo in agent.getDefinedServos():
         dynamixel.appendServo(servo)
     robot = DynamixelRobotAdaptor(dynamixel)
     robot.open()
-    robot.init()
     return robot
 
 
@@ -49,7 +48,7 @@ def getVirtualDynamixelRobot():
     return VirtualDynamixelRobotAdaptor()
 
 
-robot = getVirtualDynamixelRobot()
+robot = getDynamixelRobot()
 
 
 def getCommandsFromFileName(file: str) -> List[Command]:

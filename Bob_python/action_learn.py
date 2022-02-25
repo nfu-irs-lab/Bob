@@ -6,7 +6,7 @@ from constants import getCommandsFromFileName
 
 bot_description = ".*FT232R.*"
 agent = CSVServoAgent("servos.csv")
-dynamixel = Dynamixel(getSerialNameByDescription(bot_description), 57600)
+dynamixel = Dynamixel(getSerialNameByDescription(bot_description), 115200)
 for servo in agent.getDefinedServos():
     dynamixel.appendServo(servo)
 
@@ -24,4 +24,5 @@ for servo in agent.getDefinedServos():
 for servo in agent.getDefinedServos():
     pos = dynamixel.getPresentPosition(servo.getId())
     print(f"ID#{servo.getId()} Position:{pos}")
+
 dynamixel.close()
