@@ -13,6 +13,10 @@ class Robot(Device, abc.ABC):
     def doCommand(self, cmd: Command):
         pass
 
+    @abc.abstractmethod
+    def enableAllServos(self, enable: bool):
+        pass
+
     def stopAllAction(self):
         self._FlagStop = True
 

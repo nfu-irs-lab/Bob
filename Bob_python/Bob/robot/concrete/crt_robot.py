@@ -1,7 +1,5 @@
 import time
-from typing import List
-
-from Bob.robot.concrete.crt_command import DynamixelCommand, SleepCommand, DynamixelTorqueEnableCommand, \
+from Bob.robot.concrete.crt_command import SleepCommand, DynamixelTorqueEnableCommand, \
     DynamixelVelocityCommand, DynamixelPositionCommand
 from Bob.robot.concrete.crt_dynamixel import Dynamixel
 from Bob.robot.framework.fw_command import Command
@@ -60,6 +58,15 @@ class VirtualDynamixelRobotAdaptor(Robot):
 
     def isOpen(self) -> bool:
         return self._is_open
+
+    def enableAllServos(self, enable: bool):
+        s = ""
+        if enable:
+            s = "Enable"
+        else:
+            s = "Disable"
+
+        print(f"{s} all servos")
 
     def doCommand(self, cmd: Command):
 
