@@ -38,6 +38,8 @@ class CSVCommandFactory(CommandFactory):
                     if empty(servoId):
                         continue
 
+                    cmdList.append(DynamixelTorqueEnableCommand(int(servoId), True))
+
                     if not empty(speed):
                         cmdList.append(DynamixelVelocityCommand(int(servoId), int(speed)))
 
