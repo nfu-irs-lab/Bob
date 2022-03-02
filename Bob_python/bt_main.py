@@ -10,7 +10,7 @@ class ConnectListener(ClientConnectionListener):
     def onConnected(self, socket):
         global monitor
         print("Monitor start")
-        package_device = getSocketBluetooth(BluetoothSocketSerialDevice(socket, write_delay_ms=100))
+        package_device = getSocketBluetooth(socket)
         monitor = package_device.getMonitor(CommandControlListener(package_device), ReadLineStrategy())
         monitor.start()
 
