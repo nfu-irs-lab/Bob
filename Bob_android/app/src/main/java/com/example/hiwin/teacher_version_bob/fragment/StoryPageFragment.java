@@ -60,6 +60,10 @@ public class StoryPageFragment extends StaticFragment {
         next.setOnClickListener(onClickListener);
 
         (root.findViewById(R.id.story_page_next_session)).setOnClickListener(onClickListener);
+
+        (root.findViewById(R.id.story_page_correct)).setOnClickListener(interactionListener);
+        (root.findViewById(R.id.story_page_incorrect)).setOnClickListener(interactionListener);
+
         ((ToggleButton) root.findViewById(R.id.story_page_auto)).setOnCheckedChangeListener(onCheckedChangeListener);
         ((ToggleButton) root.findViewById(R.id.story_page_auto)).setChecked(auto);
         ((ToggleButton) root.findViewById(R.id.story_page_auto)).setTextOn("Automatically");
@@ -112,6 +116,15 @@ public class StoryPageFragment extends StaticFragment {
         return new View[0];
     }
 
+    private final View.OnClickListener interactionListener = v -> {
+        if (v.getId() == R.id.story_page_correct) {
+            MediaPlayer.create(context, R.raw.sound_good_job).start();
+            listener.onAction("DO_ACTION correct.csv");
+        } else if (v.getId() == R.id.story_page_incorrect) {
+            MediaPlayer.create(context, R.raw.sound_try_again).start();
+            listener.onAction("DO_ACTION incorrect.csv");
+        }
+    };
     final View.OnClickListener onClickListener = v -> {
         if (v.getId() == R.id.story_page_previous) {
             player.release();
