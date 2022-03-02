@@ -38,7 +38,9 @@ public class StoryActivity extends BluetoothCommunicationActivity {
                 StaticFragment vocabularyInteractiveFragment = getVocabularyInteractiveFragment(vocabularies, null, null);
                 StaticFragment storyFragment2 = getStoryPageFragment(dataObj.getJSONArray("pages"), vocabularyInteractiveFragment, "vocabularyInteractiveFragment");
                 StaticFragment vocabularyFragment = getVocabularyFragment(vocabularies, storyFragment2, "storyFragment2");
-                StaticFragment storyFragment = getStoryPageFragment(dataObj.getJSONArray("pages"), vocabularyFragment, "vocabularyFragment");
+                StaticFragment paperScissorStoneFragment = getPaperScissorStoneFragment(vocabularyFragment, "vocabularyFragment");
+                StaticFragment storyFragment = getStoryPageFragment(dataObj.getJSONArray("pages"), paperScissorStoneFragment, "paperScissorStoneFragment");
+
                 postFragment(storyFragment, "storyFragment");
 
             }
@@ -153,6 +155,29 @@ public class StoryActivity extends BluetoothCommunicationActivity {
             }
         });
         return storyPageFragment;
+    }
+
+    private StaticFragment getPaperScissorStoneFragment(Fragment next, String nextId) {
+        PaperScissorStoneFragment fragment = new PaperScissorStoneFragment();
+        fragment.initialize(this);
+        fragment.setListener(new StoryPageFragment.ActionListener() {
+            @Override
+            public void onAction(String cmd) {
+                sendMessage(cmd);
+            }
+
+            @Override
+            public void start() {
+
+            }
+
+            @Override
+            public void end() {
+                postFragment(next, nextId);
+            }
+        });
+        fragment.setCommandListener(this::sendMessage);
+        return fragment;
     }
 
     private StaticFragment getVocabularyInteractiveFragment(JSONArray vocabularies, Fragment next, String nextId) {
