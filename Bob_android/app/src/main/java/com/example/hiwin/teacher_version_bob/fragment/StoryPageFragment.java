@@ -124,8 +124,12 @@ public class StoryPageFragment extends StaticFragment {
             player.release();
             nextPage();
         } else if (v.getId() == R.id.story_page_next_session) {
-            player.stop();
-            player.release();
+            if (player != null) {
+                player.stop();
+                player.release();
+                player = null;
+            }
+
             if (listener != null)
                 listener.end();
 

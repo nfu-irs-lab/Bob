@@ -35,8 +35,8 @@ public class StoryActivity extends BluetoothCommunicationActivity {
 
                 JSONArray vocabularies = dataObj.getJSONArray("vocabularies");
 
-                StaticFragment vocabularyInteractiveFragment = getVocabularyInteractiveFragment(vocabularies, null, null);
-                StaticFragment storyFragment2 = getStoryPageFragment(dataObj.getJSONArray("pages"), vocabularyInteractiveFragment, "vocabularyInteractiveFragment");
+//                StaticFragment vocabularyInteractiveFragment = getVocabularyInteractiveFragment(vocabularies, null, null);
+                StaticFragment storyFragment2 = getStoryPageFragment(dataObj.getJSONArray("pages"), null, null);
                 StaticFragment vocabularyFragment = getVocabularyFragment(vocabularies, storyFragment2, "storyFragment2");
                 StaticFragment paperScissorStoneFragment = getPaperScissorStoneFragment(vocabularyFragment, "vocabularyFragment");
                 StaticFragment storyFragment = getStoryPageFragment(dataObj.getJSONArray("pages"), paperScissorStoneFragment, "paperScissorStoneFragment");
@@ -129,7 +129,8 @@ public class StoryActivity extends BluetoothCommunicationActivity {
 
             @Override
             public void end() {
-                postFragment(next, nextId);
+                if (next != null && nextId != null)
+                    postFragment(next, nextId);
             }
         });
         return vocabularyFragment;
@@ -151,7 +152,8 @@ public class StoryActivity extends BluetoothCommunicationActivity {
 
             @Override
             public void end() {
-                postFragment(next, nextId);
+                if (next != null && nextId != null)
+                    postFragment(next, nextId);
             }
         });
         return storyPageFragment;
@@ -173,7 +175,8 @@ public class StoryActivity extends BluetoothCommunicationActivity {
 
             @Override
             public void end() {
-                postFragment(next, nextId);
+                if (next != null && nextId != null)
+                    postFragment(next, nextId);
             }
         });
         fragment.setCommandListener(this::sendMessage);
