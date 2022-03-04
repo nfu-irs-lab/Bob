@@ -30,8 +30,22 @@ public abstract class StaticFragment extends Fragment {
     }
 
 
-    public <L extends FragmentListener> void setListener(L listener) {
-        this.listener = listener;
+    public <L extends FragmentListener> void setFragmentListener(L commandListener) {
+        this.listener = commandListener;
+    }
+
+    public FragmentListener getFragmentListener() {
+        return this.listener;
+    }
+
+    protected void start() {
+        if (listener != null)
+            listener.start();
+    }
+
+    protected void end() {
+        if (listener != null)
+            listener.end();
     }
 
     public void setShowListener(ShowListener showListener) {

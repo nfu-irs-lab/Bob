@@ -47,7 +47,7 @@ public class ObjectSelectFragment extends StaticFragment {
     }
 
     @Override
-    public <L extends FragmentListener> void setListener(L listener) {
-        selectListener = (ItemSelectListener) listener;
+    public <L extends FragmentListener> void setFragmentListener(L commandListener) {
+        selectListener = (ItemSelectListener) commandListener;
     }
 }

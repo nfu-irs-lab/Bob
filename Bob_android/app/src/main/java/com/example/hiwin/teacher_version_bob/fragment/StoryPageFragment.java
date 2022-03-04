@@ -1,7 +1,6 @@
 package com.example.hiwin.teacher_version_bob.fragment;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -12,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.example.hiwin.teacher_version_bob.R;
@@ -36,11 +34,11 @@ public class StoryPageFragment extends StaticFragment {
     private MediaPlayer player;
     private Button previous, speak, next;
     private boolean auto = true;
-    private StoryPageFragment.ActionListener listener;
+    private CommandListener commandListener;
 
 
-    public interface ActionListener extends FragmentListener {
-        void onAction(String cmd);
+    public interface CommandListener {
+        void onCommand(String cmd);
     }
 
     @Nullable
@@ -89,8 +87,8 @@ public class StoryPageFragment extends StaticFragment {
         final int drawable_id = getResourceIDByString(context, page.getString("image"), "drawable");
         final String text = page.getString("text");
 
-        if (listener != null)
-            listener.onAction("DO_ACTION " + page.getString("action"));
+        if (commandListener != null)
+            commandListener.onCommand("DO_ACTION " + page.getString("action"));
 //        Drawable drawable = drawable_id <= 0 ? null : context.getDrawable(drawable_id);
         player = MediaPlayer.create(context, audio_id);
         if (player != null)
@@ -119,10 +117,10 @@ public class StoryPageFragment extends StaticFragment {
     private final View.OnClickListener interactionListener = v -> {
         if (v.getId() == R.id.story_page_correct) {
             MediaPlayer.create(context, R.raw.sound_good_job).start();
-            listener.onAction("DO_ACTION correct.csv");
+            commandListener.onCommand("DO_ACTION correct.csv");
         } else if (v.getId() == R.id.story_page_incorrect) {
             MediaPlayer.create(context, R.raw.sound_try_again).start();
-            listener.onAction("DO_ACTION incorrect.csv");
+            commandListener.onCommand("DO_ACTION incorrect.csv");
         }
     };
     final View.OnClickListener onClickListener = v -> {
@@ -142,12 +140,9 @@ public class StoryPageFragment extends StaticFragment {
                 player.release();
                 player = null;
             }
-
-            if (listener != null)
-                listener.end();
-
-            if (listener != null)
-                listener.onAction("STOP_ALL_ACTION");
+            end();
+            if (commandListener != null)
+                commandListener.onCommand("STOP_ALL_ACTION");
 
         } else
             throw new IllegalStateException();
@@ -165,8 +160,8 @@ public class StoryPageFragment extends StaticFragment {
 
     private void nextPage() {
         if (index < pages.length() - 1 && index >= 0) {
-            if (listener != null)
-                listener.onAction("STOP_ALL_ACTION");
+            if (commandListener != null)
+                commandListener.onCommand("STOP_ALL_ACTION");
             try {
                 show(pages.getJSONObject(++index));
             } catch (JSONException e) {
@@ -177,8 +172,8 @@ public class StoryPageFragment extends StaticFragment {
 
     private void previousPage() {
         if (index < pages.length() && index > 0) {
-            if (listener != null)
-                listener.onAction("STOP_ALL_ACTION");
+            if (commandListener != null)
+                commandListener.onCommand("STOP_ALL_ACTION");
             try {
                 show(pages.getJSONObject(--index));
             } catch (JSONException e) {
@@ -191,14 +186,13 @@ public class StoryPageFragment extends StaticFragment {
         return mp -> {
             if (auto) {
                 nextPage();
-            } else if (this.listener != null)
-                this.listener.onAction("STOP_ALL_ACTION");
+            } else if (this.commandListener != null)
+                this.commandListener.onCommand("STOP_ALL_ACTION");
         };
 
     }
 
-    public <L extends FragmentListener> void setListener(L listener) {
-        this.listener = (StoryPageFragment.ActionListener) listener;
+    public void setCommandListener(CommandListener listener) {
+        this.commandListener = listener;
     }
-
 }

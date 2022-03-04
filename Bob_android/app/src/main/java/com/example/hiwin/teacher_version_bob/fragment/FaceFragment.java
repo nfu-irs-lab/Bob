@@ -14,25 +14,24 @@ import pl.droidsonroids.gif.GifDrawable;
 
 import java.io.IOException;
 
-public class FaceFragment extends Fragment {
+public class FaceFragment extends StaticFragment{
 
     private GifDrawable drawable;
-    private FragmentListener listener;
-    private ImageView imageView;
 
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_face, container, false);
-        imageView = (ImageView) root.findViewById(R.id.face_gif);
+        ImageView imageView = (ImageView) root.findViewById(R.id.face_gif);
+        imageView.setImageDrawable(drawable);
+        drawable.start();
         return root;
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        start();
+    protected View[] getViews() {
+        return new View[0];
     }
 
     public void warp(Context context, int face_gif_id, int loopCount, boolean endByAnimation) throws IOException {
@@ -40,20 +39,9 @@ public class FaceFragment extends Fragment {
         drawable.setLoopCount(loopCount);
         drawable.stop();
         if (endByAnimation) drawable.addAnimationListener(i -> {
-            if (listener != null && i + 1 == drawable.getLoopCount()) {
-                listener.end();
+            if (i + 1 == drawable.getLoopCount()) {
+                end();
             }
         });
     }
-
-    private void start() {
-        imageView.setImageDrawable(drawable);
-        drawable.start();
-        if (listener != null) listener.start();
-    }
-
-    public void setListener(FragmentListener listener) {
-        this.listener = listener;
-    }
-
 }

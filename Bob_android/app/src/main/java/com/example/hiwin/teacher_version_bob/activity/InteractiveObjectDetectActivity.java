@@ -10,7 +10,6 @@ import android.widget.ListView;
 import android.widget.Toast;
 import com.example.hiwin.teacher_version_bob.ObjectAdaptor;
 import com.example.hiwin.teacher_version_bob.R;
-import com.example.hiwin.teacher_version_bob.communication.bluetooth.framework.SerialListener;
 import com.example.hiwin.teacher_version_bob.fragment.*;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -124,7 +123,7 @@ public class InteractiveObjectDetectActivity extends BluetoothCommunicationActiv
     private Fragment getSelectFragment(JSONArray array, Fragment next, String nextId) {
         ObjectSelectFragment selectFragment = new ObjectSelectFragment();
         selectFragment.setShowListener(views -> ((ListView) views[0]).setAdapter(new ObjectAdaptor(this, array)));
-        selectFragment.setListener(new ObjectSelectFragment.ItemSelectListener() {
+        selectFragment.setFragmentListener(new ObjectSelectFragment.ItemSelectListener() {
             @Override
             public void onItemSelected(int position) {
                 SelectedObject.Builder builder = new SelectedObject.Builder();
@@ -155,7 +154,7 @@ public class InteractiveObjectDetectActivity extends BluetoothCommunicationActiv
 
     private Fragment getEntryDetectFragment() {
         EntryObjectDetectFragment objectDetectFragment = new EntryObjectDetectFragment();
-        objectDetectFragment.setListener(new FragmentListener() {
+        objectDetectFragment.setFragmentListener(new FragmentListener() {
             @Override
             public void start() {
                 sendMessage("DETECT_INTER_OBJECT");

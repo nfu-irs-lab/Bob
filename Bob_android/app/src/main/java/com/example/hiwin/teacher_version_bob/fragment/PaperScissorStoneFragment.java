@@ -1,4 +1,4 @@
-package com.example.hiwin.teacher_version_bob.activity;
+package com.example.hiwin.teacher_version_bob.fragment;
 
 import android.content.Context;
 import android.media.MediaPlayer;
@@ -18,7 +18,6 @@ public class PaperScissorStoneFragment extends StaticFragment {
     private Context context;
     private View root;
     private CommandListener commandListener;
-    private FragmentListener listener;
     private Handler handler;
     private ImageView gesture_img;
     private GestureHandler gestureHandler;
@@ -65,8 +64,7 @@ public class PaperScissorStoneFragment extends StaticFragment {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    if (listener != null)
-                        listener.end();
+                    end();
                 }).start();
             }
 
@@ -220,11 +218,6 @@ public class PaperScissorStoneFragment extends StaticFragment {
                 listener.onLoss();
             }
         }
-    }
-
-    @Override
-    public <L extends FragmentListener> void setListener(L listener) {
-        this.listener = listener;
     }
 
     public void setCommandListener(CommandListener commandListener) {

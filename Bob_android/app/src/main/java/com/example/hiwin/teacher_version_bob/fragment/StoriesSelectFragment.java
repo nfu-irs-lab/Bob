@@ -3,15 +3,12 @@ package com.example.hiwin.teacher_version_bob.fragment;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import com.example.hiwin.teacher_version_bob.R;
-import com.example.hiwin.teacher_version_bob.StoryAdapter;
-import org.json.JSONArray;
 
 public class StoriesSelectFragment extends StaticFragment {
     public abstract static class ItemSelectListener implements FragmentListener {
@@ -48,7 +45,7 @@ public class StoriesSelectFragment extends StaticFragment {
     }
 
     @Override
-    public <L extends FragmentListener> void setListener(L listener) {
-        selectListener = (ItemSelectListener) listener;
+    public <L extends FragmentListener> void setFragmentListener(L commandListener) {
+        selectListener = (ItemSelectListener) commandListener;
     }
 }

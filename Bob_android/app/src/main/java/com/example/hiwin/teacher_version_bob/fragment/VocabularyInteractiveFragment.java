@@ -50,7 +50,7 @@ public class VocabularyInteractiveFragment extends StaticFragment {
     private GestureHandler gestureHandler;
 //    private int result = -100;
 
-    public interface CommandListener extends FragmentListener {
+    public interface CommandListener {
         void onCommand(String cmd);
     }
 
@@ -329,7 +329,9 @@ public class VocabularyInteractiveFragment extends StaticFragment {
                         group = 0;
                         index = 0;
                         startNew();
-                    } else if (commandListener != null) commandListener.end();
+                    } else {
+                        end();
+                    }
                 }
             }
 
@@ -423,8 +425,7 @@ public class VocabularyInteractiveFragment extends StaticFragment {
         }
     }
 
-    @Override
-    public <L extends FragmentListener> void setListener(L listener) {
-        this.commandListener = (CommandListener) listener;
+    public void setCommandListener(CommandListener listener) {
+        this.commandListener = listener;
     }
 }

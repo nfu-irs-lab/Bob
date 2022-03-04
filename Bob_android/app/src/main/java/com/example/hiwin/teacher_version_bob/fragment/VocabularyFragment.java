@@ -13,7 +13,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.example.hiwin.teacher_version_bob.R;
-import com.example.hiwin.teacher_version_bob.activity.StoryActivity;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,7 +20,6 @@ import org.json.JSONObject;
 import static com.example.hiwin.teacher_version_bob.Constants.getResourceIDByString;
 
 public class VocabularyFragment extends StaticFragment {
-    private View root;
     private int index = 0;
     private ImageView image;
     private TextView name_text, translated_text, definition_text;
@@ -29,17 +27,18 @@ public class VocabularyFragment extends StaticFragment {
     private Context context;
     private JSONArray vocabularies;
     private MediaPlayer player;
-    private ActionListener listener;
+    private CommandListener commandListener;
     private boolean hasAction;
 
-    public interface ActionListener extends FragmentListener {
-        void onAction(String cmd);
+
+    public interface CommandListener {
+        void onCommand(String cmd);
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        root = inflater.inflate(R.layout.fragment_vocabulary, container, false);
+        View root = inflater.inflate(R.layout.fragment_vocabulary, container, false);
         image = root.findViewById(R.id.vocabulary_interactive_imageview);
         name_text = root.findViewById(R.id.vocabulary_name);
         translated_text = root.findViewById(R.id.vocabulary_translated);
@@ -121,13 +120,12 @@ public class VocabularyFragment extends StaticFragment {
             } else if (v.getId() == R.id.vocabulary_next_session) {
                 player.stop();
                 player.release();
-                if (listener != null)
-                    listener.end();
+                end();
             } else if (v.getId() == R.id.vocabulary_do_action) {
                 player.seekTo(0);
                 player.start();
-                if (listener != null)
-                    listener.onAction("DO_ACTION " + vocabularies.getJSONObject(index).getString("action"));
+                if (commandListener != null)
+                    commandListener.onCommand("DO_ACTION " + vocabularies.getJSONObject(index).getString("action"));
             } else
                 throw new IllegalStateException();
 
@@ -136,8 +134,7 @@ public class VocabularyFragment extends StaticFragment {
         }
     };
 
-    public <L extends FragmentListener> void setListener(L listener) {
-        this.listener = (ActionListener) listener;
+    public void setCommandListener(CommandListener listener) {
+        this.commandListener = listener;
     }
-
 }

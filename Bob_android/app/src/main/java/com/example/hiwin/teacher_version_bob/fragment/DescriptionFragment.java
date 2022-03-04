@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import com.example.hiwin.teacher_version_bob.R;
 
 public class DescriptionFragment extends StaticFragment {
-    View root;
+    private View root;
 
     @Nullable
     @Override

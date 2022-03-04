@@ -83,7 +83,7 @@ public class StoryActivity extends BluetoothCommunicationActivity {
     private Fragment getSelectFragment(JSONArray array, Fragment next, String nextId) {
         StaticFragment selectFragment = new StoriesSelectFragment();
         selectFragment.setShowListener(views -> ((ListView) views[0]).setAdapter(new StoryAdapter(this, array)));
-        selectFragment.setListener(new StoriesSelectFragment.ItemSelectListener() {
+        selectFragment.setFragmentListener(new StoriesSelectFragment.ItemSelectListener() {
 
             @Override
             public void onItemSelected(int position) {
@@ -116,12 +116,7 @@ public class StoryActivity extends BluetoothCommunicationActivity {
     private StaticFragment getVocabularyFragment(JSONArray vocabularies, Fragment next, String nextId) {
         VocabularyFragment vocabularyFragment = new VocabularyFragment();
         vocabularyFragment.initialize(this, vocabularies);
-        vocabularyFragment.setListener(new VocabularyFragment.ActionListener() {
-            @Override
-            public void onAction(String cmd) {
-                sendMessage(cmd);
-            }
-
+        vocabularyFragment.setFragmentListener(new FragmentListener() {
             @Override
             public void start() {
 
@@ -129,8 +124,7 @@ public class StoryActivity extends BluetoothCommunicationActivity {
 
             @Override
             public void end() {
-                if (next != null && nextId != null)
-                    postFragment(next, nextId);
+                if (next != null && nextId != null) postFragment(next, nextId);
             }
         });
         return vocabularyFragment;
@@ -139,12 +133,7 @@ public class StoryActivity extends BluetoothCommunicationActivity {
     private StaticFragment getStoryPageFragment(JSONArray pages, Fragment next, String nextId) throws JSONException {
         StoryPageFragment storyPageFragment = new StoryPageFragment();
         storyPageFragment.initialize(this, pages);
-        storyPageFragment.setListener(new StoryPageFragment.ActionListener() {
-            @Override
-            public void onAction(String cmd) {
-                sendMessage(cmd);
-            }
-
+        storyPageFragment.setFragmentListener(new FragmentListener() {
             @Override
             public void start() {
 
@@ -152,22 +141,17 @@ public class StoryActivity extends BluetoothCommunicationActivity {
 
             @Override
             public void end() {
-                if (next != null && nextId != null)
-                    postFragment(next, nextId);
+                if (next != null && nextId != null) postFragment(next, nextId);
             }
         });
+        storyPageFragment.setCommandListener(this::sendMessage);
         return storyPageFragment;
     }
 
     private StaticFragment getPaperScissorStoneFragment(Fragment next, String nextId) {
         PaperScissorStoneFragment fragment = new PaperScissorStoneFragment();
         fragment.initialize(this);
-        fragment.setListener(new StoryPageFragment.ActionListener() {
-            @Override
-            public void onAction(String cmd) {
-                sendMessage(cmd);
-            }
-
+        fragment.setFragmentListener(new FragmentListener() {
             @Override
             public void start() {
 
@@ -175,8 +159,7 @@ public class StoryActivity extends BluetoothCommunicationActivity {
 
             @Override
             public void end() {
-                if (next != null && nextId != null)
-                    postFragment(next, nextId);
+                if (next != null && nextId != null) postFragment(next, nextId);
             }
         });
         fragment.setCommandListener(this::sendMessage);
@@ -191,12 +174,7 @@ public class StoryActivity extends BluetoothCommunicationActivity {
             e.printStackTrace();
         }
 
-        vocabularyInteractiveFragment.setListener(new VocabularyInteractiveFragment.CommandListener() {
-            @Override
-            public void onCommand(String cmd) {
-                sendMessage(cmd);
-            }
-
+        vocabularyInteractiveFragment.setFragmentListener(new FragmentListener() {
             @Override
             public void start() {
 
@@ -208,13 +186,13 @@ public class StoryActivity extends BluetoothCommunicationActivity {
             }
         });
 
+        vocabularyInteractiveFragment.setCommandListener(this::sendMessage);
         return vocabularyInteractiveFragment;
     }
 
 
     private void postFragment(Fragment fragment, String id) {
-        if (fragment == null || id == null)
-            return;
+        if (fragment == null || id == null) return;
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.setReorderingAllowed(true);
         fragmentTransaction.replace(R.id.story_frame, fragment, id);

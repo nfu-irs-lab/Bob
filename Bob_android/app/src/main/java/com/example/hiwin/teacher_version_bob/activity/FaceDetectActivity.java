@@ -54,7 +54,7 @@ public class FaceDetectActivity extends DetectActivity {
     @Override
     protected void showDefault() {
         final DefaultFragment fragment = new DefaultFragment();
-        fragment.setListener(new FragmentListener() {
+        fragment.setFragmentListener(new FragmentListener() {
             @Override
             public void start() {
             }
@@ -120,7 +120,7 @@ public class FaceDetectActivity extends DetectActivity {
     private Fragment getFinalFaceFragment(int face_gif_id, Fragment next, String nextId) throws IOException {
         FaceFragment faceFragment = new FaceFragment();
         faceFragment.warp(context, face_gif_id, 2, true);
-        faceFragment.setListener(new FragmentFlowListener(next, nextId) {
+        faceFragment.setFragmentListener(new FragmentFlowListener(next, nextId) {
             @Override
             protected void postFragment(Fragment next, String nextId) {
                 FaceDetectActivity.this.postFragment(next, nextId);
@@ -140,7 +140,7 @@ public class FaceDetectActivity extends DetectActivity {
         FaceFragment faceFragment = new FaceFragment();
         faceFragment.warp(context, face_gif_id, 5, false);
 
-        faceFragment.setListener(new FragmentFlowListener(next, nextId) {
+        faceFragment.setFragmentListener(new FragmentFlowListener(next, nextId) {
             @Override
             protected void postFragment(Fragment next, String nextId) {
                 FaceDetectActivity.this.postFragment(next, nextId);
@@ -170,7 +170,7 @@ public class FaceDetectActivity extends DetectActivity {
             ((TextView) views[2]).setText(tr_name);
         });
 
-        descriptionFragment.setListener(new FragmentFlowListener(next, nextId) {
+        descriptionFragment.setFragmentListener(new FragmentFlowListener(next, nextId) {
             @Override
             public void start() {
                 super.start();
@@ -195,7 +195,7 @@ public class FaceDetectActivity extends DetectActivity {
 
     private Fragment getExampleFragment(String sentence, String tr_sentence, Fragment next, String nextId) {
         final ExampleFragment fragment = new ExampleFragment();
-        fragment.setListener(new FragmentFlowListener(next, nextId) {
+        fragment.setFragmentListener(new FragmentFlowListener(next, nextId) {
             @Override
             protected void postFragment(Fragment next, String nextId) {
                 FaceDetectActivity.this.postFragment(next, nextId);

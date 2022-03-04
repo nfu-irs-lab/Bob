@@ -11,9 +11,7 @@ import android.widget.ImageView;
 import com.example.hiwin.teacher_version_bob.R;
 
 
-public class DefaultFragment extends Fragment {
-
-    private FragmentListener listener;
+public class DefaultFragment extends StaticFragment{
 
     @Nullable
     @Override
@@ -22,21 +20,13 @@ public class DefaultFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_default, container, false);
         ImageView img = (ImageView) root.findViewById(R.id.default_img);
         img.setOnClickListener(v -> {
-            if (listener != null)
-                listener.end();
+            end();
         });
         return root;
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        if (listener != null)
-            listener.start();
+    protected View[] getViews() {
+        return new View[0];
     }
-
-    public void setListener(FragmentListener listener) {
-        this.listener = listener;
-    }
-
 }
