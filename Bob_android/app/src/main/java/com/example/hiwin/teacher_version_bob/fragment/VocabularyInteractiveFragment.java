@@ -111,6 +111,11 @@ public class VocabularyInteractiveFragment extends StaticFragment {
         return new View[0];
     }
 
+    @Override
+    public void interrupt() {
+
+    }
+
     public void initialize(Context context, JSONArray vocabularies) throws JSONException {
         this.context = context;
         JSONArray fixVocabulary = new JSONArray();

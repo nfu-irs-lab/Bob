@@ -63,12 +63,6 @@
                 android:text="Next" />
         </LinearLayout>
 
-        <Button
-            android:id="@+id/vocabulary_next_session"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Next session" />
     </LinearLayout>
     <TextView
             android:id="@+id/vocabulary_name"

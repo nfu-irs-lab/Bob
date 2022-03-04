@@ -26,4 +26,9 @@ public class ExampleFragment extends StaticFragment {
         views[1] = layout.findViewById(R.id.example_tr_sentence);
         return views;
     }
+
+    @Override
+    public void interrupt() {
+
+    }
 }

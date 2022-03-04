@@ -18,6 +18,7 @@ public abstract class StaticFragment extends Fragment {
 
 
     protected abstract View[] getViews();
+    public abstract void interrupt();
 
     @Override
     public final void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {

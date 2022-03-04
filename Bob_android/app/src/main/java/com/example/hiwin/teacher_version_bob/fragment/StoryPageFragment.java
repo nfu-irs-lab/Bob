@@ -57,8 +57,6 @@ public class StoryPageFragment extends StaticFragment {
         next = root.findViewById(R.id.story_page_next);
         next.setOnClickListener(onClickListener);
 
-        (root.findViewById(R.id.story_page_next_session)).setOnClickListener(onClickListener);
-
         (root.findViewById(R.id.story_page_correct)).setOnClickListener(interactionListener);
         (root.findViewById(R.id.story_page_incorrect)).setOnClickListener(interactionListener);
 
@@ -114,6 +112,18 @@ public class StoryPageFragment extends StaticFragment {
         return new View[0];
     }
 
+    @Override
+    public void interrupt() {
+        end();
+        if (player != null) {
+            player.stop();
+            player.release();
+            player = null;
+        }
+        if (commandListener != null)
+            commandListener.onCommand("STOP_ALL_ACTION");
+    }
+
     private final View.OnClickListener interactionListener = v -> {
         if (v.getId() == R.id.story_page_correct) {
             MediaPlayer.create(context, R.raw.sound_good_job).start();
@@ -134,16 +144,6 @@ public class StoryPageFragment extends StaticFragment {
             player.stop();
             player.release();
             nextPage();
-        } else if (v.getId() == R.id.story_page_next_session) {
-            if (player != null) {
-                player.stop();
-                player.release();
-                player = null;
-            }
-            end();
-            if (commandListener != null)
-                commandListener.onCommand("STOP_ALL_ACTION");
-
         } else
             throw new IllegalStateException();
     };

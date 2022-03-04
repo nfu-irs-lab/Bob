@@ -14,6 +14,8 @@ import com.example.hiwin.teacher_version_bob.R;
 import com.example.hiwin.teacher_version_bob.fragment.*;
 import org.json.JSONException;
 
+import java.util.Arrays;
+
 public class PaperScissorStoneFragment extends StaticFragment {
     private Context context;
     private View root;
@@ -21,6 +23,7 @@ public class PaperScissorStoneFragment extends StaticFragment {
     private Handler handler;
     private ImageView gesture_img;
     private GestureHandler gestureHandler;
+    private Button[] buttons;
 
     public interface CommandListener {
         void onCommand(String cmd);
@@ -34,9 +37,11 @@ public class PaperScissorStoneFragment extends StaticFragment {
         handler = new Handler();
         gesture_img = root.findViewById(R.id.paper_scissor_stone_image);
 
-        root.findViewById(R.id.paper_scissor_stone_btn_paper).setOnClickListener(paper_scissor_stone_listener);
-        root.findViewById(R.id.paper_scissor_stone_btn_scissor).setOnClickListener(paper_scissor_stone_listener);
-        root.findViewById(R.id.paper_scissor_stone_btn_stone).setOnClickListener(paper_scissor_stone_listener);
+        buttons = new Button[3];
+        buttons[0] = root.findViewById(R.id.paper_scissor_stone_btn_paper);
+        buttons[1] = root.findViewById(R.id.paper_scissor_stone_btn_scissor);
+        buttons[2] = root.findViewById(R.id.paper_scissor_stone_btn_stone);
+        Arrays.stream(buttons).forEach(button -> button.setOnClickListener(paper_scissor_stone_listener));
 
         showGame();
         return root;
@@ -48,50 +53,76 @@ public class PaperScissorStoneFragment extends StaticFragment {
         return new View[0];
     }
 
+    @Override
+    public void interrupt() {
+        end();
+        if (commandListener != null)
+            commandListener.onCommand("STOP_ALL_ACTION");
+    }
+
     public void initialize(Context context) {
         this.context = context;
     }
 
     private void showGame() {
         gestureHandler = new GestureHandler(new GestureListener() {
+            boolean locked = false;
+
             @Override
             public void onWin() {
-                MediaPlayer.create(context, R.raw.sound_correct_2).start();
-                new Thread(() -> {
-
-                    try {
-                        Thread.sleep(7000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    end();
-                }).start();
+                if (!locked) {
+                    MediaPlayer.create(context, R.raw.sound_correct_2).start();
+                    Arrays.stream(buttons).forEach(button -> button.setEnabled(false));
+                    locked = true;
+                    new Thread(() -> {
+                        try {
+                            Thread.sleep(7000);
+                            locked = false;
+                            handler.post(() -> Arrays.stream(buttons).forEach(button -> button.setEnabled(true)));
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        gestureHandler.restart();
+                    }).start();
+                }
             }
 
             @Override
             public void onLoss() {
-                MediaPlayer.create(context, R.raw.sound_try_again).start();
-                new Thread(() -> {
-                    try {
-                        Thread.sleep(7000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    gestureHandler.restart();
-                }).start();
+                if (!locked) {
+                    MediaPlayer.create(context, R.raw.sound_try_again).start();
+                    Arrays.stream(buttons).forEach(button -> button.setEnabled(false));
+                    locked = true;
+                    new Thread(() -> {
+                        try {
+                            Thread.sleep(7000);
+                            locked = false;
+                            handler.post(() -> Arrays.stream(buttons).forEach(button -> button.setEnabled(true)));
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        gestureHandler.restart();
+                    }).start();
+                }
             }
 
             @Override
             public void onPeace() {
-                MediaPlayer.create(context, R.raw.sound_try_again).start();
-                new Thread(() -> {
-                    try {
-                        Thread.sleep(7000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    gestureHandler.restart();
-                }).start();
+                if (!locked) {
+                    MediaPlayer.create(context, R.raw.sound_try_again).start();
+                    Arrays.stream(buttons).forEach(button -> button.setEnabled(false));
+                    locked = true;
+                    new Thread(() -> {
+                        try {
+                            Thread.sleep(7000);
+                            locked = false;
+                            handler.post(() -> Arrays.stream(buttons).forEach(button -> button.setEnabled(true)));
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        gestureHandler.restart();
+                    }).start();
+                }
             }
 
             @Override

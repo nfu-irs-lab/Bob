@@ -6,12 +6,11 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import com.example.hiwin.teacher_version_bob.R;
 
 public class StoriesSelectFragment extends StaticFragment {
-    public abstract static class ItemSelectListener implements FragmentListener {
+    public abstract static class ItemSelectListener {
         public abstract void onItemSelected(int position);
     }
 
@@ -26,17 +25,14 @@ public class StoriesSelectFragment extends StaticFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         root = inflater.inflate(R.layout.fragment_stories_select, container, false);
         listView = (ListView) root.findViewById(R.id.stories_list);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (selectListener != null) {
-                    selectListener.onItemSelected(position);
-                    selectListener.end();
-                }
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+            if (selectListener != null) {
+                selectListener.onItemSelected(position);
             }
         });
         return root;
     }
+
     @Override
     protected View[] getViews() {
         View[] views = new View[1];
@@ -45,7 +41,11 @@ public class StoriesSelectFragment extends StaticFragment {
     }
 
     @Override
-    public <L extends FragmentListener> void setFragmentListener(L commandListener) {
-        selectListener = (ItemSelectListener) commandListener;
+    public void interrupt() {
+
+    }
+
+    public void setSelectListener(ItemSelectListener selectListener) {
+        this.selectListener = selectListener;
     }
 }

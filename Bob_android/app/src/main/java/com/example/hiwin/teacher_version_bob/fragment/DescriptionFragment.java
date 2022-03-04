@@ -27,4 +27,9 @@ public class DescriptionFragment extends StaticFragment {
         views[2] = root.findViewById(R.id.description_textview2);
         return views;
     }
+
+    @Override
+    public void interrupt() {
+
+    }
 }

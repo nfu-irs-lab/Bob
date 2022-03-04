@@ -70,4 +70,9 @@ public class EntryObjectDetectFragment extends StaticFragment {
     protected View[] getViews() {
         return new View[0];
     }
+
+    @Override
+    public void interrupt() {
+
+    }
 }

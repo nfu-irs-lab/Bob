@@ -56,7 +56,6 @@ public class VocabularyFragment extends StaticFragment {
         action = (root.findViewById(R.id.vocabulary_do_action));
         action.setOnClickListener(onClickListener);
 
-        (root.findViewById(R.id.vocabulary_next_session)).setOnClickListener(onClickListener);
 
         try {
             show(vocabularies.getJSONObject(index));
@@ -69,6 +68,18 @@ public class VocabularyFragment extends StaticFragment {
     @Override
     protected View[] getViews() {
         return new View[0];
+    }
+
+    @Override
+    public void interrupt() {
+        end();
+        if (player != null) {
+            player.stop();
+            player.release();
+            player = null;
+        }
+        if (commandListener != null)
+            commandListener.onCommand("STOP_ALL_ACTION");
     }
 
     public void initialize(Context context, JSONArray vocabularies) {
@@ -117,10 +128,6 @@ public class VocabularyFragment extends StaticFragment {
                     player.release();
                     show(vocabularies.getJSONObject(++index));
                 }
-            } else if (v.getId() == R.id.vocabulary_next_session) {
-                player.stop();
-                player.release();
-                end();
             } else if (v.getId() == R.id.vocabulary_do_action) {
                 player.seekTo(0);
                 player.start();
@@ -129,7 +136,8 @@ public class VocabularyFragment extends StaticFragment {
             } else
                 throw new IllegalStateException();
 
-        } catch (JSONException e) {
+        } catch (
+                JSONException e) {
             e.printStackTrace();
         }
     };

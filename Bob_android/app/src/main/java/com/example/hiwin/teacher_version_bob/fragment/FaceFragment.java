@@ -34,6 +34,11 @@ public class FaceFragment extends StaticFragment{
         return new View[0];
     }
 
+    @Override
+    public void interrupt() {
+
+    }
+
     public void warp(Context context, int face_gif_id, int loopCount, boolean endByAnimation) throws IOException {
         drawable = new GifDrawable(context.getResources(), face_gif_id);
         drawable.setLoopCount(loopCount);
