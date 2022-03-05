@@ -3,6 +3,7 @@ package com.example.hiwin.teacher_version_bob.fragment;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -33,9 +34,9 @@ public class StoryPageFragment extends StaticFragment {
     private int index = 0;
     private MediaPlayer player;
     private Button previous, speak, next;
-    private boolean auto = true;
+    private boolean auto = false;
     private CommandListener commandListener;
-
+    private Handler handler;
 
     public interface CommandListener {
         void onCommand(String cmd);
@@ -45,6 +46,7 @@ public class StoryPageFragment extends StaticFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         root = inflater.inflate(R.layout.fragment_story_page, container, false);
+        handler = new Handler();
         imageview = root.findViewById(R.id.story_page_imageview);
 //        story_text = root.findViewById(R.id.story_page_text);
 
@@ -59,6 +61,7 @@ public class StoryPageFragment extends StaticFragment {
 
         (root.findViewById(R.id.story_page_correct)).setOnClickListener(interactionListener);
         (root.findViewById(R.id.story_page_incorrect)).setOnClickListener(interactionListener);
+        setInteractionEnable(false);
 
         ((ToggleButton) root.findViewById(R.id.story_page_auto)).setOnCheckedChangeListener(onCheckedChangeListener);
         ((ToggleButton) root.findViewById(R.id.story_page_auto)).setChecked(auto);
@@ -87,6 +90,8 @@ public class StoryPageFragment extends StaticFragment {
 
         if (commandListener != null)
             commandListener.onCommand("DO_ACTION " + page.getString("action"));
+        setInteractionEnable(false);
+
 //        Drawable drawable = drawable_id <= 0 ? null : context.getDrawable(drawable_id);
         player = MediaPlayer.create(context, audio_id);
         if (player != null)
@@ -131,7 +136,18 @@ public class StoryPageFragment extends StaticFragment {
         } else if (v.getId() == R.id.story_page_incorrect) {
             MediaPlayer.create(context, R.raw.sound_try_again).start();
             commandListener.onCommand("DO_ACTION incorrect.csv");
-        }
+        } else
+            return;
+
+        setInteractionEnable(false);
+        new Thread(() -> {
+            try {
+                Thread.sleep(7000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            handler.post(()->setInteractionEnable(true));
+        }).start();
     };
     final View.OnClickListener onClickListener = v -> {
         if (v.getId() == R.id.story_page_previous) {
@@ -147,6 +163,7 @@ public class StoryPageFragment extends StaticFragment {
         } else
             throw new IllegalStateException();
     };
+
 
     private final CompoundButton.OnCheckedChangeListener onCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
         @Override
@@ -184,12 +201,20 @@ public class StoryPageFragment extends StaticFragment {
 
     private MediaPlayer.OnCompletionListener getSpeakerListener() {
         return mp -> {
+            handler.post(() -> setInteractionEnable(true));
             if (auto) {
                 nextPage();
-            } else if (this.commandListener != null)
+            }
+            if (this.commandListener != null)
                 this.commandListener.onCommand("STOP_ALL_ACTION");
+
         };
 
+    }
+
+    private void setInteractionEnable(boolean enable) {
+        (root.findViewById(R.id.story_page_correct)).setEnabled(enable);
+        (root.findViewById(R.id.story_page_incorrect)).setEnabled(enable);
     }
 
     public void setCommandListener(CommandListener listener) {

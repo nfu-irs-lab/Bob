@@ -17,13 +17,12 @@ public class StoriesSelectFragment extends StaticFragment {
     private ItemSelectListener selectListener;
 
     private ListView listView;
-    private View root;
 
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        root = inflater.inflate(R.layout.fragment_stories_select, container, false);
+        View root = inflater.inflate(R.layout.fragment_stories_select, container, false);
         listView = (ListView) root.findViewById(R.id.stories_list);
         listView.setOnItemClickListener((parent, view, position, id) -> {
             if (selectListener != null) {

@@ -28,7 +28,6 @@ public class VocabularyFragment extends StaticFragment {
     private JSONArray vocabularies;
     private MediaPlayer player;
     private CommandListener commandListener;
-    private boolean hasAction;
 
 
     public interface CommandListener {
@@ -95,7 +94,7 @@ public class VocabularyFragment extends StaticFragment {
         String translated = vocabulary.getString("translated");
         String definition = vocabulary.getString("definition");
         String part_of_speech = vocabulary.getString("part_of_speech");
-        hasAction = vocabularies.getJSONObject(index).has("action");
+        boolean hasAction = vocabularies.getJSONObject(index).has("action");
         action.setEnabled(hasAction);
         next.setEnabled(index < vocabularies.length() - 1);
         previous.setEnabled(index > 0);
