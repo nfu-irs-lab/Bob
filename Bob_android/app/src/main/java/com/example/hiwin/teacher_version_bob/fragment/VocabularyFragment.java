@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -28,6 +29,7 @@ public class VocabularyFragment extends StaticFragment {
     private JSONArray vocabularies;
     private MediaPlayer player;
     private CommandListener commandListener;
+    private Handler handler;
 
 
     public interface CommandListener {
@@ -38,6 +40,7 @@ public class VocabularyFragment extends StaticFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_vocabulary, container, false);
+        handler = new Handler();
         image = root.findViewById(R.id.vocabulary_interactive_imageview);
         name_text = root.findViewById(R.id.vocabulary_name);
         translated_text = root.findViewById(R.id.vocabulary_translated);
@@ -132,6 +135,15 @@ public class VocabularyFragment extends StaticFragment {
                 player.start();
                 if (commandListener != null)
                     commandListener.onCommand("DO_ACTION " + vocabularies.getJSONObject(index).getString("action"));
+                action.setEnabled(false);
+                new Thread(() -> {
+                    try {
+                        Thread.sleep(7000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    handler.post(() -> action.setEnabled(true));
+                }).start();
             } else
                 throw new IllegalStateException();
 
