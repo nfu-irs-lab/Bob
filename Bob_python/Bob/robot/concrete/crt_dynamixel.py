@@ -79,8 +79,7 @@ class Dynamixel(Device):
 
     def enableTorque(self, servoId: int, enable: bool):
         servo = self.findServoById(servoId)
-        address: int = servo.getTorqueEnableAddressLength()['address']
-        length: int = servo.getTorqueEnableAddressLength()['length']
+        address, length = servo.getTorqueEnableAddressLength()
         if enable:
             value = 1
         else:
@@ -89,26 +88,25 @@ class Dynamixel(Device):
 
     def setGoalPosition(self, servoId: int, position: int):
         servo = self.findServoById(servoId)
-        address: int = servo.getGoalPositionAddressLength()['address']
-        length: int = servo.getGoalPositionAddressLength()['length']
+        address, length = servo.getGoalPositionAddressLength()
         self._write(servo.getProtocol(), servo.getId(), address, position, length)
 
     def setVelocity(self, servoId: int, velocity: int):
         servo = self.findServoById(servoId)
-        address: int = servo.getGoalVelocityAddressLength()['address']
-        length: int = servo.getGoalVelocityAddressLength()['length']
+        address, length = servo.getGoalVelocityAddressLength()
         self._write(servo.getProtocol(), servo.getId(), address, velocity, length)
+
+    def stop(self, servoId: int):
+        self.setGoalPosition(servoId, self.getPresentPosition(servoId))
 
     def getPresentPosition(self, servoId: int):
         servo = self.findServoById(servoId)
-        address: int = servo.getPresentPositionAddressLength()['address']
-        length: int = servo.getPresentPositionAddressLength()['length']
+        address, length = servo.getPresentPositionAddressLength()
         return self._read(servo.getProtocol(), servo.getId(), address, length)
 
     def isMoving(self, servoId: int) -> bool:
         servo = self.findServoById(servoId)
-        address: int = servo.getMovingAddressLength()['address']
-        length: int = servo.getMovingAddressLength()['length']
+        address, length = servo.getMovingAddressLength()
         return self._read(servo.getProtocol(), servo.getId(), address, length) == 1
 
     def ping(self, servoId: int):

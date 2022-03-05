@@ -7,19 +7,19 @@ class H42_20_S300_R(DynamixelServo):
         super().__init__(servoId, protocol)
 
     def getGoalPositionAddressLength(self):
-        return {'address': 596, 'length': 4}
+        return 596, 4
 
     def getPresentPositionAddressLength(self):
-        return {'address': 611, 'length': 4}
+        return 611, 4
 
     def getGoalVelocityAddressLength(self):
-        return {'address': 600, 'length': 4}
+        return 600, 4
 
     def getTorqueEnableAddressLength(self):
-        return {'address': 562, 'length': 1}
+        return 562, 1
 
     def getMovingAddressLength(self):
-        return {'address': 610, 'length': 1}
+        return 610, 1
 
 
 class RX_64(DynamixelServo):
@@ -28,19 +28,19 @@ class RX_64(DynamixelServo):
         super().__init__(servoId, protocol)
 
     def getGoalPositionAddressLength(self):
-        return {'address': 30, 'length': 2}
+        return 30, 2
 
     def getPresentPositionAddressLength(self):
-        return {'address': 36, 'length': 2}
+        return 36, 2
 
     def getGoalVelocityAddressLength(self):
-        return {'address': 32, 'length': 2}
+        return 32, 2
 
     def getTorqueEnableAddressLength(self):
-        return {'address': 24, 'length': 1}
+        return 24, 1
 
     def getMovingAddressLength(self):
-        return {'address': 46, 'length': 1}
+        return 46, 1
 
 
 class MX_106(DynamixelServo):
@@ -49,19 +49,19 @@ class MX_106(DynamixelServo):
         super().__init__(servoId, protocol)
 
     def getGoalPositionAddressLength(self):
-        return {'address': 30, 'length': 2}
+        return 30, 2
 
     def getPresentPositionAddressLength(self):
-        return {'address': 36, 'length': 2}
+        return 36, 2
 
     def getGoalVelocityAddressLength(self):
-        return {'address': 32, 'length': 2}
+        return 32, 2
 
     def getTorqueEnableAddressLength(self):
-        return {'address': 24, 'length': 1}
+        return 24, 1
 
     def getMovingAddressLength(self):
-        return {'address': 46, 'length': 1}
+        return 46, 1
 
 
 class MX_64(DynamixelServo):
@@ -70,19 +70,19 @@ class MX_64(DynamixelServo):
         super().__init__(servoId, protocol)
 
     def getGoalPositionAddressLength(self):
-        return {'address': 30, 'length': 2}
+        return 30, 2
 
     def getPresentPositionAddressLength(self):
-        return {'address': 36, 'length': 2}
+        return 36, 2
 
     def getGoalVelocityAddressLength(self):
-        return {'address': 32, 'length': 2}
+        return 32, 2
 
     def getTorqueEnableAddressLength(self):
-        return {'address': 24, 'length': 1}
+        return 24, 1
 
     def getMovingAddressLength(self):
-        return {'address': 46, 'length': 1}
+        return 46, 1
 
 
 class RX_24F(DynamixelServo):
@@ -91,16 +91,16 @@ class RX_24F(DynamixelServo):
         super().__init__(servoId, protocol)
 
     def getGoalPositionAddressLength(self):
-        return {'address': 30, 'length': 2}
+        return 30, 2
 
     def getPresentPositionAddressLength(self):
-        return {'address': 36, 'length': 2}
+        return 36, 2
 
     def getGoalVelocityAddressLength(self):
-        return {'address': 32, 'length': 2}
+        return 32, 2
 
     def getTorqueEnableAddressLength(self):
-        return {'address': 24, 'length': 1}
+        return 24, 1
 
     def getMovingAddressLength(self):
-        return {'address': 46, 'length': 1}
+        return 46, 1
