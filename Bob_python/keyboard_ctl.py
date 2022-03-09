@@ -104,12 +104,12 @@ def walk(direction: int):
         left_ctl(-5000)
         print("walk backward")
     elif direction == 3:
-        right_ctl(-5000)
-        left_ctl(-5000)
-        print("turn right")
-    elif direction == 4:
         right_ctl(5000)
         left_ctl(5000)
+        print("turn right")
+    elif direction == 4:
+        right_ctl(-5000)
+        left_ctl(-5000)
         print("turn left")
 
 
