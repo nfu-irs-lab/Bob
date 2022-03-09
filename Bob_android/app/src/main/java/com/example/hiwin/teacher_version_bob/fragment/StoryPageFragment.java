@@ -205,8 +205,8 @@ public class StoryPageFragment extends StaticFragment {
             if (auto) {
                 nextPage();
             }
-            if (this.commandListener != null)
-                this.commandListener.onCommand("STOP_ALL_ACTION");
+//            if (this.commandListener != null)
+//                this.commandListener.onCommand("STOP_ALL_ACTION");
 
         };
 
