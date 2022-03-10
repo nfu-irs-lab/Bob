@@ -129,7 +129,6 @@ def walk(direction: int):
 
 
 def keyboard_ctl():
-    robot.enableAllServos(True)
     keyboard.on_press_key("w", lambda _: key_w_press())
     keyboard.on_release_key("w", lambda _: key_w_release())
     keyboard.on_press_key("s", lambda _: key_s_press())
