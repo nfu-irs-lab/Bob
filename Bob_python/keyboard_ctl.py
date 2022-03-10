@@ -94,22 +94,25 @@ def key_a_release():
     stop()
 
 
+VOL = 2000
+
+
 def walk(direction: int):
     if direction == 1:
-        right_ctl(-5000)
-        left_ctl(5000)
+        right_ctl(-VOL)
+        left_ctl(VOL)
         print("walk forward")
     elif direction == 2:
-        right_ctl(5000)
-        left_ctl(-5000)
+        right_ctl(VOL)
+        left_ctl(-VOL)
         print("walk backward")
     elif direction == 3:
-        right_ctl(5000)
-        left_ctl(5000)
+        right_ctl(VOL)
+        left_ctl(VOL)
         print("turn right")
     elif direction == 4:
-        right_ctl(-5000)
-        left_ctl(-5000)
+        right_ctl(-VOL)
+        left_ctl(-VOL)
         print("turn left")
 
 
