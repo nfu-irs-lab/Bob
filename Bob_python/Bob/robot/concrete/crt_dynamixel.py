@@ -110,6 +110,7 @@ class Dynamixel(Device):
         return self._read(servo.getProtocol(), servo.getId(), address, length) == 1
 
     def ping(self, servoId: int):
+        self._block_unit_robot_free()
         servo = self.findServoById(servoId)
         if servo.getProtocol() == PROTOCOL_1:
             model, dxl_comm_result, dxl_error = packetHandler1.ping(self._portHandler, servo.getId())
@@ -136,11 +137,12 @@ class Dynamixel(Device):
         self._write(servo.getProtocol(), servo.getId(), address, value, byte_num)
 
     def _write(self, protocol: int, id: int, address: int, value, byte_num: int):
+        self._block_unit_robot_free()
+
         if protocol == PROTOCOL_1:
             self._write_proto_1(id, address, value, byte_num)
         elif protocol == PROTOCOL_2:
             self._write_proto_2(id, address, value, byte_num)
-        time.sleep(0.05)
 
     def _write_proto_1(self, id: int, address: int, value, byte_num: int):
         if byte_num == 4:
@@ -153,9 +155,11 @@ class Dynamixel(Device):
             raise Exception("byte_num=" + str(byte_num))
 
         if dxl_comm_result != COMM_SUCCESS:
-            raise Exception("%s" % packetHandler1.getTxRxResult(dxl_comm_result))
+            # raise Exception(f'ID#{id} {packetHandler1.getTxRxResult(dxl_comm_result)}')
+            print(f'ID#{id} {packetHandler1.getTxRxResult(dxl_comm_result)}')
         elif dxl_error != 0:
-            raise Exception("%s" % packetHandler1.getRxPacketError(dxl_error))
+            # raise Exception(f'ID#{id} {packetHandler1.getRxPacketError(dxl_error)}')
+            print(f'ID#{id} {packetHandler1.getRxPacketError(dxl_error)}')
 
     def _write_proto_2(self, id: int, address: int, value, byte_num: int):
         if byte_num == 4:
@@ -168,10 +172,11 @@ class Dynamixel(Device):
             raise Exception("byte_num=" + str(byte_num))
 
         if dxl_comm_result != COMM_SUCCESS:
-            print("%s" % packetHandler2.getTxRxResult(dxl_comm_result))
+            # raise Exception(f'ID#{id} {packetHandler2.getTxRxResult(dxl_comm_result)}')
+            print(f'ID#{id} {packetHandler2.getTxRxResult(dxl_comm_result)}')
         elif dxl_error != 0:
-            print(dxl_error)
-            raise Exception("%s" % packetHandler2.getRxPacketError(dxl_error))
+            # raise Exception(f'ID#{id} {packetHandler2.getRxPacketError(dxl_error)}')
+            print(f'ID#{id} {packetHandler2.getRxPacketError(dxl_error)}')
 
     def readServoById(self, servoId: int, address: int, byte_num: int):
         servo = self.findServoById(servoId)
@@ -179,6 +184,7 @@ class Dynamixel(Device):
         return self._read(servo.getProtocol(), servo.getId(), address, byte_num)
 
     def _read(self, protocol: int, id: int, address: int, byte_num: int):
+        self._block_unit_robot_free()
         if protocol == PROTOCOL_1:
             return self._read_proto_1(id, address, byte_num)
         elif protocol == PROTOCOL_2:
@@ -222,3 +228,7 @@ class Dynamixel(Device):
         elif dxl_error != 0:
             print("%s" % packetHandler1.getRxPacketError(dxl_error))
         return value
+
+    def _block_unit_robot_free(self):
+        while self._portHandler.is_using:
+            time.sleep(0.001)

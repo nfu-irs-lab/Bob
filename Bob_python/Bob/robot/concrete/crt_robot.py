@@ -19,7 +19,7 @@ class DynamixelRobotAdaptor(Robot):
         self.dynamixel.close()
 
     def isOpen(self) -> bool:
-        return self.isOpen()
+        return self.dynamixel.isOpen()
 
     def enableAllServos(self, enable: bool):
         for servo in self.dynamixel.servos:
