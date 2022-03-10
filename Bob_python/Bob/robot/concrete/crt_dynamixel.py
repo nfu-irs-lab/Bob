@@ -153,9 +153,11 @@ class Dynamixel(Device):
             raise Exception("byte_num=" + str(byte_num))
 
         if dxl_comm_result != COMM_SUCCESS:
-            raise Exception("%s" % packetHandler1.getTxRxResult(dxl_comm_result))
+            # raise Exception(f'ID#{id} {packetHandler1.getTxRxResult(dxl_comm_result)}')
+            print(f'ID#{id} {packetHandler1.getTxRxResult(dxl_comm_result)}')
         elif dxl_error != 0:
-            raise Exception("%s" % packetHandler1.getRxPacketError(dxl_error))
+            # raise Exception(f'ID#{id} {packetHandler1.getRxPacketError(dxl_error)}')
+            print(f'ID#{id} {packetHandler1.getRxPacketError(dxl_error)}')
 
     def _write_proto_2(self, id: int, address: int, value, byte_num: int):
         if byte_num == 4:
@@ -168,10 +170,11 @@ class Dynamixel(Device):
             raise Exception("byte_num=" + str(byte_num))
 
         if dxl_comm_result != COMM_SUCCESS:
-            print("%s" % packetHandler2.getTxRxResult(dxl_comm_result))
+            # raise Exception(f'ID#{id} {packetHandler2.getTxRxResult(dxl_comm_result)}')
+            print(f'ID#{id} {packetHandler2.getTxRxResult(dxl_comm_result)}')
         elif dxl_error != 0:
-            print(dxl_error)
-            raise Exception("%s" % packetHandler2.getRxPacketError(dxl_error))
+            # raise Exception(f'ID#{id} {packetHandler2.getRxPacketError(dxl_error)}')
+            print(f'ID#{id} {packetHandler2.getRxPacketError(dxl_error)}')
 
     def readServoById(self, servoId: int, address: int, byte_num: int):
         servo = self.findServoById(servoId)
