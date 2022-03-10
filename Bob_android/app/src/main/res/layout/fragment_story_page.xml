@@ -50,48 +50,64 @@
                 android:orientation="horizontal">
 
             <Button
-                    android:id="@+id/story_page_previous"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="previous"/>
+                android:id="@+id/story_page_previous"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Previous"
+                android:textAllCaps="false"
+                android:textSize="20sp" />
 
             <Button
-                    android:id="@+id/story_page_speak"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Speak"/>
+                android:id="@+id/story_page_speak"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Speak"
+                android:textAllCaps="false"
+                android:textSize="20sp" />
 
             <ToggleButton
-                    android:id="@+id/story_page_auto"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="ToggleButton"/>
+                android:id="@+id/story_page_auto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="ToggleButton"
+                android:textAllCaps="false"
+                android:textSize="20sp" />
 
             <Button
-                    android:id="@+id/story_page_next"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Next"/>
+                android:id="@+id/story_page_next"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Next"
+                android:textAllCaps="false"
+                android:textSize="20sp" />
 
         </LinearLayout>
         <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" android:layout_weight="1">
+
             <Button
-                    android:text="Correct"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:id="@+id/story_page_correct"
-                    android:layout_weight="1"/>
+                android:id="@+id/story_page_correct"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Correct"
+                android:textAllCaps="false"
+                android:textSize="20sp" />
+
             <Button
-                    android:text="Incorrect"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:id="@+id/story_page_incorrect"
-                    android:layout_weight="1"/>
+                android:id="@+id/story_page_incorrect"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Incorrect"
+                android:textAllCaps="false"
+                android:textSize="20sp" />
         </LinearLayout>
 
     </LinearLayout>
