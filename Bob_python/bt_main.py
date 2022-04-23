@@ -1,4 +1,3 @@
-from Bob.device.concrete.crt_serial_dev import BluetoothSocketSerialDevice
 from Bob.bluetooth_utils.utils import BluetoothServer, ClientConnectionListener
 from Bob.communication.concrete.crt_strategy import ReadLineStrategy
 from constants import detector, CommandControlListener

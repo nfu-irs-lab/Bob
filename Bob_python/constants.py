@@ -21,11 +21,13 @@ from keyboard_ctl import KeyboardController
 obj_db_location = f"db{os.path.sep}objects.json"
 face_db_location = f"db{os.path.sep}faces.json"
 stories_db_location = f"db{os.path.sep}stories.json"
+vocabularies_db_location = f"db{os.path.sep}vocabularies.json"
 db_charset = 'UTF-8'
 
 object_db = JSONDatabase(open(obj_db_location, encoding=db_charset))
 face_db = JSONDatabase(open(face_db_location, encoding=db_charset))
 stories_db = JSONDatabase(open(stories_db_location, encoding=db_charset))
+vocabularies_db = JSONDatabase(open(vocabularies_db_location, encoding=db_charset))
 
 detector = None
 monitor = None
@@ -134,6 +136,13 @@ class CommandControlListener(PackageListener):
             # doAction(action)
         elif cmd == "STOP_ALL_ACTION":
             robot.stopAllAction()
+        elif cmd == "ALL_VOCABULARIES":
+            print("get all vocabulary")
+            vocabularies_content = vocabularies_db.queryForId("vocabulary")
+            print(vocabularies_content)
+            jsonString = formatDataToJsonString(0, "json_array", "all_vocabularies", vocabularies_content['data'])
+            print("Send:", jsonString)
+            self.package_device.writePackage(Base64LinePackage(StringPackage(jsonString, "UTF-8")))
 
 
 class FaceDetectListener(DetectListener):

@@ -24,9 +24,9 @@ public class VocabularyActivity extends BluetoothCommunicationActivity {
         try {
             JSONObject obj = new JSONObject(str);
             String content = obj.getString("content");
-            if (content.equals("vocabularies")) {
+            if (content.equals("all_vocabularies")) {
                 JSONObject dataObj = obj.getJSONObject("data");
-                postFragment(getVocabularyFragment(dataObj.getJSONArray(content)));
+                postFragment(getVocabularyFragment(dataObj.getJSONArray("vocabularies")));
             }
         } catch (JSONException e) {
            e.printStackTrace();

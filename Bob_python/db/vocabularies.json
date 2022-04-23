@@ -1,0 +1,237 @@
+[
+  {
+    "id": "vocabulary",
+    "data": {
+      "name": "Vocabularies",
+      "vocabularies": [
+        {
+          "name": "Monster",
+          "translated": "（虛構的）怪物",
+          "definition": "a large, ugly, and frightening imaginary creature.",
+          "part_of_speech": "n",
+          "image": "vocabulary_img_monster",
+          "audio": "vocabulary_audio_monster",
+          "action": "monster.csv"
+        },
+        {
+          "name": "Beast",
+          "translated": "(尤指大型或野生的)動物；野獸",
+          "part_of_speech": "n",
+          "image": "vocabulary_img_beast",
+          "audio": "vocabulary_audio_beast",
+          "definition": "an animal, especially a large or wild one.",
+          "action": "monster.csv"
+        },
+        {
+          "name": "Ocean",
+          "translated": "海洋",
+          "part_of_speech": "n",
+          "image": "vocabulary_img_ocean",
+          "audio": "vocabulary_audio_ocean",
+          "definition": "a very large area of sea."
+        },
+        {
+          "name": "Lunar Year",
+          "translated": "農曆年",
+          "part_of_speech": "n",
+          "image": "vocabulary_img_lunar_year",
+          "audio": "vocabulary_audio_lunar_year",
+          "definition": "a period of 12 lunar months"
+        },
+        {
+          "name": "Attack",
+          "translated": "攻擊",
+          "part_of_speech": "v",
+          "image": "vocabulary_img_attack",
+          "audio": "vocabulary_audio_attack",
+          "definition": "to try to hurt or defeat using violence.",
+          "action": "attack.csv"
+        },
+        {
+          "name": "Power / Powerful",
+          "translated": "影響力 操控力 / 強大的，有力量的",
+          "part_of_speech": "n / adj",
+          "image": "vocabulary_img_power",
+          "audio": "vocabulary_audio_power_powerful",
+          "definition": "ability to control people and events.",
+          "action": "powerful.csv"
+        },
+        {
+          "name": "Defeat",
+          "translated": "擊敗，打敗",
+          "part_of_speech": "v",
+          "image": "vocabulary_img_defeat",
+          "audio": "vocabulary_audio_defeat",
+          "definition": "to win against someone in a fight, war, or competition.",
+          "action": "powerful.csv"
+        },
+        {
+          "name": "Villager",
+          "translated": "村民",
+          "part_of_speech": "n",
+          "image": "vocabulary_img_villager",
+          "audio": "vocabulary_audio_villager",
+          "definition": "a person who lives in a village."
+        },
+        {
+          "name": "Hide",
+          "translated": "躲藏；把…藏起來",
+          "part_of_speech": "v",
+          "image": "vocabulary_img_hide",
+          "audio": "vocabulary_audio_hide",
+          "definition": "to put something or someone in a place where that thing or person cannot be seen or found, or to put yourself somewhere where you cannot be seen or found.",
+          "action": "hide.csv"
+        },
+        {
+          "name": "Travel / Traveler",
+          "translated": "旅行 / 旅行者",
+          "part_of_speech": "v / n",
+          "image": "vocabulary_img_travel_traveler",
+          "audio": "vocabulary_audio_travel_traveler",
+          "definition": "to make a journey, usually over a long distance. / someone who travels."
+        },
+        {
+          "name": "Kindness / Generosity",
+          "translated": "慷慨",
+          "part_of_speech": "n",
+          "image": "vocabulary_img_kind",
+          "audio": "vocabulary_audio_kindness_generosity",
+          "definition": "the quality or condition of being generous.",
+          "action": "generosity.csv"
+        },
+        {
+          "name": "Secret",
+          "translated": "秘密",
+          "part_of_speech": "n",
+          "image": "vocabulary_img_secret",
+          "audio": "vocabulary_audio_secret",
+          "definition": "something that is kept or meant to be kept unknown orunseen by others."
+        },
+        {
+          "name": "Village",
+          "translated": "村莊",
+          "part_of_speech": "n",
+          "image": "vocabulary_img_village",
+          "audio": "vocabulary_audio_village",
+          "definition": "a group of houses and other buildings that is smaller than a town, usually in the countryside."
+        },
+        {
+          "name": "Frighten",
+          "translated": "使害怕，使受驚",
+          "part_of_speech": "v",
+          "image": "vocabulary_img_frighten",
+          "audio": "vocabulary_audio_frighten",
+          "definition": "to make someone feel fear.",
+          "action": "hide.csv"
+        },
+        {
+          "name": "Return / Come back",
+          "translated": "回；返回",
+          "part_of_speech": "v",
+          "image": "vocabulary_img_return",
+          "audio": "vocabulary_audio_return",
+          "definition": "to come or go back to a previous place."
+        },
+        {
+          "name": "Hurt / Unhurt",
+          "translated": "（使）感到疼痛；弄傷 / 未受傷害的",
+          "part_of_speech": "v / adj",
+          "image": "vocabulary_img_hurt_unhurt",
+          "audio": "vocabulary_audio_hurt_unhurt",
+          "definition": "to feel pain in a part of your body, or to injure someone or cause them pain."
+        },
+        {
+          "name": "Survive",
+          "translated": "存活",
+          "part_of_speech": "v",
+          "image": "vocabulary_img_survive",
+          "audio": "vocabulary_audio_survive",
+          "definition": "to continue to live or exist."
+        },
+        {
+          "name": "Gong",
+          "translated": "鑼",
+          "part_of_speech": "n",
+          "image": "vocabulary_img_gong",
+          "audio": "vocabulary_audio_gong",
+          "definition": "a round piece of metal that is hung in a frame and hit with a stick to produce a sound as a signal, also used as a musical instrument."
+        },
+        {
+          "name": "Drum",
+          "translated": "鼓",
+          "part_of_speech": "n",
+          "image": "vocabulary_img_drum",
+          "audio": "vocabulary_audio_drum",
+          "definition": "a musical instrument, especially one made from a skin stretched over the end of a hollow tube or bowl, played by hitting with the hand or a stick.",
+          "action": "drum.csv"
+        },
+        {
+          "name": "Tradition",
+          "translated": "傳統",
+          "part_of_speech": "n",
+          "image": "vocabulary_img_tradition",
+          "audio": "vocabulary_audio_tradition",
+          "definition": "the transmission of customs or beliefs from generationto generation, or the fact of being passed on in this way."
+        },
+        {
+          "name": "Except on",
+          "translated": "除了",
+          "part_of_speech": "phr",
+          "image": "vocabulary_img_except_on",
+          "audio": "vocabulary_audio_except_on",
+          "definition": "not including; other than."
+        },
+        {
+          "name": "Live in terror",
+          "translated": "活在恐懼中",
+          "part_of_speech": "phr",
+          "image": "vocabulary_img_live_in_terror",
+          "audio": "vocabulary_audio_live_in_terror",
+          "definition": "indicate that someone is always thinking about an unpleasant or scaring event, because they think that it might happen.",
+          "action": "hide.csv"
+        },
+        {
+          "name": "Be touched by something",
+          "translated": "受到感動",
+          "part_of_speech": "phr",
+          "image": "vocabulary_img_be_touched_by_something",
+          "audio": "vocabulary_audio_be_touched_by_something",
+          "definition": "to be affected by a particular quality or feeling.",
+          "action": "touched.csv"
+        },
+        {
+          "name": "Drive away",
+          "translated": "趕走",
+          "part_of_speech": "phr",
+          "image": "vocabulary_img_drive_away",
+          "audio": "vocabulary_audio_drive_away",
+          "definition": "tomake them want to go away or stay away."
+        },
+        {
+          "name": "Lick his lips",
+          "translated": "舔嘴唇",
+          "part_of_speech": "phr",
+          "image": "vocabulary_img_lick_his_lips",
+          "audio": "vocabulary_audio_lick_his_lips",
+          "definition": "to move your tongue along your lips."
+        },
+        {
+          "name": "Eagerness / Eager to do something",
+          "translated": "渴望 / 渴望做某事",
+          "part_of_speech": "n / phr",
+          "image": "vocabulary_img_eagerness",
+          "audio": "vocabulary_audio_eagerness",
+          "definition": "the state of wanting to do or have something very much, especially something interesting or enjoyable."
+        },
+        {
+          "name": "Stay up all night",
+          "translated": "熬夜",
+          "part_of_speech": "phr",
+          "image": "vocabulary_img_stay_up_all_night",
+          "audio": "vocabulary_audio_stay_up_all_night",
+          "definition": "meansno sleep."
+        }
+      ]
+    }
+  }
+]
