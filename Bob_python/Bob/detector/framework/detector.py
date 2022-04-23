@@ -12,7 +12,7 @@ class DetectListener(ABC):
 
 class Detector(threading.Thread, ABC):
 
-    def __init__(self, listener: DetectListener):
+    def __init__(self, listener: Optional[DetectListener]):
         super().__init__()
         self._listener: Optional[DetectListener] = listener
         self.__interrupt = False
