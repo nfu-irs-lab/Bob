@@ -4,10 +4,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import com.example.hiwin.teacher_version_bob.activity.FaceDetectActivity;
-import com.example.hiwin.teacher_version_bob.activity.InteractiveObjectDetectActivity;
-import com.example.hiwin.teacher_version_bob.activity.ObjectDetectActivity;
-import com.example.hiwin.teacher_version_bob.activity.StoryActivity;
+import com.example.hiwin.teacher_version_bob.activity.*;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -17,7 +14,8 @@ public class ModeDialogFragment extends DialogFragment {
         face_detect("Face Detect", FaceDetectActivity.class),
         object_detect("Object Detect", ObjectDetectActivity.class),
         interactive_object_detect("Interactive Object Detect", InteractiveObjectDetectActivity.class),
-        story("Story", StoryActivity.class);
+        story("Story", StoryActivity.class),
+        action_button("Action button", ActionButtonActivity.class);
 
         final String description;
         private final Class<?> clazz;

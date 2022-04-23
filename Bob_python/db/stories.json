@@ -8,67 +8,152 @@
         {
           "text": "THE STORY OF NIAN, A CHINESE NEW YEAR STORY",
           "audio": "story_audio_the_story_of_niana_title",
-          "image": null
+          "image": "face_gif_happy",
+          "action": "storyaction_start.csv"
         },
         {
-          "text": "Once upon a time, long long ago, there was a man-eating monster called \"Nian\". This beast lived deep in the ocean. It would sleep every day of the year, except on the last day of the Lunar Year, when the cold winter months would turn into Spring.",
-          "image": "story_img_the_story_of_niana_1",
-          "audio": "story_audio_the_story_of_niana_1"
+          "text": "Once upon a time, long long ago, there was a man-eating monster called \"Nian\".",
+          "audio": "story_audio_the_story_of_niana_1",
+          "image": "face_gif_surprise",
+          "action": "storyaction_2.csv"
         },
         {
-          "text": "Nian would come on land to attack, and eat whatever it could find and whatever lay in its path. This was the night everyone lived in terror!",
-          "image": "story_img_the_story_of_niana_2",
-          "audio": "story_audio_the_story_of_niana_2"
+          "text": "This beast lived deep in the ocean.",
+          "image": "face_gif_surprise",
+          "audio": "story_audio_the_story_of_niana_2",
+          "action": "storyaction_3.csv"
         },
         {
-          "text": "Year after year Nian returned, and this was such a powerful beast that no one can take on or defeat it. Many had tried but all had died. On New Year’s Eve, all the villagers would take their loved ones and family members, old and young, deep into the mountains to hide from the beast.",
-          "image": "story_img_the_story_of_niana_3",
-          "audio": "story_audio_the_story_of_niana_3"
+          "text": "He would sleep every day of the year, except on the last day of the Lunar Year, when the cold winter months would turn into Spring.",
+          "image": "face_gif_sad",
+          "audio": "story_audio_the_story_of_niana_3",
+          "action": "storyaction_1.csv"
         },
         {
-          "text": "One year on that night, a traveler came to town, looking for food and a place to stay overnight. Everyone was far too busy packing to leave for the mountains, so no one was kind to him. Only one old lady offered him a simple plate of dumplings and a place to sleep. After his meal, the traveler was so touched by the old lady's generosity and decided to tell a long-hidden secret of how to drive away the New Year beast.",
-          "image": "story_img_the_story_of_niana_4",
-          "audio": "story_audio_the_story_of_niana_4"
+          "text": "Nian would come on land to attack, and eat whatever he could find and whatever lay in I his path.",
+          "image": "face_gif_love_eyes",
+          "audio": "story_audio_the_story_of_niana_4",
+          "action": "storyaction_4.csv"
         },
         {
-          "text": "That evening when Nian arrived at their village, all the houses were dark, except the one where the old woman lived. As Nian saw the light, it licked its lips with eagerness and came near the house.",
-          "image": "story_img_the_story_of_niana_5",
-          "audio": "story_audio_the_story_of_niana_5"
+          "text": "This was the night everyone lived in terror!",
+          "image": "face_gif_surprise",
+          "audio": "story_audio_the_story_of_niana_5",
+          "action": "storyaction_2.csv"
         },
         {
-          "text": "Suddenly, it was greeted with deafening noises of firecrackers sounding endlessly. The monster was frightened! ",
-          "image": "story_img_the_story_of_niana_6",
-          "audio": "story_audio_the_story_of_niana_6"
+          "text": "Year after year Nian returned, and he was such a powerful beast that no one could take him on or defeat him.",
+          "image": "face_gif_surprise",
+          "audio": "story_audio_the_story_of_niana_6",
+          "action": "storyaction_1.csv"
         },
         {
-          "text": "Next, the beast saw that the house was covered in red paper. ",
-          "image": "story_img_the_story_of_niana_7",
-          "audio": "story_audio_the_story_of_niana_7"
+          "text": "Many had tried but all had died.",
+          "image": "face_gif_happy",
+          "audio": "story_audio_the_story_of_niana_7",
+          "action": "storyaction_3.csv"
         },
         {
-          "text": "That scared Nian even more, and it took off running back into the ocean.",
-          "image": "story_img_the_story_of_niana_8",
-          "audio": "story_audio_the_story_of_niana_8"
+          "text": "On New Year’s Eve, all the villagers would take their loved ones and family members, old and young, deep into the mountains to hide from the beast.",
+          "image": "face_gif_happy",
+          "audio": "story_audio_the_story_of_niana_8",
+          "action": "storyaction_1.csv"
         },
         {
-          "text": "When the villagers returned, they saw that the old woman was unhurt! Everyone was eager to learn what she did to survive Nian.",
-          "image": "story_img_the_story_of_niana_9",
-          "audio": "story_audio_the_story_of_niana_9"
+          "text": "One year on that night, a traveler came to town, looking for food and a place to stay overnight.",
+          "image": "face_gif_happy",
+          "audio": "story_audio_the_story_of_niana_9",
+          "action": "storyaction_2.csv"
+        },
+        {
+          "text": "Everyone was far too busy packing to leave for the mountains, so no one was kind to him.",
+          "image": "face_gif_happy",
+          "audio": "story_audio_the_story_of_niana_10",
+          "action": "storyaction_4.csv"
+        },
+        {
+          "text": "Only one old lady offered him a simple plate of dumplings and a place to sleep.",
+          "image": "face_gif_happy",
+          "audio": "story_audio_the_story_of_niana_11",
+          "action": "storyaction_3.csv"
+        },
+        {
+          "text": "After his meal, the traveler was so touched by the old lady's kindness that he decided to tell a long-hidden secret of how to drive away the New Year beast.",
+          "image": "face_gif_happy",
+          "audio": "story_audio_the_story_of_niana_12",
+          "action": "storyaction_2.csv"
+        },
+        {
+          "text": "That evening when Nian arrived at their village, all the houses were dark, except the one where the old woman lived.",
+          "audio": "story_audio_the_story_of_niana_13",
+          "image": "face_gif_happy",
+          "action": "storyaction_4.csv"
+        },
+        {
+          "text": "As Nian saw the light, he licked his lips with eagerness and came near the house.",
+          "audio": "story_audio_the_story_of_niana_14",
+          "image": "face_gif_surprise",
+          "action": "storyaction_2.csv"
+        },
+        {
+          "text": "Suddenly, Nian was greeted with deafening noises of firecrackers sounding endlessly.",
+          "image": "face_gif_surprise",
+          "audio": "story_audio_the_story_of_niana_15",
+          "action": "storyaction_3.csv"
+        },
+        {
+          "text": "The monster was frightened!",
+          "image": "face_gif_sad",
+          "audio": "story_audio_the_story_of_niana_16",
+          "action": "storyaction_1.csv"
+        },
+        {
+          "text": "Next, the beast saw that the house was covered in red paper.",
+          "image": "face_gif_love_eyes",
+          "audio": "story_audio_the_story_of_niana_17",
+          "action": "storyaction_4.csv"
+        },
+        {
+          "text": "That scared Nian even more, and he took off running back into the ocean.",
+          "image": "face_gif_surprise",
+          "audio": "story_audio_the_story_of_niana_18",
+          "action": "storyaction_2.csv"
+        },
+        {
+          "text": "When the villagers returned, they saw that the old woman was unhurt!",
+          "image": "face_gif_surprise",
+          "audio": "story_audio_the_story_of_niana_19",
+          "action": "storyaction_1.csv"
+        },
+        {
+          "text": "Everyone was eager to learn what she did to survive Nian.",
+          "image": "face_gif_happy",
+          "audio": "story_audio_the_story_of_niana_20",
+          "action": "storyaction_3.csv"
         },
         {
           "text": "The old woman told the villagers that Nian was afraid of loud noises and the color red.",
-          "image": "story_img_the_story_of_niana_10",
-          "audio": "story_audio_the_story_of_niana_10"
+          "image": "face_gif_happy",
+          "audio": "story_audio_the_story_of_niana_21",
+          "action": "storyaction_1.csv"
         },
         {
-          "image": "story_img_the_story_of_niana_11",
-          "text": "The next year, the villagers stayed up all night, lit firecrackers, lit red lanterns all around their houses, pasted red paper on their walls and doors, wore red clothing, danced to loud music, and banged loud gongs and drums.",
-          "audio": "story_audio_the_story_of_niana_11"
+          "text": "The next year, the villagers stayed up all night, lit firecrackers, lit red lanterns all around their houses, pasted red paper on their doors and walls, wore red clothing, danced to loud music, and banged loud gongs and drums.",
+          "image": "face_gif_happy",
+          "audio": "story_audio_the_story_of_niana_22",
+          "action": "storyaction_2.csv"
         },
         {
-          "image": "story_img_the_story_of_niana_12",
-          "text": "That year and every year since, Nian has never returned. This eventually became a tradition and the way to celebrate Chinese New Year.",
-          "audio": "story_audio_the_story_of_niana_12"
+          "text": "That year and every year since, Nian has never returned.",
+          "image": "face_gif_happy",
+          "audio": "story_audio_the_story_of_niana_23",
+          "action": "storyaction_4.csv"
+        },
+        {
+          "text": "This eventually became a tradition and the way to celebrate Chinese New Year.",
+          "image": "face_gif_happy",
+          "audio": "story_audio_the_story_of_niana_24",
+          "action": "storyaction_end.csv"
         }
       ],
       "vocabularies": [
@@ -91,12 +176,12 @@
           "action": "monster.csv"
         },
         {
-          "name": "Except on",
-          "translated": "除了",
-          "part_of_speech": "phr",
-          "image": "vocabulary_img_except_on",
-          "audio": "vocabulary_audio_except_on",
-          "definition": "not including; other than."
+          "name": "Ocean",
+          "translated": "海洋",
+          "part_of_speech": "n",
+          "image": "vocabulary_img_ocean",
+          "audio": "vocabulary_audio_ocean",
+          "definition": "a very large area of sea."
         },
         {
           "name": "Lunar Year",
@@ -107,22 +192,6 @@
           "definition": "a period of 12 lunar months"
         },
         {
-          "name": "Land",
-          "translated": "土地",
-          "part_of_speech": "n",
-          "image": "vocabulary_img_land",
-          "audio": "vocabulary_audio_land",
-          "definition": "an area of ground, especially when used for a particular purpose such as farming or building."
-        },
-        {
-          "name": "Ocean",
-          "translated": "海洋",
-          "part_of_speech": "n",
-          "image": "vocabulary_img_ocean",
-          "audio": "vocabulary_audio_ocean",
-          "definition": "a very large area of sea."
-        },
-        {
           "name": "Attack",
           "translated": "攻擊",
           "part_of_speech": "v",
@@ -130,15 +199,6 @@
           "audio": "vocabulary_audio_attack",
           "definition": "to try to hurt or defeat using violence.",
           "action": "attack.csv"
-        },
-        {
-          "name": "Live in terror",
-          "translated": "活在恐懼中",
-          "part_of_speech": "phr",
-          "image": "vocabulary_img_live_in_terror",
-          "audio": "vocabulary_audio_live_in_terror",
-          "definition": "indicate that someone is always thinking about an unpleasant or scaring event, because they think that it might happen.",
-          "action": "hide.csv"
         },
         {
           "name": "Power / Powerful",
@@ -159,14 +219,6 @@
           "action": "powerful.csv"
         },
         {
-          "name": "Village",
-          "translated": "村莊",
-          "part_of_speech": "n",
-          "image": "vocabulary_img_village",
-          "audio": "vocabulary_audio_village",
-          "definition": "a group of houses and other buildings that is smaller than a town, usually in the countryside."
-        },
-        {
           "name": "Villager",
           "translated": "村民",
           "part_of_speech": "n",
@@ -184,45 +236,19 @@
           "action": "hide.csv"
         },
         {
-          "name": "Travel",
-          "translated": "旅行",
-          "part_of_speech": "v",
-          "image": "vocabulary_img_travel",
-          "audio": "vocabulary_audio_travel",
-          "definition": "to make a journey, usually over a long distance."
+          "name": "Travel / Traveler",
+          "translated": "旅行 / 旅行者",
+          "part_of_speech": "v / n",
+          "image": "vocabulary_img_travel_traveler",
+          "audio": "vocabulary_audio_travel_traveler",
+          "definition": "to make a journey, usually over a long distance. / someone who travels."
         },
         {
-          "name": "Traveler",
-          "translated": "旅行者",
-          "part_of_speech": "n",
-          "image": "vocabulary_img_traveler",
-          "audio": "vocabulary_audio_traveler",
-          "definition": "someone who travels."
-        },
-        {
-          "name": "Be touched by something",
-          "translated": "受到感動",
-          "part_of_speech": "phr",
-          "image": "vocabulary_img_be_touched_by_something",
-          "audio": "vocabulary_audio_be_touched_by_something",
-          "definition": "to be affected by a particular quality or feeling.",
-          "action": "touched.csv"
-        },
-        {
-          "name": "Generous/kind",
-          "translated": "慷慨的",
-          "part_of_speech": "adj",
-          "image": "vocabulary_img_kind",
-          "audio": "vocabulary_audio_generous_kind",
-          "definition": "willing to give money, help, kindness, etc.",
-          "action": "generosity.csv"
-        },
-        {
-          "name": "generosity/kindness",
+          "name": "Kindness / Generosity",
           "translated": "慷慨",
           "part_of_speech": "n",
           "image": "vocabulary_img_kind",
-          "audio": "vocabulary_audio_generosity_kindness",
+          "audio": "vocabulary_audio_kindness_generosity",
           "definition": "the quality or condition of being generous.",
           "action": "generosity.csv"
         },
@@ -235,28 +261,12 @@
           "definition": "something that is kept or meant to be kept unknown orunseen by others."
         },
         {
-          "name": "Drive away",
-          "translated": "趕走",
-          "part_of_speech": "phr",
-          "image": "vocabulary_img_drive_away",
-          "audio": "vocabulary_audio_drive_away",
-          "definition": "tomake them want to go away or stay away."
-        },
-        {
-          "name": "Lick its lips",
-          "translated": "舔嘴唇",
-          "part_of_speech": "phr",
-          "image": "vocabulary_img_lick_its_lips",
-          "audio": "vocabulary_audio_lick_its_lips",
-          "definition": "to move your tongue along your lips."
-        },
-        {
-          "name": "Eagerness / Eager to do something",
-          "translated": "渴望 / 渴望做某事",
-          "part_of_speech": "n / phr",
-          "image": "vocabulary_img_eagerness",
-          "audio": "vocabulary_audio_eagerness",
-          "definition": "the state of wanting to do or have something very much, especially something interesting or enjoyable."
+          "name": "Village",
+          "translated": "村莊",
+          "part_of_speech": "n",
+          "image": "vocabulary_img_village",
+          "audio": "vocabulary_audio_village",
+          "definition": "a group of houses and other buildings that is smaller than a town, usually in the countryside."
         },
         {
           "name": "Frighten",
@@ -268,7 +278,7 @@
           "action": "hide.csv"
         },
         {
-          "name": "Return /Come back",
+          "name": "Return / Come back",
           "translated": "回；返回",
           "part_of_speech": "v",
           "image": "vocabulary_img_return",
@@ -290,14 +300,6 @@
           "image": "vocabulary_img_survive",
           "audio": "vocabulary_audio_survive",
           "definition": "to continue to live or exist."
-        },
-        {
-          "name": "Stay up all night",
-          "translated": "熬夜",
-          "part_of_speech": "phr",
-          "image": "vocabulary_img_stay_up_all_night",
-          "audio": "vocabulary_audio_stay_up_all_night",
-          "definition": "meansno sleep."
         },
         {
           "name": "Gong",
@@ -323,6 +325,64 @@
           "image": "vocabulary_img_tradition",
           "audio": "vocabulary_audio_tradition",
           "definition": "the transmission of customs or beliefs from generationto generation, or the fact of being passed on in this way."
+        },
+        {
+          "name": "Except on",
+          "translated": "除了",
+          "part_of_speech": "phr",
+          "image": "vocabulary_img_except_on",
+          "audio": "vocabulary_audio_except_on",
+          "definition": "not including; other than."
+        },
+        {
+          "name": "Live in terror",
+          "translated": "活在恐懼中",
+          "part_of_speech": "phr",
+          "image": "vocabulary_img_live_in_terror",
+          "audio": "vocabulary_audio_live_in_terror",
+          "definition": "indicate that someone is always thinking about an unpleasant or scaring event, because they think that it might happen.",
+          "action": "hide.csv"
+        },
+        {
+          "name": "Be touched by something",
+          "translated": "受到感動",
+          "part_of_speech": "phr",
+          "image": "vocabulary_img_be_touched_by_something",
+          "audio": "vocabulary_audio_be_touched_by_something",
+          "definition": "to be affected by a particular quality or feeling.",
+          "action": "touched.csv"
+        },
+        {
+          "name": "Drive away",
+          "translated": "趕走",
+          "part_of_speech": "phr",
+          "image": "vocabulary_img_drive_away",
+          "audio": "vocabulary_audio_drive_away",
+          "definition": "tomake them want to go away or stay away."
+        },
+        {
+          "name": "Lick his lips",
+          "translated": "舔嘴唇",
+          "part_of_speech": "phr",
+          "image": "vocabulary_img_lick_his_lips",
+          "audio": "vocabulary_audio_lick_his_lips",
+          "definition": "to move your tongue along your lips."
+        },
+        {
+          "name": "Eagerness / Eager to do something",
+          "translated": "渴望 / 渴望做某事",
+          "part_of_speech": "n / phr",
+          "image": "vocabulary_img_eagerness",
+          "audio": "vocabulary_audio_eagerness",
+          "definition": "the state of wanting to do or have something very much, especially something interesting or enjoyable."
+        },
+        {
+          "name": "Stay up all night",
+          "translated": "熬夜",
+          "part_of_speech": "phr",
+          "image": "vocabulary_img_stay_up_all_night",
+          "audio": "vocabulary_audio_stay_up_all_night",
+          "definition": "meansno sleep."
         }
       ]
     }

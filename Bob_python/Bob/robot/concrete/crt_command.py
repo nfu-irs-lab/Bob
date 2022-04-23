@@ -1,24 +1,79 @@
-from Bob.robot.framework.fw_command import BytesCommand
+import csv
+from typing import Optional, List
+
+from Bob.robot.framework.fw_command import Command, CommandFactory
 
 
-class RoboticsBytesCommand(BytesCommand):
+def empty(content: str):
+    return content == ''
 
-    def __init__(self, id: int, position: int, speed: int):
-        self.speed = speed
+
+class CSVCommandFactory(CommandFactory):
+    def __init__(self, csv_file: str):
+        self.csv_file = csv_file
+
+    def create(self) -> Optional[Command]:
+        raise Exception("This method can't be used.")
+
+    def createList(self) -> Optional[List[Command]]:
+        with open(self.csv_file, newline='') as file:
+            cmdList = []
+            rows = csv.reader(file, delimiter=",")
+            line = 0
+            for row in rows:
+                if line == 0:
+                    pass
+                else:
+                    if len(row) == 0:
+                        continue
+
+                    servoId = row[0]
+                    position = row[1]
+                    speed = row[2]
+                    delay = row[3]
+
+                    if not empty(delay):
+                        cmdList.append(SleepCommand(float(delay)))
+
+                    if empty(servoId):
+                        continue
+
+                    cmdList.append(DynamixelTorqueEnableCommand(int(servoId), True))
+
+                    if not empty(speed):
+                        cmdList.append(DynamixelVelocityCommand(int(servoId), int(speed)))
+
+                    if not empty(position):
+                        cmdList.append(DynamixelPositionCommand(int(servoId), int(position)))
+                line = line + 1
+            return cmdList
+
+
+class SleepCommand(Command):
+    def __init__(self, duration: float):
+        self.duration = duration
+
+
+class DynamixelCommand(Command):
+
+    def __init__(self, servoId: int):
+        self.servoId = servoId
+
+
+class DynamixelPositionCommand(DynamixelCommand):
+    def __init__(self, servoId: int, position: int):
+        super().__init__(servoId)
         self.position = position
-        self.id = id
 
-    def getBytes(self) -> bytes:
-        arr = []
-        arr.append(0xff)
-        arr.append(0xff)
-        arr.append(self.id)
-        arr.append(0x07)
-        arr.append(0x03)
-        arr.append(0x1e)
-        arr.append(self.position & 255)
-        arr.append(self.position // 256)
-        arr.append(self.speed & 255)
-        arr.append(self.speed // 256)
-        arr.append(0xff - (sum(arr[2:9]) & 255))
-        return bytes(arr)
+
+class DynamixelVelocityCommand(DynamixelCommand):
+    def __init__(self, servoId: int, velocity: int):
+        super().__init__(servoId)
+        self.velocity = velocity
+
+
+class DynamixelTorqueEnableCommand(DynamixelCommand):
+
+    def __init__(self, servoId: int, enable: bool):
+        super().__init__(servoId)
+        self.enable = enable

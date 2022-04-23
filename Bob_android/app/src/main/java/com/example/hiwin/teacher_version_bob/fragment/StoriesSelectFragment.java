@@ -3,43 +3,35 @@ package com.example.hiwin.teacher_version_bob.fragment;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import com.example.hiwin.teacher_version_bob.R;
-import com.example.hiwin.teacher_version_bob.StoryAdapter;
-import org.json.JSONArray;
 
 public class StoriesSelectFragment extends StaticFragment {
-    public abstract static class ItemSelectListener implements FragmentListener {
+    public abstract static class ItemSelectListener {
         public abstract void onItemSelected(int position);
     }
 
     private ItemSelectListener selectListener;
 
     private ListView listView;
-    private View root;
 
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        root = inflater.inflate(R.layout.fragment_stories_select, container, false);
+        View root = inflater.inflate(R.layout.fragment_stories_select, container, false);
         listView = (ListView) root.findViewById(R.id.stories_list);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (selectListener != null) {
-                    selectListener.onItemSelected(position);
-                    selectListener.end();
-                }
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+            if (selectListener != null) {
+                selectListener.onItemSelected(position);
             }
         });
         return root;
     }
+
     @Override
     protected View[] getViews() {
         View[] views = new View[1];
@@ -48,7 +40,11 @@ public class StoriesSelectFragment extends StaticFragment {
     }
 
     @Override
-    public <L extends FragmentListener> void setListener(L listener) {
-        selectListener = (ItemSelectListener) listener;
+    public void interrupt() {
+
+    }
+
+    public void setSelectListener(ItemSelectListener selectListener) {
+        this.selectListener = selectListener;
     }
 }

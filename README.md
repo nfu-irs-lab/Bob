@@ -1,3 +1,7 @@
+---
+typora-copy-images-to: README_resources
+---
+
 # Bob
 
 ## 封包協定
@@ -101,6 +105,39 @@ re.search(x,y) 則是從y輸入字串中比對是否符合x正規表達示。
 
 因為HC-05會接上CP2102，所以可以認定含有CP2102描述的即為HC-05序列埠。藉此在判斷式中進行初始化。
 
+## Dynamixel SDK 
+
+### 安裝
+
+```shell
+pip install dynamixel-sdk
+```
+
+#### 參考
+
+- [dynamixel-sdk 3.7.31](https://pypi.org/project/dynamixel-sdk/)
+
+### 無法在Pycharm執行Dynamixel SDK
+
+```shell
+Traceback (most recent call last):
+  File "/mnt/EAFC7A87FC7A4E37/git_projects/Linux/Bob/Bob_python/bb.py", line 1, in <module>
+    from Bob.robot.concrete.crt_dynamixel import DynamixelRobot
+  File "/mnt/EAFC7A87FC7A4E37/git_projects/Linux/Bob/Bob_python/Bob/robot/concrete/crt_dynamixel.py", line 16, in <module>
+    old_settings = termios.tcgetattr(fd)
+termios.error: (25, 'Inappropriate ioctl for device')
+```
+
+
+
+開啟選項**Emulate terminal in output console**
+
+![](/mnt/EAFC7A87FC7A4E37/git_projects/Linux/Bob/img_1.png)
+
+#### 參考
+
+- [pycharn python 运行报错,问题未知,报错结果为 (25, 'Inappropriate ioctl for device')](https://ask.csdn.net/questions/7541039?spm=1001.2101.3001.6650.1&utm_medium=distribute.pc_relevant.none-task-ask-2%7Edefault%7ECTRLIST%7Edefault-1.essearch_pc_relevant&depth_1-utm_source=distribute.pc_relevant.none-task-ask-2%7Edefault%7ECTRLIST%7Edefault-1.essearch_pc_relevant%20%E2%80%94%E2%80%94%E2%80%94%E2%80%94%E2%80%94%E2%80%94%E2%80%94%E2%80%94%E2%80%94%E2%80%94%E2%80%94%E2%80%94%E2%80%94%E2%80%94%E2%80%94%E2%80%94%20%E7%89%88%E6%9D%83%E5%A3%B0%E6%98%8E%EF%BC%9A%E6%9C%AC%E6%96%87%E4%B8%BACSDN%E5%8D%9A%E4%B8%BB%E3%80%8Cwindofwow%E3%80%8D%E7%9A%84%E5%8E%9F%E5%88%9B%E6%96%87%E7%AB%A0%EF%BC%8C%E9%81%B5%E5%BE%AACC%204.0%20BY-SA%E7%89%88%E6%9D%83%E5%8D%8F%E8%AE%AE%EF%BC%8C%E8%BD%AC%E8%BD%BD%E8%AF%B7%E9%99%84%E4%B8%8A%E5%8E%9F%E6%96%87%E5%87%BA%E5%A4%84%E9%93%BE%E6%8E%A5%E5%8F%8A%E6%9C%AC%E5%A3%B0%E6%98%8E%E3%80%82%20%E5%8E%9F%E6%96%87%E9%93%BE%E6%8E%A5%EF%BC%9Ahttps://blog.csdn.net/qq_37527572/article/details/121350583)
+
 ### 安裝 PyBluez
 ```shell
 sudo apt install python-dev libpython3.6-dev libbluetooth-dev
@@ -117,6 +154,25 @@ sudo systemctl restart bluetooth
 ```shell
 sudo hciconfig hci0 piscan
 ```
+
+#### 藍芽sp無裝置
+
+```
+Traceback (most recent call last):
+  File "/mnt/EAFC7A87FC7A4E37/git_projects/Linux/Bob/Bob_python/bt_main.py", line 19, in <module>
+    server = BluetoothServer(ConnectListener())
+  File "/mnt/EAFC7A87FC7A4E37/git_projects/Linux/Bob/Bob_python/Bob/bluetooth_utils/utils.py", line 28, in __init__
+    profiles=[bluetooth.SERIAL_PORT_PROFILE],
+  File "/home/vincent/PyEnv/bob/lib/python3.6/site-packages/bluetooth/bluez.py", line 275, in advertise_service
+    raise BluetoothError (*e.args)
+bluetooth.btcommon.BluetoothError: no advertisable device
+```
+
+```shell
+sudo sdptool add SP
+```
+
+
 
 #### 藍芽sp權限遭拒
 
@@ -149,6 +205,39 @@ sudo chmod 666 /var/run/sdp
 
 ## Linux
 ### Bluetooth
+
+#### 更改藍芽成相容模式
+
+2-1. Open Bluetooth service configuration file.
+
+```shell
+sudo nano /etc/systemd/system/dbus-org.bluez.service
+```
+
+2-2. Look for a line starts with “ExecStart” and add compatibility flag ‘-C’ at the end of the line.
+
+```
+ExecStart=/usr/lib/bluetooth/bluetoothd -C
+```
+
+2-3. Add a line below immediately after “ExecStart” line, then save and close the file.
+
+```
+ExecStartPost=/usr/bin/sdptool add SP
+```
+
+2-4. Reload the configuration file.
+
+```
+sudo systemctl daemon-reload
+```
+
+2-5. Restart the service.
+
+```
+sudo systemctl restart bluetooth.service
+```
+
 - https://scribles.net/setting-up-bluetooth-serial-port-profile-on-raspberry-pi/
 - https://blog.csdn.net/Adrian503/article/details/110947477
 - https://blog.csdn.net/XiaoXiaoPengBo/article/details/108125755

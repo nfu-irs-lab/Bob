@@ -1,8 +1,8 @@
 from Bob.device.concrete.crt_serial_dev import BluetoothSocketSerialDevice
 from Bob.bluetooth_utils.utils import BluetoothServer, ClientConnectionListener
-from Bob.communication.concrete.crt_package_device import SerialPackageDevice
 from Bob.communication.concrete.crt_strategy import ReadLineStrategy
 from constants import detector, CommandControlListener
+from device_config import getSocketBluetooth
 
 
 class ConnectListener(ClientConnectionListener):
@@ -10,7 +10,7 @@ class ConnectListener(ClientConnectionListener):
     def onConnected(self, socket):
         global monitor
         print("Monitor start")
-        package_device = SerialPackageDevice(BluetoothSocketSerialDevice(socket, write_delay_ms=100))
+        package_device = getSocketBluetooth(socket)
         monitor = package_device.getMonitor(CommandControlListener(package_device), ReadLineStrategy())
         monitor.start()
 

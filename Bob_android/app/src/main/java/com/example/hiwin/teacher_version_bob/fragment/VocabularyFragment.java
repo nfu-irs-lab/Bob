@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -13,7 +14,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.example.hiwin.teacher_version_bob.R;
-import com.example.hiwin.teacher_version_bob.activity.StoryActivity;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,7 +21,6 @@ import org.json.JSONObject;
 import static com.example.hiwin.teacher_version_bob.Constants.getResourceIDByString;
 
 public class VocabularyFragment extends StaticFragment {
-    private View root;
     private int index = 0;
     private ImageView image;
     private TextView name_text, translated_text, definition_text;
@@ -29,17 +28,19 @@ public class VocabularyFragment extends StaticFragment {
     private Context context;
     private JSONArray vocabularies;
     private MediaPlayer player;
-    private ActionListener listener;
-    private boolean hasAction;
+    private CommandListener commandListener;
+    private Handler handler;
 
-    public interface ActionListener extends FragmentListener {
-        void onAction(String cmd);
+
+    public interface CommandListener {
+        void onCommand(String cmd);
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        root = inflater.inflate(R.layout.fragment_vocabulary, container, false);
+        View root = inflater.inflate(R.layout.fragment_vocabulary, container, false);
+        handler = new Handler();
         image = root.findViewById(R.id.vocabulary_interactive_imageview);
         name_text = root.findViewById(R.id.vocabulary_name);
         translated_text = root.findViewById(R.id.vocabulary_translated);
@@ -57,7 +58,6 @@ public class VocabularyFragment extends StaticFragment {
         action = (root.findViewById(R.id.vocabulary_do_action));
         action.setOnClickListener(onClickListener);
 
-        (root.findViewById(R.id.vocabulary_next_session)).setOnClickListener(onClickListener);
 
         try {
             show(vocabularies.getJSONObject(index));
@@ -70,6 +70,18 @@ public class VocabularyFragment extends StaticFragment {
     @Override
     protected View[] getViews() {
         return new View[0];
+    }
+
+    @Override
+    public void interrupt() {
+        end();
+        if (player != null) {
+            player.stop();
+            player.release();
+            player = null;
+        }
+        if (commandListener != null)
+            commandListener.onCommand("STOP_ALL_ACTION");
     }
 
     public void initialize(Context context, JSONArray vocabularies) {
@@ -85,7 +97,7 @@ public class VocabularyFragment extends StaticFragment {
         String translated = vocabulary.getString("translated");
         String definition = vocabulary.getString("definition");
         String part_of_speech = vocabulary.getString("part_of_speech");
-        hasAction = vocabularies.getJSONObject(index).has("action");
+        boolean hasAction = vocabularies.getJSONObject(index).has("action");
         action.setEnabled(hasAction);
         next.setEnabled(index < vocabularies.length() - 1);
         previous.setEnabled(index > 0);
@@ -118,26 +130,30 @@ public class VocabularyFragment extends StaticFragment {
                     player.release();
                     show(vocabularies.getJSONObject(++index));
                 }
-            } else if (v.getId() == R.id.vocabulary_next_session) {
-                player.stop();
-                player.release();
-                if (listener != null)
-                    listener.end();
             } else if (v.getId() == R.id.vocabulary_do_action) {
                 player.seekTo(0);
                 player.start();
-                if (listener != null)
-                    listener.onAction("DO_ACTION " + vocabularies.getJSONObject(index).getString("action"));
+                if (commandListener != null)
+                    commandListener.onCommand("DO_ACTION " + vocabularies.getJSONObject(index).getString("action"));
+                action.setEnabled(false);
+                new Thread(() -> {
+                    try {
+                        Thread.sleep(7000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    handler.post(() -> action.setEnabled(true));
+                }).start();
             } else
                 throw new IllegalStateException();
 
-        } catch (JSONException e) {
+        } catch (
+                JSONException e) {
             e.printStackTrace();
         }
     };
 
-    public <L extends FragmentListener> void setListener(L listener) {
-        this.listener = (ActionListener) listener;
+    public void setCommandListener(CommandListener listener) {
+        this.commandListener = listener;
     }
-
 }

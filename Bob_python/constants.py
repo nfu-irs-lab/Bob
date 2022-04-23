@@ -1,19 +1,22 @@
 import os
+import threading
+
+import keyboard
 
 from Bob.detector.concrete.object_detect_yolov5 import ObjectDetector
 from Bob.detector.concrete.face_detect_deepface import FaceDetector
 from Bob.dbctrl.concrete.crt_database import JSONDatabase
-from Bob.robot.concrete.crt_action import CSVAction
-from Bob.robot.framework.fw_action import Action
-from Bob.serial_config import *
 import base64
 import json
 from typing import List, Optional
-from serial import SerialTimeoutException
 from Bob.communication.concrete.crt_package import StringPackage, Base64LinePackage
 from Bob.communication.framework.fw_listener import PackageListener
 from Bob.communication.framework.fw_package_device import PackageDevice
 from Bob.detector.framework.detector import DetectListener
+from Bob.robot.concrete.crt_command import DynamixelVelocityCommand
+from command_utils import getCommandsFromFileName
+from device_config import getRobot
+from keyboard_ctl import KeyboardController
 
 obj_db_location = f"db{os.path.sep}objects.json"
 face_db_location = f"db{os.path.sep}faces.json"
@@ -24,25 +27,27 @@ object_db = JSONDatabase(open(obj_db_location, encoding=db_charset))
 face_db = JSONDatabase(open(face_db_location, encoding=db_charset))
 stories_db = JSONDatabase(open(stories_db_location, encoding=db_charset))
 
-bt_description = ".*CP2102.*"
-bot_description = ".*FT232R.*"
-
-# robot = getRobotWithName("COM1")
-robot = getRobotWithDescription(bot_description)
-# robot = getPrintedRobot()
-
 detector = None
 monitor = None
 
+robot = getRobot()
+robot.open()
 
-def getActionFromFileName(file: str) -> Action:
-    return CSVAction(f'actions{os.path.sep}{file}')
+robot.enableAllServos(True)
+
+keyboard_ctl = KeyboardController(robot)
+keyboard_ctl.init()
 
 
 def formatDataToJsonString(id: int, type: str, content: str, data):
     sendData = {"id": id, "response_type": type, "content": content,
                 "data": data}
     return json.dumps(sendData, ensure_ascii=False)
+
+
+def doAction(action):
+    print("do action:", action)
+    robot.doCommands(getCommandsFromFileName(action))
 
 
 class CommandControlListener(PackageListener):
@@ -125,8 +130,10 @@ class CommandControlListener(PackageListener):
                 self.package_device.writePackage(Base64LinePackage(StringPackage(jsonString, "UTF-8")))
         elif cmd.startswith("DO_ACTION"):
             action = cmd[10:]
-            print("do action:", action)
-            robot.doAction(getActionFromFileName(action))
+            threading.Thread(target=doAction, args=(action,)).start()
+            # doAction(action)
+        elif cmd == "STOP_ALL_ACTION":
+            robot.stopAllAction()
 
 
 class FaceDetectListener(DetectListener):

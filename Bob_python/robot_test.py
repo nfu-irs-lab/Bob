@@ -1,10 +1,10 @@
-from Bob.serial_config import getRobotWithDescription, getRobotWithName
-from constants import getActionFromFileName
+from device_config import getRobot
+from command_utils import getCommandsFromFileName
 
-bt_description = ".*CP2102.*"
-bot_description = ".*FT232R.*"
+robot = getRobot()
+robot.open()
 
-robot = getRobotWithDescription(bot_description)
-# robot = getRobotWithName("/dev/ttyUSB0")
-robot.doAction(getActionFromFileName("attack.csv"))
+robot.enableAllServos(True)
+robot.doCommands(getCommandsFromFileName("storyaction_start.csv"))
+
 robot.close()
