@@ -15,7 +15,8 @@ public class ModeDialogFragment extends DialogFragment {
         object_detect("Object Detect", ObjectDetectActivity.class),
         interactive_object_detect("Interactive Object Detect", InteractiveObjectDetectActivity.class),
         story("Story", StoryActivity.class),
-        action_button("Action button", ActionButtonActivity.class);
+        action_button("Action button", ActionButtonActivity.class),
+        vocabulary("Vocabulary",VocabularyActivity.class);
 
         final String description;
         private final Class<?> clazz;
