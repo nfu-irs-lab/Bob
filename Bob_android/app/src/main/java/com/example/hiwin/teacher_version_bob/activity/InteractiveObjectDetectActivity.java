@@ -6,9 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.widget.ListView;
 import android.widget.Toast;
-import com.example.hiwin.teacher_version_bob.ObjectAdaptor;
 import com.example.hiwin.teacher_version_bob.R;
 import com.example.hiwin.teacher_version_bob.fragment.*;
 import org.json.JSONArray;
@@ -16,68 +14,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.nio.charset.StandardCharsets;
+import java.util.LinkedList;
 
 public class InteractiveObjectDetectActivity extends BluetoothCommunicationActivity {
 
 
-    private static class SelectedObject {
-        private final String name;
-        private final String tr_name;
-        private final String sentence;
-        private final String tr_sentence;
-
-        private SelectedObject(String name, String tr_name, String sentence, String tr_sentence) {
-            this.name = name;
-            this.tr_name = tr_name;
-            this.sentence = sentence;
-            this.tr_sentence = tr_sentence;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getTrName() {
-            return tr_name;
-        }
-
-        public String getSentence() {
-            return sentence;
-        }
-
-        public String getTrSentence() {
-            return tr_sentence;
-        }
-
-        public static class Builder {
-            public SelectedObject buildFromJsonObject(JSONObject jsonObject) throws JSONException {
-                JSONObject jdata = jsonObject.getJSONObject("data");
-
-                JSONArray languages = jdata.getJSONArray("languages");
-
-                JSONObject translated = null;
-                for (int i = 0; i < languages.length(); i++) {
-                    if (languages.getJSONObject(i).get("code").equals("zh_TW"))
-                        translated = languages.getJSONObject(i);
-                }
-
-                if (translated == null)
-                    throw new RuntimeException("code not found");
-
-//                Face face = Face.valueOf(jdata.getString("face"));
-                String name = jdata.getString("name");
-                String sentence = jdata.getString("sentence");
-                String tr_name = translated.getString("tr_name");
-                String tr_sentence = translated.getString("tr_sentence");
-                return new SelectedObject(name, tr_name, sentence, tr_sentence);
-            }
-        }
-
-    }
-
     private static final String THIS_LOG_TAG = "InteractiveObjectDetectActivity";
-    private SelectedObject selectedObject;
-    private DetectedListener detectedListener;
+    private final LinkedList<JSONObject> available_vocabulary=new LinkedList<>();
+    private JSONArray objects;
+    private String answer;
 
     @Override
     protected void initialize(Bundle savedInstanceState) {
@@ -95,23 +40,24 @@ public class InteractiveObjectDetectActivity extends BluetoothCommunicationActiv
             String str = new String(data, StandardCharsets.UTF_8);
             Log.d(THIS_LOG_TAG, "received string:");
             Log.d(THIS_LOG_TAG, str);
-            JSONObject object = new JSONObject(str);
-//            int id = object.getInt("id");
-//            String responseType = object.getString("response_type");
-            String content = object.getString("content");
-            if (content.equals("all_object")) {
-                Fragment entryDetectFragment = getEntryDetectFragment();
-                Fragment selectFragment = getSelectFragment(object.getJSONArray("data"), entryDetectFragment, "entryDetectFragment");
-                postFragment(selectFragment, "selectFragment");
+            JSONObject json = new JSONObject(str);
+            String content = json.getString("content");
+            if (content.equals("all_objects")) {
+                objects = json.getJSONArray("data");
+                reset();
+                selectAnswer();
+                sendMessage("DETECT_INTER_OBJECT");
+                sendMessage("START_DETECT");
             } else if (content.equals("single_object")) {
-                SelectedObject.Builder builder = new SelectedObject.Builder();
-                SelectedObject sb = builder.buildFromJsonObject(object);
-                if (detectedListener == null)
-                    throw new RuntimeException("detectedListener");
+                String detected_object = json.getJSONObject("data").getString("name");
 
-                detectedListener.onDetected(sb.getName());
+                if(detected_object.equals(answer)){
+                    Toast.makeText(this,"Correct",Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(this,"Incorrect",Toast.LENGTH_SHORT).show();
+                }
             } else {
-                throw new RuntimeException("Unknown state");
+                throw new IllegalStateException("Unknown state");
             }
 
 
@@ -120,55 +66,30 @@ public class InteractiveObjectDetectActivity extends BluetoothCommunicationActiv
         }
     }
 
-    private Fragment getSelectFragment(JSONArray array, Fragment next, String nextId) {
-        ObjectSelectFragment selectFragment = new ObjectSelectFragment();
-        selectFragment.setShowListener(views -> ((ListView) views[0]).setAdapter(new ObjectAdaptor(this, array)));
-        selectFragment.setFragmentListener(new ObjectSelectFragment.ItemSelectListener() {
-            @Override
-            public void onItemSelected(int position) {
-                SelectedObject.Builder builder = new SelectedObject.Builder();
-                try {
-                    selectedObject = builder.buildFromJsonObject(array.getJSONObject(position));
-                    Toast.makeText(InteractiveObjectDetectActivity.this, selectedObject.getName(), Toast.LENGTH_SHORT).show();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
+    private void reset() throws JSONException {
+        available_vocabulary.clear();
+        for(int i=0;i<objects.length();i++){
+            available_vocabulary.add(objects.getJSONObject(i));
+        }
+    }
+    private void selectAnswer() throws JSONException {
+        int i = (int) (Math.random() * available_vocabulary.size());
+        JSONObject selected=available_vocabulary.get(i).getJSONObject("data");
 
-            @Override
-            public void start() {
-
-            }
-
-            @Override
-            public void end() {
-                postFragment(next, nextId);
-            }
-        });
-        return selectFragment;
+        answer= selected.getString("name");
+        String definition = selected.getString("sentence");
+        postFragment(getEntryDetectFragment(definition),"AA");
+        available_vocabulary.remove(i);
     }
 
-    public interface DetectedListener {
-        void onDetected(String obj);
-    }
 
-    private Fragment getEntryDetectFragment() {
+//    public interface DetectedListener {
+//        void onDetected(String obj);
+//    }
+
+    private Fragment getEntryDetectFragment(String definition) {
         EntryObjectDetectFragment objectDetectFragment = new EntryObjectDetectFragment();
-        objectDetectFragment.setFragmentListener(new FragmentListener() {
-            @Override
-            public void start() {
-                sendMessage("DETECT_INTER_OBJECT");
-                sendMessage("START_DETECT");
-                objectDetectFragment.setAnswer(selectedObject.getName());
-                detectedListener = objectDetectFragment.getListener();
-
-            }
-
-            @Override
-            public void end() {
-
-            }
-        });
+        objectDetectFragment.setDefinition(definition);
         return objectDetectFragment;
     }
 
@@ -183,10 +104,11 @@ public class InteractiveObjectDetectActivity extends BluetoothCommunicationActiv
 //        sendMessage("PAUSE_DETECT");
         sendMessage("STOP_DETECT");
     }
+
     @Override
     public void onStop() {
 //        sendMessage("PAUSE_DETECT");
-        if(isConnected())
+        if (isConnected())
             sendMessage("STOP_DETECT");
         super.onStop();
     }

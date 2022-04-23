@@ -103,12 +103,9 @@ class CommandControlListener(PackageListener):
 
         elif cmd == "DB_GET_ALL":
             all_data: json = object_db.getAllData()
-            sendData = {"id": self.__id_counter, "response_type": "json_object", "content": "all_object",
-                        "data": all_data}
-            jsonString = json.dumps(sendData, ensure_ascii=False)
+            jsonString = formatDataToJsonString(0, "json_object", "all_objects", all_data)
             print("Send:", jsonString)
             self.package_device.writePackage(Base64LinePackage(StringPackage(jsonString, "UTF-8")))
-            self.__id_counter = self.__id_counter + 1
 
         elif cmd.startswith("STORY_GET"):
             l1 = cmd[10:]
