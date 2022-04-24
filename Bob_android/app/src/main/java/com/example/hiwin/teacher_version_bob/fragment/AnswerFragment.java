@@ -22,8 +22,8 @@ public class AnswerFragment extends StaticFragment {
 
         View root = inflater.inflate(R.layout.fragment_answer, container, false);
         img = (ImageView) root.findViewById(R.id.answer_img);
-        img.setImageDrawable(getContext().getDrawable(correct ? R.drawable.correct : R.drawable.incorrect));
-        MediaPlayer.create(getContext(),correct?R.raw.sound_correct_2:R.raw.sound_try_again).start();
+        img.setImageDrawable(getContext().getDrawable(correct ? R.drawable.correct: R.drawable.incorrect));
+        MediaPlayer.create(getContext(),correct?R.raw.sound_good_job:R.raw.sound_try_again).start();
         return root;
     }
 

@@ -45,7 +45,12 @@ public class InteractiveObjectDetectActivity extends BluetoothCommunicationActiv
             JSONObject json = new JSONObject(str);
             String content = json.getString("content");
             if (content.equals("all_objects")) {
-                objects = json.getJSONArray("data");
+                JSONArray raw = json.getJSONArray("data");
+                objects = new JSONArray();
+                for (int i = 0; i < 9; i++) {
+                    objects.put(raw.getJSONObject(i));
+                }
+
                 reset();
                 selectNewAnswer();
                 sendMessage("DETECT_INTER_OBJECT");
@@ -104,7 +109,7 @@ public class InteractiveObjectDetectActivity extends BluetoothCommunicationActiv
         JSONObject selected = available_vocabulary.get(i).getJSONObject("data");
 
         answer = selected.getString("name");
-        String definition = selected.getString("sentence");
+        String definition = selected.getString("definition");
         currentQuestion = getEntryDetectFragment(definition);
         postFragment(currentQuestion, "AA");
         available_vocabulary.remove(i);
