@@ -16,6 +16,8 @@ import org.json.JSONObject;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 
+import static com.example.hiwin.teacher_version_bob.Constants.getResourceIDByString;
+
 public class InteractiveObjectDetectActivity extends BluetoothCommunicationActivity {
 
 
@@ -110,7 +112,7 @@ public class InteractiveObjectDetectActivity extends BluetoothCommunicationActiv
 
         answer = selected.getString("name");
         String definition = selected.getString("definition");
-        currentQuestion = getEntryDetectFragment(definition);
+        currentQuestion = getEntryDetectFragment(definition,getResourceIDByString(this,selected.getString("definition_audio"),"raw"));
         postFragment(currentQuestion, "AA");
         available_vocabulary.remove(i);
     }
@@ -120,9 +122,9 @@ public class InteractiveObjectDetectActivity extends BluetoothCommunicationActiv
 //        void onDetected(String obj);
 //    }
 
-    private Fragment getEntryDetectFragment(String definition) {
+    private Fragment getEntryDetectFragment(String definition ,int audio_id) {
         EntryObjectDetectFragment objectDetectFragment = new EntryObjectDetectFragment();
-        objectDetectFragment.setDefinition(definition);
+        objectDetectFragment.setDefinition(definition,audio_id);
         return objectDetectFragment;
     }
 
