@@ -1,5 +1,6 @@
 import os
 import threading
+import time
 
 import keyboard
 
@@ -178,11 +179,15 @@ class ObjectDetectListener(DetectListener):
 class InteractiveObjectDetectListener(DetectListener):
     def __init__(self, device: PackageDevice):
         self.device = device
+        self.timer = 0
 
     def onDetect(self, objectList: List):
         for dobj in objectList:
             if dobj['confidence'] < 0.65:
                 continue
+
+            if time.time() <= self.timer:
+                break
 
             obj: Optional[json] = object_db.queryForId(dobj['name'])
             if obj is not None:
@@ -191,3 +196,5 @@ class InteractiveObjectDetectListener(DetectListener):
                 jsonString = json.dumps(sendData, ensure_ascii=False)
                 print("Send:", jsonString)
                 self.device.writePackage(Base64LinePackage(StringPackage(jsonString, "UTF-8")))
+                self.timer = time.time()+5
+                break
