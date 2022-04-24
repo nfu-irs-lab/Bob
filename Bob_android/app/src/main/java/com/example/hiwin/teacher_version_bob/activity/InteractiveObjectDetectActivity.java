@@ -2,11 +2,11 @@ package com.example.hiwin.teacher_version_bob.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.widget.Toast;
 import com.example.hiwin.teacher_version_bob.R;
 import com.example.hiwin.teacher_version_bob.fragment.*;
 import org.json.JSONArray;
@@ -20,9 +20,11 @@ public class InteractiveObjectDetectActivity extends BluetoothCommunicationActiv
 
 
     private static final String THIS_LOG_TAG = "InteractiveObjectDetectActivity";
-    private final LinkedList<JSONObject> available_vocabulary=new LinkedList<>();
+    private final LinkedList<JSONObject> available_vocabulary = new LinkedList<>();
     private JSONArray objects;
     private String answer;
+    private final Handler handler = new Handler();
+    private Fragment currentQuestion;
 
     @Override
     protected void initialize(Bundle savedInstanceState) {
@@ -45,17 +47,38 @@ public class InteractiveObjectDetectActivity extends BluetoothCommunicationActiv
             if (content.equals("all_objects")) {
                 objects = json.getJSONArray("data");
                 reset();
-                selectAnswer();
+                selectNewAnswer();
                 sendMessage("DETECT_INTER_OBJECT");
                 sendMessage("START_DETECT");
             } else if (content.equals("single_object")) {
                 String detected_object = json.getJSONObject("data").getString("name");
 
-                if(detected_object.equals(answer)){
-                    Toast.makeText(this,"Correct",Toast.LENGTH_SHORT).show();
-                }else{
-                    Toast.makeText(this,"Incorrect",Toast.LENGTH_SHORT).show();
-                }
+                AnswerFragment fragment = new AnswerFragment();
+                boolean correct = detected_object.equals(answer);
+                postFragment(fragment, "A");
+                new Thread(() -> {
+
+                    if (correct) {
+                        fragment.correct();
+                    } else {
+                        fragment.incorrect();
+                    }
+                    try {
+                        Thread.sleep(3000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    handler.post(() -> {
+                        try {
+                            if (correct)
+                                selectNewAnswer();
+                            else
+                                postFragment(currentQuestion, "UU");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    });
+                }).start();
             } else {
                 throw new IllegalStateException("Unknown state");
             }
@@ -68,17 +91,22 @@ public class InteractiveObjectDetectActivity extends BluetoothCommunicationActiv
 
     private void reset() throws JSONException {
         available_vocabulary.clear();
-        for(int i=0;i<objects.length();i++){
+        for (int i = 0; i < objects.length(); i++) {
             available_vocabulary.add(objects.getJSONObject(i));
         }
     }
-    private void selectAnswer() throws JSONException {
-        int i = (int) (Math.random() * available_vocabulary.size());
-        JSONObject selected=available_vocabulary.get(i).getJSONObject("data");
 
-        answer= selected.getString("name");
+    private void selectNewAnswer() throws JSONException {
+        if (available_vocabulary.size() == 0)
+            reset();
+
+        int i = (int) (Math.random() * available_vocabulary.size());
+        JSONObject selected = available_vocabulary.get(i).getJSONObject("data");
+
+        answer = selected.getString("name");
         String definition = selected.getString("sentence");
-        postFragment(getEntryDetectFragment(definition),"AA");
+        currentQuestion = getEntryDetectFragment(definition);
+        postFragment(currentQuestion, "AA");
         available_vocabulary.remove(i);
     }
 
