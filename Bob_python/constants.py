@@ -38,8 +38,8 @@ robot.open()
 
 robot.enableAllServos(True)
 
-keyboard_ctl = KeyboardController(robot)
-keyboard_ctl.init()
+# keyboard_ctl = KeyboardController(robot)
+# keyboard_ctl.init()
 
 
 def formatDataToJsonString(id: int, type: str, content: str, data):
@@ -182,19 +182,27 @@ class InteractiveObjectDetectListener(DetectListener):
         self.timer = 0
 
     def onDetect(self, objectList: List):
-        for dobj in objectList:
-            if dobj['confidence'] < 0.65:
-                continue
+        max_index = -1
+        max_conf = -1
+        for i in range(0, len(objectList)):
+            if objectList[i]['confidence'] > max_conf:
+                max_conf = objectList[i]['confidence']
+                max_index = i
 
-            if time.time() <= self.timer:
-                break
+        selected_object = objectList[max_index]
 
-            obj: Optional[json] = object_db.queryForId(dobj['name'])
-            if obj is not None:
-                data: json = obj['data']
-                sendData = {"id": -1, "response_type": "json_object", "content": "single_object", "data": data}
-                jsonString = json.dumps(sendData, ensure_ascii=False)
-                print("Send:", jsonString)
-                self.device.writePackage(Base64LinePackage(StringPackage(jsonString, "UTF-8")))
-                self.timer = time.time()+5
-                break
+        if selected_object['confidence'] < 0.65:
+            return
+
+        if time.time() <= self.timer:
+            return
+
+        obj: Optional[json] = object_db.queryForId(selected_object['name'])
+        if obj is not None:
+            data: json = obj['data']
+            sendData = {"id": -1, "response_type": "json_object", "content": "single_object", "data": data}
+            jsonString = json.dumps(sendData, ensure_ascii=False)
+            print("Send:", jsonString)
+            self.device.writePackage(Base64LinePackage(StringPackage(jsonString, "UTF-8")))
+            self.timer = time.time() + 5
+
