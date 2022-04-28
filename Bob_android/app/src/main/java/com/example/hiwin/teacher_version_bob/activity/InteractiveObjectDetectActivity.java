@@ -122,6 +122,8 @@ public class InteractiveObjectDetectActivity extends BluetoothCommunicationActiv
     }
 
     private void selectNewAnswer() throws JSONException {
+        if(objects==null || objects.length()==0)
+            return;
         if (available_vocabulary.size() == 0)
             reset();
 
