@@ -24,7 +24,7 @@ def getVirtualDynamixelRobot():
 
 
 def getRobot() -> Robot:
-    return getVirtualDynamixelRobot()
+    return getDynamixelRobot()
 
 
 def getBluetooth() -> PackageDevice:
