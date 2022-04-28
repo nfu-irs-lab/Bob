@@ -204,5 +204,5 @@ class InteractiveObjectDetectListener(DetectListener):
             jsonString = json.dumps(sendData, ensure_ascii=False)
             print("Send:", jsonString)
             self.device.writePackage(Base64LinePackage(StringPackage(jsonString, "UTF-8")))
-            self.timer = time.time() + 5
+            self.timer = time.time() + 17
 
