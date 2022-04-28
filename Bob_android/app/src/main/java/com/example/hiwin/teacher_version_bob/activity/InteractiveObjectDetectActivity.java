@@ -7,8 +7,12 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+
 import com.example.hiwin.teacher_version_bob.R;
 import com.example.hiwin.teacher_version_bob.fragment.*;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -54,7 +58,6 @@ public class InteractiveObjectDetectActivity extends BluetoothCommunicationActiv
                 }
 
                 reset();
-                selectNewAnswer();
                 sendMessage("DETECT_INTER_OBJECT");
                 sendMessage("START_DETECT");
             } else if (content.equals("single_object")) {
@@ -67,24 +70,17 @@ public class InteractiveObjectDetectActivity extends BluetoothCommunicationActiv
 
                     if (correct) {
                         fragment.correct();
+                        sendMessage("DO_ACTION correct.csv");
                     } else {
                         fragment.incorrect();
+                        sendMessage("DO_ACTION incorrect.csv");
                     }
                     try {
                         Thread.sleep(3000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    handler.post(() -> {
-                        try {
-                            if (correct)
-                                selectNewAnswer();
-                            else
-                                postFragment(currentQuestion, "UU");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    });
+                    handler.post(() -> postFragment(currentQuestion, "UU"));
                 }).start();
             } else {
                 throw new IllegalStateException("Unknown state");
@@ -94,6 +90,28 @@ public class InteractiveObjectDetectActivity extends BluetoothCommunicationActiv
         } catch (IllegalArgumentException | JSONException e) {
             Log.e(THIS_LOG_TAG, e.getMessage());
         }
+    }
+
+    MenuItem next_item;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        next_item = menu.add("Next");
+        next_item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item == next_item) {
+            try {
+                selectNewAnswer();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void reset() throws JSONException {
@@ -112,7 +130,7 @@ public class InteractiveObjectDetectActivity extends BluetoothCommunicationActiv
 
         answer = selected.getString("name");
         String definition = selected.getString("definition");
-        currentQuestion = getEntryDetectFragment(definition,getResourceIDByString(this,selected.getString("definition_audio"),"raw"));
+        currentQuestion = getEntryDetectFragment(definition, getResourceIDByString(this, selected.getString("definition_audio"), "raw"));
         postFragment(currentQuestion, "AA");
         available_vocabulary.remove(i);
     }
@@ -122,9 +140,9 @@ public class InteractiveObjectDetectActivity extends BluetoothCommunicationActiv
 //        void onDetected(String obj);
 //    }
 
-    private Fragment getEntryDetectFragment(String definition ,int audio_id) {
+    private Fragment getEntryDetectFragment(String definition, int audio_id) {
         EntryObjectDetectFragment objectDetectFragment = new EntryObjectDetectFragment();
-        objectDetectFragment.setDefinition(definition,audio_id);
+        objectDetectFragment.setDefinition(definition, audio_id);
         return objectDetectFragment;
     }
 
