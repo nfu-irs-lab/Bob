@@ -37,8 +37,7 @@
           "part_of_speech": "adj",
           "image": "vocabulary_img_hungry",
           "audio": "vocabulary_audio_hungry",
-          "definition": "feeling or showing the need for food",
-          "action": "hungry.csv"
+          "definition": "feeling or showing the need for food"
         },
         {
           "name": "Tired",
