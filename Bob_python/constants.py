@@ -1,5 +1,6 @@
 import os
 import threading
+import time
 
 import keyboard
 
@@ -21,11 +22,13 @@ from keyboard_ctl import KeyboardController
 obj_db_location = f"db{os.path.sep}objects.json"
 face_db_location = f"db{os.path.sep}faces.json"
 stories_db_location = f"db{os.path.sep}stories.json"
+vocabularies_db_location = f"db{os.path.sep}vocabularies.json"
 db_charset = 'UTF-8'
 
 object_db = JSONDatabase(open(obj_db_location, encoding=db_charset))
 face_db = JSONDatabase(open(face_db_location, encoding=db_charset))
 stories_db = JSONDatabase(open(stories_db_location, encoding=db_charset))
+vocabularies_db = JSONDatabase(open(vocabularies_db_location, encoding=db_charset))
 
 detector = None
 monitor = None
@@ -35,8 +38,8 @@ robot.open()
 
 robot.enableAllServos(True)
 
-keyboard_ctl = KeyboardController(robot)
-keyboard_ctl.init()
+# keyboard_ctl = KeyboardController(robot)
+# keyboard_ctl.init()
 
 
 def formatDataToJsonString(id: int, type: str, content: str, data):
@@ -101,12 +104,9 @@ class CommandControlListener(PackageListener):
 
         elif cmd == "DB_GET_ALL":
             all_data: json = object_db.getAllData()
-            sendData = {"id": self.__id_counter, "response_type": "json_object", "content": "all_object",
-                        "data": all_data}
-            jsonString = json.dumps(sendData, ensure_ascii=False)
+            jsonString = formatDataToJsonString(0, "json_object", "all_objects", all_data)
             print("Send:", jsonString)
             self.package_device.writePackage(Base64LinePackage(StringPackage(jsonString, "UTF-8")))
-            self.__id_counter = self.__id_counter + 1
 
         elif cmd.startswith("STORY_GET"):
             l1 = cmd[10:]
@@ -134,6 +134,13 @@ class CommandControlListener(PackageListener):
             # doAction(action)
         elif cmd == "STOP_ALL_ACTION":
             robot.stopAllAction()
+        elif cmd == "ALL_VOCABULARIES":
+            print("get all vocabulary")
+            vocabularies_content = vocabularies_db.queryForId("vocabulary")
+            print(vocabularies_content)
+            jsonString = formatDataToJsonString(0, "json_array", "all_vocabularies", vocabularies_content['data'])
+            print("Send:", jsonString)
+            self.package_device.writePackage(Base64LinePackage(StringPackage(jsonString, "UTF-8")))
 
 
 class FaceDetectListener(DetectListener):
@@ -172,16 +179,30 @@ class ObjectDetectListener(DetectListener):
 class InteractiveObjectDetectListener(DetectListener):
     def __init__(self, device: PackageDevice):
         self.device = device
+        self.timer = 0
 
     def onDetect(self, objectList: List):
-        for dobj in objectList:
-            if dobj['confidence'] < 0.65:
-                continue
+        max_index = -1
+        max_conf = -1
+        for i in range(0, len(objectList)):
+            if objectList[i]['confidence'] > max_conf:
+                max_conf = objectList[i]['confidence']
+                max_index = i
 
-            obj: Optional[json] = object_db.queryForId(dobj['name'])
-            if obj is not None:
-                data: json = obj['data']
-                sendData = {"id": -1, "response_type": "json_object", "content": "single_object", "data": data}
-                jsonString = json.dumps(sendData, ensure_ascii=False)
-                print("Send:", jsonString)
-                self.device.writePackage(Base64LinePackage(StringPackage(jsonString, "UTF-8")))
+        selected_object = objectList[max_index]
+
+        if selected_object['confidence'] < 0.65:
+            return
+
+        if time.time() <= self.timer:
+            return
+
+        obj: Optional[json] = object_db.queryForId(selected_object['name'])
+        if obj is not None:
+            data: json = obj['data']
+            sendData = {"id": -1, "response_type": "json_object", "content": "single_object", "data": data}
+            jsonString = json.dumps(sendData, ensure_ascii=False)
+            print("Send:", jsonString)
+            self.device.writePackage(Base64LinePackage(StringPackage(jsonString, "UTF-8")))
+            self.timer = time.time() + 17
+

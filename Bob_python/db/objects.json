@@ -1,15 +1,152 @@
 [
   {
+    "id": "sandwich",
+    "data": {
+      "name": "sandwich",
+      "group": "food",
+      "sentence": "",
+      "face": "",
+      "definition": "two pieces of bread with food such as cheese, salad, or meat between them.",
+      "definition_audio": "definition_audio_sandwich",
+      "image": "",
+      "action": "",
+      "tr_name": "三明治",
+      "tr_sentence": ""
+    }
+  },
+  {
+    "id": "pizza",
+    "data": {
+      "name": "pizza",
+      "group": "food",
+      "sentence": "",
+      "face": "",
+      "definition": "a large circle of flat bread baked with cheese, tomatoes, and sometimes meat and vegetables spread on top.",
+      "definition_audio": "definition_audio_pizza",
+      "image": "",
+      "action": "",
+      "tr_name": "披薩",
+      "tr_sentence": ""
+    }
+  },
+  {
+    "id": "donut",
+    "data": {
+      "name": "donut",
+      "group": "food",
+      "sentence": "",
+      "face": "",
+      "definition": "a small fried cake of sweetened dough, typically in the shape of a ball or ring.",
+      "definition_audio": "definition_audio_donut",
+      "image": "",
+      "action": "",
+      "tr_name": "甜甜圈",
+      "tr_sentence": ""
+    }
+  },
+  {
+    "id": "carrot",
+    "data": {
+      "name": "carrot",
+      "group": "food",
+      "sentence": "",
+      "face": "",
+      "definition": "a long pointed orange root eaten as a vegetable",
+      "definition_audio": "definition_audio_carrot",
+      "image": "",
+      "action": "",
+      "tr_name": "胡蘿蔔",
+      "tr_sentence": ""
+    }
+  },
+  {
+    "id": "cake",
+    "data": {
+      "name": "cake",
+      "group": "food",
+      "sentence": "This cake is delicious",
+      "face": "face_gif_happy",
+      "definition": "a sweet food made with a mixture of flour, egg, fat, and sugar",
+      "definition_audio": "definition_audio_cake",
+      "image": "object_cake",
+      "action": "cake.csv",
+      "tr_name": "蛋糕",
+      "tr_sentence": "這個蛋糕很好吃。"
+    }
+  },
+  {
+    "id": "hot dog",
+    "data": {
+      "name": "hotdog",
+      "group": "food",
+      "sentence": "",
+      "face": "",
+      "definition": "a cooked sausage eaten in a long soft piece of bread, often with ketchup (番茄醬) or mustard（芥末醬）",
+      "definition_audio": "definition_audio_hotdog",
+      "image": "",
+      "action": "",
+      "tr_sentence": "",
+      "tr_name": "熱狗"
+    }
+  },
+  {
+    "id": "apple",
+    "data": {
+      "name": "apple",
+      "group": "food",
+      "sentence": "",
+      "face": "",
+      "definition": "a round fruit with red, green, yellow skin and small seeds.",
+      "definition_audio": "definition_audio_apple",
+      "image": "",
+      "action": "",
+      "tr_name": "蘋果",
+      "tr_sentence": ""
+    }
+  },
+  {
+    "id": "banana",
+    "data": {
+      "name": "banana",
+      "group": "food",
+      "sentence": "",
+      "face": "",
+      "definition": "a long, curved fruit with yellow skin and soft, sweet, white flesh (果肉）inside.",
+      "definition_audio": "definition_audio_banana",
+      "image": "",
+      "action": "",
+      "tr_name": "香蕉",
+      "tr_sentence": ""
+    }
+  },
+  {
+    "id": "broccoli",
+    "data": {
+      "name": "broccoli",
+      "group": "food",
+      "sentence": "",
+      "face": "",
+      "definition": "a vegetable with green stalks(莖)and green top (表面).",
+      "definition_audio": "definition_audio_broccoli",
+      "image": "",
+      "action": "",
+      "tr_name": "花椰菜",
+      "tr_sentence": ""
+    }
+  },
+  {
     "id": "bird",
     "data": {
       "name": "bird",
       "group": "creature",
       "sentence": "The bird is flying in the sky.",
       "face": "face_gif_happy",
+      "definition": "",
+      "definition_audio": "",
       "image": "object_bird",
       "action": "bird.csv",
       "tr_name": "鳥",
-      "tr_sentence": "鳥兒在天上飛。"
+      "tr_sentence": "鳥兒在天上飛"
     }
   },
   {
@@ -19,6 +156,8 @@
       "group": "creature",
       "sentence": "His bottle is very big",
       "face": "face_gif_love_eyes",
+      "definition": "",
+      "definition_audio": "",
       "image": "object_bottle",
       "action": "bottle.csv",
       "tr_name": "瓶子",
@@ -32,23 +171,12 @@
       "group": "tool",
       "sentence": "That bowl is really beautiful.",
       "face": "face_gif_love_eyes",
+      "definition": "",
+      "definition_audio": "",
       "image": "object_bowl",
       "action": "bowl.csv",
       "tr_name": "碗",
       "tr_sentence": "那碗真漂亮。"
-    }
-  },
-  {
-    "id": "cake",
-    "data": {
-      "name": "cake",
-      "group": "food",
-      "sentence": "This cake is delicious",
-      "face": "face_gif_happy",
-      "image": "object_cake",
-      "action": "cake.csv",
-      "tr_name": "蛋糕",
-      "tr_sentence": "這個蛋糕很好吃。"
     }
   },
   {
@@ -57,6 +185,8 @@
       "group": "transportation",
       "sentence": "My new car is broken.",
       "face": "face_gif_sad",
+      "definition": "",
+      "definition_audio": "",
       "image": "object_car",
       "action": "car.csv",
       "name": "car",
@@ -70,6 +200,8 @@
       "name": "cat",
       "group": "creature",
       "sentence": "The cat is very cute",
+      "definition": "",
+      "definition_audio": "",
       "face": "face_gif_love_eyes",
       "image": "object_cat",
       "action": "cat.csv",
@@ -84,6 +216,8 @@
       "group": "tool",
       "sentence": "Don't point the knife at me.",
       "face": "face_gif_sad",
+      "definition": "",
+      "definition_audio": "",
       "image": "object_knife",
       "action": "knife.csv",
       "tr_name": "刀",

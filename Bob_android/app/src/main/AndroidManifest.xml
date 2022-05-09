@@ -8,35 +8,33 @@
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
-    <application
-        android:allowBackup="true"
-        android:icon="@mipmap/robot"
-        android:label="@string/app_name"
-        android:roundIcon="@mipmap/robot"
-        android:supportsRtl="true"
-        android:theme="@style/AppTheme.NoActionBar"
-        tools:ignore="GoogleAppIndexingWarning">
 
+    <application
+            android:allowBackup="true"
+            android:icon="@mipmap/robot"
+            android:label="@string/app_name"
+            android:roundIcon="@mipmap/robot"
+            android:supportsRtl="true"
+            android:theme="@style/AppTheme.NoActionBar"
+            tools:ignore="GoogleAppIndexingWarning">
+        <activity
+                android:name=".activity.VocabularyActivity"
+                android:exported="true"/>
         <activity android:name=".activity.ObjectDetectActivity">
         </activity>
         <activity android:name=".activity.BluetoothConnectionActivity">
-             <intent-filter>
-             <action android:name="android.intent.action.MAIN" />
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
 
-
-             <category android:name="android.intent.category.LAUNCHER" />
-             </intent-filter>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
         </activity>
-
         <activity android:name=".activity.FaceDetectActivity"/>
-
         <activity android:name=".activity.InteractiveObjectDetectActivity"/>
-
         <activity android:name=".activity.StoryActivity"/>
         <activity android:name=".activity.ActionButtonActivity"/>
 
         <service android:name=".communication.service.SerialService"/>
-
     </application>
 
 </manifest>
