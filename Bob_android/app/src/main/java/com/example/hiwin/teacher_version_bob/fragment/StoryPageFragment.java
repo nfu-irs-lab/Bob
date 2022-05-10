@@ -3,16 +3,12 @@ package com.example.hiwin.teacher_version_bob.fragment;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.CompoundButton;
-import android.widget.ImageView;
-import android.widget.ToggleButton;
+import android.widget.*;
 
 import com.example.hiwin.teacher_version_bob.R;
 
@@ -26,6 +22,7 @@ import java.io.IOException;
 import static com.example.hiwin.teacher_version_bob.Constants.getResourceIDByString;
 
 public class StoryPageFragment extends StaticFragment {
+    private TextView text;
     private ImageView imageview;
     private Context context;
     private JSONArray pages;
@@ -46,6 +43,7 @@ public class StoryPageFragment extends StaticFragment {
         View root = inflater.inflate(R.layout.fragment_story_page, container, false);
         imageview = root.findViewById(R.id.story_page_imageview);
 
+        text = root.findViewById(R.id.story_page_text);
         previous = root.findViewById(R.id.story_page_previous);
         previous.setOnClickListener(onClickListener);
 
@@ -80,6 +78,7 @@ public class StoryPageFragment extends StaticFragment {
         final int audio_id = getResourceIDByString(context, page.getString("audio"), "raw");
         final int drawable_id = getResourceIDByString(context, page.getString("image"), "drawable");
         final String text = page.getString("text");
+        this.text.setText(text);
 
         if (commandListener != null)
             commandListener.onCommand("DO_ACTION " + page.getString("action"));
