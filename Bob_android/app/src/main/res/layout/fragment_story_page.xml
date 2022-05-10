@@ -43,6 +43,11 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
+        <TextView
+                android:text="TextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:id="@+id/story_page_text" android:layout_weight="1"
+                android:textSize="34sp" android:gravity="center"/>
         <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -85,29 +90,6 @@
                 android:textAllCaps="false"
                 android:textSize="20sp" />
 
-        </LinearLayout>
-        <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" android:layout_weight="1">
-
-            <Button
-                android:id="@+id/story_page_correct"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Correct"
-                android:textAllCaps="false"
-                android:textSize="20sp" />
-
-            <Button
-                android:id="@+id/story_page_incorrect"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Incorrect"
-                android:textAllCaps="false"
-                android:textSize="20sp" />
         </LinearLayout>
 
     </LinearLayout>

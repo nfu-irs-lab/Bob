@@ -3,16 +3,12 @@ package com.example.hiwin.teacher_version_bob.fragment;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.CompoundButton;
-import android.widget.ImageView;
-import android.widget.ToggleButton;
+import android.widget.*;
 
 import com.example.hiwin.teacher_version_bob.R;
 
@@ -26,17 +22,16 @@ import java.io.IOException;
 import static com.example.hiwin.teacher_version_bob.Constants.getResourceIDByString;
 
 public class StoryPageFragment extends StaticFragment {
-    private View root;
+    private TextView text;
     private ImageView imageview;
-    //    private TextView story_text;
     private Context context;
     private JSONArray pages;
     private int index = 0;
     private MediaPlayer player;
-    private Button previous, speak, next;
+    private Button previous;
+    private Button next;
     private boolean auto = false;
     private CommandListener commandListener;
-    private Handler handler;
 
     public interface CommandListener {
         void onCommand(String cmd);
@@ -45,23 +40,19 @@ public class StoryPageFragment extends StaticFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        root = inflater.inflate(R.layout.fragment_story_page, container, false);
-        handler = new Handler();
+        View root = inflater.inflate(R.layout.fragment_story_page, container, false);
         imageview = root.findViewById(R.id.story_page_imageview);
-//        story_text = root.findViewById(R.id.story_page_text);
 
+        text = root.findViewById(R.id.story_page_text);
         previous = root.findViewById(R.id.story_page_previous);
         previous.setOnClickListener(onClickListener);
 
-        speak = root.findViewById(R.id.story_page_speak);
+        Button speak = root.findViewById(R.id.story_page_speak);
         speak.setOnClickListener(onClickListener);
 
         next = root.findViewById(R.id.story_page_next);
         next.setOnClickListener(onClickListener);
 
-        (root.findViewById(R.id.story_page_correct)).setOnClickListener(interactionListener);
-        (root.findViewById(R.id.story_page_incorrect)).setOnClickListener(interactionListener);
-        setInteractionEnable(false);
 
         ((ToggleButton) root.findViewById(R.id.story_page_auto)).setOnCheckedChangeListener(onCheckedChangeListener);
         ((ToggleButton) root.findViewById(R.id.story_page_auto)).setChecked(auto);
@@ -87,10 +78,10 @@ public class StoryPageFragment extends StaticFragment {
         final int audio_id = getResourceIDByString(context, page.getString("audio"), "raw");
         final int drawable_id = getResourceIDByString(context, page.getString("image"), "drawable");
         final String text = page.getString("text");
+        this.text.setText(text);
 
         if (commandListener != null)
             commandListener.onCommand("DO_ACTION " + page.getString("action"));
-        setInteractionEnable(false);
 
 //        Drawable drawable = drawable_id <= 0 ? null : context.getDrawable(drawable_id);
         player = MediaPlayer.create(context, audio_id);
@@ -129,26 +120,6 @@ public class StoryPageFragment extends StaticFragment {
             commandListener.onCommand("STOP_ALL_ACTION");
     }
 
-    private final View.OnClickListener interactionListener = v -> {
-        if (v.getId() == R.id.story_page_correct) {
-            MediaPlayer.create(context, R.raw.sound_good_job).start();
-            commandListener.onCommand("DO_ACTION correct.csv");
-        } else if (v.getId() == R.id.story_page_incorrect) {
-            MediaPlayer.create(context, R.raw.sound_try_again).start();
-            commandListener.onCommand("DO_ACTION incorrect.csv");
-        } else
-            return;
-
-        setInteractionEnable(false);
-        new Thread(() -> {
-            try {
-                Thread.sleep(7000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            handler.post(()->setInteractionEnable(true));
-        }).start();
-    };
     final View.OnClickListener onClickListener = v -> {
         if (v.getId() == R.id.story_page_previous) {
             player.release();
@@ -201,7 +172,6 @@ public class StoryPageFragment extends StaticFragment {
 
     private MediaPlayer.OnCompletionListener getSpeakerListener() {
         return mp -> {
-            handler.post(() -> setInteractionEnable(true));
             if (auto) {
                 nextPage();
             }
@@ -210,11 +180,6 @@ public class StoryPageFragment extends StaticFragment {
 
         };
 
-    }
-
-    private void setInteractionEnable(boolean enable) {
-        (root.findViewById(R.id.story_page_correct)).setEnabled(enable);
-        (root.findViewById(R.id.story_page_incorrect)).setEnabled(enable);
     }
 
     public void setCommandListener(CommandListener listener) {
