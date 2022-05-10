@@ -34,3 +34,6 @@ deepface~=0.0.68
 pyserial~=3.5
 
 PyBluez==0.23
+
+keyboard==0.13.5
+dynamixel-sdk==3.7.31
