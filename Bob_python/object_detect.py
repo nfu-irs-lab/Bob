@@ -1,14 +1,16 @@
+import cv2
 from Bob.visual.detector.concrete.object_detect_yolov5 import ObjectDetector
-from Bob.visual.detector.framework.detector import DetectListener
+from Bob.visual.utils import visual_utils
 
+cam = cv2.VideoCapture(0)
 
-class AAListener(DetectListener):
+object_detector = ObjectDetector(0.3)
+while True:
+    ret, frame = cam.read()
 
-    def onDetect(self, data):
-        for obj in data:
-            print(f'{obj["name"]}({round(obj["confidence"], 2)}),', end='')
-        print()
-
-
-detector = ObjectDetector(AAListener())
-detector.start()
+    for result in object_detector.detect(frame):
+        label = result['name'] + " " + str(round(result['conf'], 2))
+        visual_utils.annotateLabel(frame, (result['x']['min'], result['y']['min']),
+                                   (result['x']['max'], result['y']['max']), label)
+    cv2.imshow('result', frame)
+    cv2.waitKey(1)
