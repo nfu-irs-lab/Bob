@@ -19,13 +19,13 @@ class ObjectDetector(Detector):
         results: List = []
         for i in range(0, len(r.name.values)):
             name = r.name.values[i]
-
+            conf = r.confidence.values[i]
             xmax = int(r.xmax.values[i])
             ymax = int(r.ymax.values[i])
 
             xmin = int(r.xmin.values[i])
             ymin = int(r.ymin.values[i])
-
-            results.append({'name': name, 'x': {'min': xmin, 'max': xmax}, 'y': {'min': ymin, 'max': ymax}})
+            results.append(
+                {'name': name, 'conf': conf, 'x': {'min': xmin, 'max': xmax}, 'y': {'min': ymin, 'max': ymax}})
 
         return results
