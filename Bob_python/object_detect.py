@@ -1,5 +1,5 @@
-from Bob.detector.concrete.object_detect_yolov5 import ObjectDetector
-from Bob.detector.framework.detector import DetectListener
+from Bob.visual.detector.concrete.object_detect_yolov5 import ObjectDetector
+from Bob.visual.detector.framework.detector import DetectListener
 
 
 class AAListener(DetectListener):

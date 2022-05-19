@@ -2,10 +2,8 @@ import os
 import threading
 import time
 
-import keyboard
-
-from Bob.detector.concrete.object_detect_yolov5 import ObjectDetector
-from Bob.detector.concrete.face_detect_deepface import FaceDetector
+from Bob.visual.detector.concrete.object_detect_yolov5 import ObjectDetector
+from Bob.visual.detector.concrete.face_detect_deepface import FaceDetector
 from Bob.dbctrl.concrete.crt_database import JSONDatabase
 import base64
 import json
@@ -13,11 +11,9 @@ from typing import List, Optional
 from Bob.communication.concrete.crt_package import StringPackage, Base64LinePackage
 from Bob.communication.framework.fw_listener import PackageListener
 from Bob.communication.framework.fw_package_device import PackageDevice
-from Bob.detector.framework.detector import DetectListener
-from Bob.robot.concrete.crt_command import DynamixelVelocityCommand
+from Bob.visual.detector.framework.detector import DetectListener
 from command_utils import getCommandsFromFileName
 from device_config import getRobot
-from keyboard_ctl import KeyboardController
 
 obj_db_location = f"db{os.path.sep}objects.json"
 face_db_location = f"db{os.path.sep}faces.json"

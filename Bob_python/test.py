@@ -1,7 +1,7 @@
 import cv2
 
-from Bob.detector.concrete.face_detect_deepface import FaceDetector
-from Bob.detector.concrete.object_detect_yolov5 import ObjectDetector
+from Bob.visual.detector.concrete.face_detect_deepface import FaceDetector
+from Bob.visual.detector.concrete.object_detect_yolov5 import ObjectDetector
 
 cam = cv2.VideoCapture(0)
 

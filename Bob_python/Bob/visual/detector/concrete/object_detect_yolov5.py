@@ -1,6 +1,6 @@
 from typing import List
 
-from Bob.detector.framework.detector import Detector
+from Bob.visual.detector.framework.detector import Detector
 import torch
 
 
