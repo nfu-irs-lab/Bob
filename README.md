@@ -4,6 +4,18 @@ typora-copy-images-to: README_resources
 
 # Bob
 
+## Yolov5
+
+https://pytorch.org/hub/ultralytics_yolov5/
+
+https://officeguide.cc/pytorch-yolo-v5-object-egg-detection-models-tutorial-examples/
+
+```shell
+pip install -qr https://raw.githubusercontent.com/ultralytics/yolov5/master/requirements.txt  # install dependencies
+```
+
+
+
 ## 封包協定
 封包使用串列埠進行傳輸，手機使用藍芽與機器人建立連線，並開啟串列端口。
 
