@@ -26,7 +26,6 @@ class FaceDetector(Detector):
                 emotion = DeepFace.analyze(face, actions=['emotion'])['dominant_emotion']
                 results.append({'emotion': emotion, 'x': {'min': xmin, 'max': xmax}, 'y': {'min': ymin, 'max': ymax}})
             except Exception as e:
-                print(e.__str__())
                 pass
 
         # cv2.imshow('result', frame)
