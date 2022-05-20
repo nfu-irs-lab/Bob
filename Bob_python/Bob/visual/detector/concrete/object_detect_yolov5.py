@@ -6,7 +6,8 @@ import torch
 
 class ObjectDetector(Detector):
 
-    def __init__(self, iou: float = 0.5, conf: float = 0.5):
+    def __init__(self, _id, iou: float = 0.5, conf: float = 0.5):
+        super().__init__(_id)
         model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
         model.iou = iou
         model.conf = conf

@@ -1,16 +1,26 @@
 import cv2
+
+from Bob.visual.camera.camera import CameraListener, CameraMonitor
 from Bob.visual.detector.concrete.object_detect_yolov5 import ObjectDetector
 from Bob.visual.utils import visual_utils
 
-cam = cv2.VideoCapture(0)
 
-object_detector = ObjectDetector(0.3)
-while True:
-    ret, frame = cam.read()
+class TestListener(CameraListener):
 
-    for result in object_detector.detect(frame):
-        label = result['name'] + " " + str(round(result['conf'], 2))
-        visual_utils.annotateLabel(frame, (result['x']['min'], result['y']['min']),
-                                   (result['x']['max'], result['y']['max']), label)
-    cv2.imshow('result', frame)
-    cv2.waitKey(1)
+    def onImageRead(self, image):
+        cv2.imshow("object", image)
+
+    def onDetect(self, detector_id, image, data):
+        if detector_id == 1:
+            labeledImage = image
+            for result in data:
+                label = result['name'] + " " + str(round(result['conf'], 2))
+                labeledImage = visual_utils.annotateLabel(labeledImage, (result['x']['min'], result['y']['min']),
+                                                          (result['x']['max'], result['y']['max']), label, False)
+            cv2.imshow("object", labeledImage)
+
+
+monitor = CameraMonitor()
+monitor.setDetector([ObjectDetector(1, conf=0.3)])
+monitor.setListener(TestListener())
+monitor.start()
