@@ -21,6 +21,7 @@ class TestListener(CameraListener):
 
 
 monitor = CameraMonitor()
-monitor.setDetector([ObjectDetector(1, conf=0.3)])
+monitor.registerDetector(ObjectDetector(1, conf=0.3), False)
+monitor.setDetectorEnable(1, True)
 monitor.setListener(TestListener())
 monitor.start()

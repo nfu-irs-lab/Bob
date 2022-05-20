@@ -2,6 +2,7 @@ import os
 import threading
 import time
 
+from Bob.visual.camera.camera import CameraMonitor
 from Bob.visual.detector.concrete.object_detect_yolov5 import ObjectDetector
 from Bob.visual.detector.concrete.face_detect_deepface import FaceDetector
 from Bob.dbctrl.concrete.crt_database import JSONDatabase
@@ -33,6 +34,7 @@ robot = getRobot()
 robot.open()
 
 robot.enableAllServos(True)
+
 
 # keyboard_ctl = KeyboardController(robot)
 # keyboard_ctl.init()
@@ -201,4 +203,3 @@ class InteractiveObjectDetectListener(DetectListener):
             print("Send:", jsonString)
             self.device.writePackage(Base64LinePackage(StringPackage(jsonString, "UTF-8")))
             self.timer = time.time() + 17
-

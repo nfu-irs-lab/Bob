@@ -10,6 +10,7 @@ class TestListener(CameraListener):
 
     def onImageRead(self, image):
         cv2.imshow("face", image)
+        cv2.imshow("object", image)
 
     def onDetect(self, detector_id, image, data):
         if detector_id == 1:
@@ -31,7 +32,11 @@ class TestListener(CameraListener):
 
 
 monitor = CameraMonitor()
-monitor.setDetector([FaceDetector(1), ObjectDetector(2)])
+monitor.registerDetector(FaceDetector(1), False)
+monitor.registerDetector(ObjectDetector(2), False)
+monitor.setDetectorEnable(1, True)
+monitor.setDetectorEnable(2, True)
+
 monitor.setListener(TestListener())
 monitor.start()
 
