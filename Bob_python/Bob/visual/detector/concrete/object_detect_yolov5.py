@@ -1,20 +1,24 @@
 from typing import List
 
+import cv2
 from Bob.visual.detector.framework.detector import Detector
 import torch
+from PIL import Image
 
 
 class ObjectDetector(Detector):
 
-    def __init__(self, _id, iou: float = 0.5, conf: float = 0.5):
+    def __init__(self, _id, conf: float = 0.25):
         super().__init__(_id)
-        model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
-        model.iou = iou
-        model.conf = conf
+        model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True, _verbose=False)
+        model.conf = conf  # NMS confidence threshold
+        model.iou = 0.45  # NMS IoU threshold
         self._module = model
 
     def detect(self, image):
-        detections = self._module(image)
+        img = Image.fromarray(cv2.cvtColor(image.copy(), cv2.COLOR_BGR2RGB))
+
+        detections = self._module(img)
 
         r = detections.pandas().xyxy[0]
         results: List = []
