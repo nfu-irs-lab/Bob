@@ -2,7 +2,9 @@ import os
 import threading
 import time
 
-from Bob.visual.camera.camera import CameraMonitor
+import cv2
+
+from Bob.visual.camera.camera import CameraMonitor, CameraListener
 from Bob.visual.detector.concrete.object_detect_yolov5 import ObjectDetector
 from Bob.visual.detector.concrete.face_detect_deepface import FaceDetector
 from Bob.dbctrl.concrete.crt_database import JSONDatabase
@@ -12,7 +14,7 @@ from typing import List, Optional
 from Bob.communication.concrete.crt_package import StringPackage, Base64LinePackage
 from Bob.communication.framework.fw_listener import PackageListener
 from Bob.communication.framework.fw_package_device import PackageDevice
-from Bob.visual.detector.framework.detector import DetectListener
+from Bob.visual.utils import visual_utils
 from command_utils import getCommandsFromFileName
 from device_config import getRobot
 
@@ -27,12 +29,72 @@ face_db = JSONDatabase(open(face_db_location, encoding=db_charset))
 stories_db = JSONDatabase(open(stories_db_location, encoding=db_charset))
 vocabularies_db = JSONDatabase(open(vocabularies_db_location, encoding=db_charset))
 
-detector = None
-monitor = None
+
+class MainCameraListener(CameraListener):
+    def __init__(self, device: PackageDevice):
+        self.device = device
+        self.object_timer = 0
+        self.face_timer = 0
+
+    def onImageRead(self, image):
+        cv2.imshow("face", image)
+        cv2.imshow("object", image)
+
+    def onDetect(self, detector_id, image, data):
+        if detector_id == 1:
+            labeledImage = image
+            for result in data:
+                label = result['emotion']
+                labeledImage = visual_utils.annotateLabel(labeledImage, (result['x']['min'], result['y']['min']),
+                                                          (result['x']['max'], result['y']['max']), label,
+                                                          overwrite=False)
+
+            cv2.imshow("face", labeledImage)
+            if time.time() <= self.face_timer:
+                return
+            obj: Optional[json] = face_db.queryForId(data[0]['emotion'])
+
+            if obj is not None:
+                data: json = obj['data']
+                sendData = {"id": -1, "response_type": "json_object", "content": "single_object", "data": data}
+                jsonString = json.dumps(sendData, ensure_ascii=False)
+                print("Send:", jsonString)
+                self.device.writePackage(Base64LinePackage(StringPackage(jsonString, "UTF-8")))
+                self.face_timer = time.time() + 17
+
+        elif detector_id == 2:
+            labeledImage = image
+            max_index = -1
+            max_conf = -1
+            i = 0
+            for result in data:
+                label = result['name'] + " " + str(round(result['conf'], 2))
+                labeledImage = visual_utils.annotateLabel(image, (result['x']['min'], result['y']['min']),
+                                                          (result['x']['max'], result['y']['max']), label,
+                                                          overwrite=False)
+                if result['conf'] > max_conf:
+                    max_conf = result['conf']
+                    max_index = i
+
+                i = i + 1
+            cv2.imshow("object", labeledImage)
+
+            if time.time() <= self.object_timer:
+                return
+
+            selected_object = data[max_index]
+            obj: Optional[json] = object_db.queryForId(selected_object['name'])
+            if obj is not None:
+                data: json = obj['data']
+                sendData = {"id": -1, "response_type": "json_object", "content": "single_object", "data": data}
+                jsonString = json.dumps(sendData, ensure_ascii=False)
+                print("Send:", jsonString)
+                self.device.writePackage(Base64LinePackage(StringPackage(jsonString, "UTF-8")))
+                self.object_timer = time.time() + 17
+
 
 robot = getRobot()
 robot.open()
-
 robot.enableAllServos(True)
 
 
@@ -52,54 +114,31 @@ def doAction(action):
 
 
 class CommandControlListener(PackageListener):
-    def __init__(self, device: PackageDevice):
+    def __init__(self, device: PackageDevice, camera_monitor: CameraMonitor):
         self.__id_counter = 0
+        self._camera_monitor = camera_monitor
         self.package_device = device
         self.mode: str = ""
 
     def onReceive(self, data: bytes):
-        global detector
         d = base64.decodebytes(data)
         cmd = d.decode()
         print("receive:", cmd)
 
-        if cmd == "DETECT_OBJECT":
-            if detector is not None:
-                detector.stop()
-
-            detector = ObjectDetector(ObjectDetectListener(self.package_device))
-            detector.start()
+        if cmd == "DETECT_OBJECT" or cmd == "DETECT_INTER_OBJECT":
+            self._camera_monitor.setDetectorEnable(1, False)
+            self._camera_monitor.setDetectorEnable(2, True)
             self.mode = cmd
 
         elif cmd == "DETECT_FACE":
-            if detector is not None:
-                detector.stop()
-
-            detector = FaceDetector(FaceDetectListener(self.package_device))
-            detector.start()
-            self.mode = cmd
-        elif cmd == "DETECT_INTER_OBJECT":
-            if detector is not None:
-                detector.stop()
-
-            detector = ObjectDetector(InteractiveObjectDetectListener(self.package_device))
-            detector.start()
-            self.mode = cmd
-
+            self._camera_monitor.setDetectorEnable(1, True)
+            self._camera_monitor.setDetectorEnable(2, False)
         elif cmd == "START_DETECT":
-            print("Start detect")
-            if detector is None:
-                return
-            detector.resume()
+            pass
         elif cmd == "PAUSE_DETECT":
-            if detector is None:
-                return
-            print("Pause detect")
-            detector.pause()
+            pass
         elif cmd == "STOP_DETECT":
-            if detector is not None:
-                detector.stop()
-
+            pass
         elif cmd == "DB_GET_ALL":
             all_data: json = object_db.getAllData()
             jsonString = formatDataToJsonString(0, "json_object", "all_objects", all_data)
@@ -140,66 +179,65 @@ class CommandControlListener(PackageListener):
             print("Send:", jsonString)
             self.package_device.writePackage(Base64LinePackage(StringPackage(jsonString, "UTF-8")))
 
-
-class FaceDetectListener(DetectListener):
-    def __init__(self, device: PackageDevice):
-        self.device = device
-
-    def onDetect(self, face_type: str):
-        print("now face emotion: " + face_type)
-        obj: Optional[json] = face_db.queryForId(face_type)
-        if obj is not None:
-            data: json = obj['data']
-            sendData = {"id": -1, "response_type": "json_object", "content": "single_object", "data": data}
-            jsonString = json.dumps(sendData, ensure_ascii=False)
-            print("Send:", jsonString)
-            self.device.writePackage(Base64LinePackage(StringPackage(jsonString, "UTF-8")))
-
-
-class ObjectDetectListener(DetectListener):
-    def __init__(self, device: PackageDevice):
-        self.device = device
-
-    def onDetect(self, objectList: List):
-        for dobj in objectList:
-            if dobj['confidence'] < 0.65:
-                continue
-
-            obj: Optional[json] = object_db.queryForId(dobj['name'])
-            if obj is not None:
-                data: json = obj['data']
-                sendData = {"id": -1, "response_type": "json_object", "content": "single_object", "data": data}
-                jsonString = json.dumps(sendData, ensure_ascii=False)
-                print("Send:", jsonString)
-                self.device.writePackage(Base64LinePackage(StringPackage(jsonString, "UTF-8")))
-
-
-class InteractiveObjectDetectListener(DetectListener):
-    def __init__(self, device: PackageDevice):
-        self.device = device
-        self.timer = 0
-
-    def onDetect(self, objectList: List):
-        max_index = -1
-        max_conf = -1
-        for i in range(0, len(objectList)):
-            if objectList[i]['confidence'] > max_conf:
-                max_conf = objectList[i]['confidence']
-                max_index = i
-
-        selected_object = objectList[max_index]
-
-        if selected_object['confidence'] < 0.65:
-            return
-
-        if time.time() <= self.timer:
-            return
-
-        obj: Optional[json] = object_db.queryForId(selected_object['name'])
-        if obj is not None:
-            data: json = obj['data']
-            sendData = {"id": -1, "response_type": "json_object", "content": "single_object", "data": data}
-            jsonString = json.dumps(sendData, ensure_ascii=False)
-            print("Send:", jsonString)
-            self.device.writePackage(Base64LinePackage(StringPackage(jsonString, "UTF-8")))
-            self.timer = time.time() + 17
+# class FaceDetectListener(DetectListener):
+#     def __init__(self, device: PackageDevice):
+#         self.device = device
+#
+#     def onDetect(self, face_type: str):
+#         print("now face emotion: " + face_type)
+#         obj: Optional[json] = face_db.queryForId(face_type)
+#         if obj is not None:
+#             data: json = obj['data']
+#             sendData = {"id": -1, "response_type": "json_object", "content": "single_object", "data": data}
+#             jsonString = json.dumps(sendData, ensure_ascii=False)
+#             print("Send:", jsonString)
+#             self.device.writePackage(Base64LinePackage(StringPackage(jsonString, "UTF-8")))
+#
+#
+# class ObjectDetectListener(DetectListener):
+#     def __init__(self, device: PackageDevice):
+#         self.device = device
+#
+#     def onDetect(self, objectList: List):
+#         for dobj in objectList:
+#             if dobj['confidence'] < 0.65:
+#                 continue
+#
+#             obj: Optional[json] = object_db.queryForId(dobj['name'])
+#             if obj is not None:
+#                 data: json = obj['data']
+#                 sendData = {"id": -1, "response_type": "json_object", "content": "single_object", "data": data}
+#                 jsonString = json.dumps(sendData, ensure_ascii=False)
+#                 print("Send:", jsonString)
+#                 self.device.writePackage(Base64LinePackage(StringPackage(jsonString, "UTF-8")))
+#
+#
+# class InteractiveObjectDetectListener(DetectListener):
+#     def __init__(self, device: PackageDevice):
+#         self.device = device
+#         self.timer = 0
+#
+#     def onDetect(self, objectList: List):
+#         max_index = -1
+#         max_conf = -1
+#         for i in range(0, len(objectList)):
+#             if objectList[i]['confidence'] > max_conf:
+#                 max_conf = objectList[i]['confidence']
+#                 max_index = i
+#
+#         selected_object = objectList[max_index]
+#
+#         if selected_object['confidence'] < 0.65:
+#             return
+#
+#         if time.time() <= self.timer:
+#             return
+#
+#         obj: Optional[json] = object_db.queryForId(selected_object['name'])
+#         if obj is not None:
+#             data: json = obj['data']
+#             sendData = {"id": -1, "response_type": "json_object", "content": "single_object", "data": data}
+#             jsonString = json.dumps(sendData, ensure_ascii=False)
+#             print("Send:", jsonString)
+#             self.device.writePackage(Base64LinePackage(StringPackage(jsonString, "UTF-8")))
+#             self.timer = time.time() + 17
