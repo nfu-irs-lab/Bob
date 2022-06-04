@@ -4,13 +4,11 @@ import time
 
 import cv2
 
-from Bob.visual.camera.camera import CameraMonitor, CameraListener
-from Bob.visual.detector.concrete.object_detect_yolov5 import ObjectDetector
-from Bob.visual.detector.concrete.face_detect_deepface import FaceDetector
+from Bob.visual.monitor.concrete.crt_camera import CameraMonitor, CameraListener
 from Bob.dbctrl.concrete.crt_database import JSONDatabase
 import base64
 import json
-from typing import List, Optional
+from typing import Optional
 from Bob.communication.concrete.crt_package import StringPackage, Base64LinePackage
 from Bob.communication.framework.fw_listener import PackageListener
 from Bob.communication.framework.fw_package_device import PackageDevice

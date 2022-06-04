@@ -1,6 +1,6 @@
 import cv2
 
-from Bob.visual.camera.camera import CameraMonitor, CameraListener
+from Bob.visual.monitor.concrete.crt_camera import CameraMonitor, CameraListener
 from Bob.visual.detector.concrete.face_detect_deepface import FaceDetector
 from Bob.visual.detector.concrete.object_detect_yolov5 import ObjectDetector
 from Bob.visual.utils import visual_utils
@@ -31,7 +31,7 @@ class TestListener(CameraListener):
             cv2.imshow("object", labeledImage)
 
 
-monitor = CameraMonitor()
+monitor = CameraMonitor(0)
 monitor.registerDetector(FaceDetector(1), False)
 monitor.registerDetector(ObjectDetector(2), False)
 monitor.setDetectorEnable(1, True)
