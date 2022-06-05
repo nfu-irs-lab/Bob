@@ -257,3 +257,66 @@ sudo systemctl restart bluetooth.service
 - https://raspberrypi.stackexchange.com/questions/41776/failed-to-connect-to-sdp-server-on-ffffff000000-no-such-file-or-directory
 - https://forums.developer.nvidia.com/t/jetson-nano-bluetooth-issue-rfcomm-tty-support-not-available/81432
 
+
+https://blog.csdn.net/Li_Hungchieh/article/details/107465119
+https://docs.nvidia.com/deeplearning/frameworks/install-tf-jetson-platform/index.html
+
+
+```shell=
+$ sudo apt-get update
+$ sudo apt-get install libhdf5-serial-dev hdf5-tools libhdf5-dev zlib1g-dev zip libjpeg8-dev liblapack-dev libblas-dev gfortran
+
+$ sudo apt-get install python3-pip
+$ sudo pip3 install -U pip testresources setuptools==49.6.0 
+
+$ sudo pip3 install -U --no-deps numpy==1.19.4 future==0.18.2 mock==3.0.5 keras_preprocessing==1.1.2 keras_applications==1.0.8 gast==0.4.0 protobuf pybind11 cython pkgconfig packaging
+$ sudo env H5PY_SETUP_REQUIRES=0 pip3 install -U h5py==3.1.0
+
+$ sudo pip3 install --pre --extra-index-url https://developer.download.nvidia.com/compute/redist/jp/v50 tensorflow
+
+```
+
+Check tensorflow version
+```shell=
+pip3 list |grep "tensor"
+tensorboard             2.8.0
+tensorboard-data-server 0.6.1
+tensorboard-plugin-wit  1.8.1
+tensorflow              2.8.0+nv22.5
+tensorflow-estimator    2.8.0
+```
+JP_VERSION=5.0.1 DP
+TF_VERSION=2.8.0
+NV_VERSION=22.5
+
+Activate virtual environment
+```shell=
+$ pip3 install -U numpy grpcio absl-py py-cpuinfo psutil portpicker six mock requests gast h5py astor termcolor protobuf keras-applications keras-preprocessing wrapt google-pasta setuptools testresources
+$ pip3 install --extra-index-url https://developer.download.nvidia.com/compute/redist/jp/v50 tensorflow==$TF_VERSION+nv$NV_VERSION
+```
+
+## cannot allocate memory in static TLS block 
+```
+Traceback (most recent call last):
+  File "/home/airobot/important_data/Bob/Bob_python/detector_test.py", line 6, in <module>
+    from Bob.visual.detector.concrete.object_detect_yolov5 import ObjectDetector
+  File "/home/airobot/important_data/Bob/Bob_python/Bob/visual/detector/concrete/object_detect_yolov5.py", line 5, in <module>
+    import torch
+  File "/home/airobot/important_data/Bob/Bob_python/venv3.8/lib/python3.8/site-packages/torch/__init__.py", line 198, in <module>
+    _load_global_deps()
+  File "/home/airobot/important_data/Bob/Bob_python/venv3.8/lib/python3.8/site-packages/torch/__init__.py", line 151, in _load_global_deps
+    ctypes.CDLL(lib_path, mode=ctypes.RTLD_GLOBAL)
+  File "/usr/lib/python3.8/ctypes/__init__.py", line 373, in __init__
+    self._handle = _dlopen(self._name, mode)
+OSError: /home/airobot/important_data/Bob/Bob_python/venv3.8/lib/python3.8/site-packages/torch/lib/libgomp-d22c30c5.so.1: cannot allocate memory in static TLS block
+```
+
+Must import yolov5 before deepface
+
+```
+#Must Import before deepface
+from Bob.visual.detector.concrete.object_detect_yolov5 import ObjectDetector
+# Must Import after yolov5
+from Bob.visual.detector.concrete.face_detect_deepface import FaceDetector
+```
+
