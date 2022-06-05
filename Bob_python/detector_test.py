@@ -1,8 +1,10 @@
 import cv2
 
 from Bob.visual.monitor.concrete.crt_camera import CameraMonitor, CameraListener
-from Bob.visual.detector.concrete.face_detect_deepface import FaceDetector
+#Must Import before deepface
 from Bob.visual.detector.concrete.object_detect_yolov5 import ObjectDetector
+# Must Import after yolov5
+from Bob.visual.detector.concrete.face_detect_deepface import FaceDetector
 from Bob.visual.utils import visual_utils
 
 
