@@ -122,9 +122,7 @@ class CommandControlListener(PackageListener):
         self.package_device = device
         self.mode: str = ""
 
-    def onReceive(self, data: bytes):
-        d = base64.decodebytes(data)
-        cmd = d.decode()
+    def onReceive(self, cmd:str):
         print("receive:", cmd)
 
         if cmd == "DETECT_OBJECT" or cmd == "DETECT_INTER_OBJECT":

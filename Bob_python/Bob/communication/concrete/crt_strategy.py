@@ -17,7 +17,7 @@ class ReadLineStrategy(SerialReadStrategy):
         indexOfFirstEOL = self.__getIndexOfFirstEOL(self.buffer)
         while indexOfFirstEOL != -1:
             # remove \n,add to packages array.
-            self.packages.append(self.buffer[0:indexOfFirstEOL])
+            self.packages.append(self.buffer[0:indexOfFirstEOL+1])
 
             # remove from content to \n in buffer.
             del self.buffer[0:indexOfFirstEOL + 1]

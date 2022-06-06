@@ -8,7 +8,7 @@ from Bob.device.framework.fw_device import Device
 
 class PackageListener(metaclass=abc.ABCMeta):
     @abc.abstractmethod
-    def onReceive(self, data: bytes):
+    def onReceive(self, data: str):
         pass
 
 
@@ -29,6 +29,6 @@ class PackageDevice(Device, ABC, Thread):
     def setListener(self, listener: PackageListener):
         self.__listener = listener
 
-    def _onReceive(self, data: bytes):
+    def _onReceive(self, data: str):
         if self.__listener is not None:
             self.__listener.onReceive(data)

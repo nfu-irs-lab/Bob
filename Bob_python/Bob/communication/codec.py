@@ -19,3 +19,8 @@ class PackageCodec:
             return base64.b64decode(raw[0:-1])
         else:
             return base64.b64decode(raw)
+
+    @staticmethod
+    def decodeString(raw: bytes, hasEOL: bool) -> str:
+        return PackageCodec.decode(raw,hasEOL).decode(encoding='utf-8')
+

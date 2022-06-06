@@ -40,7 +40,7 @@ class SerialPackageDevice(PackageDevice):
                 self.__strategy.warp(data)
 
                 while self.__strategy.hasNextPackage():
-                    self._onReceive(self.__strategy.nextPackage())
+                    self._onReceive(PackageCodec.decodeString(self.__strategy.nextPackage(),True))
             except KeyboardInterrupt:
                 self.stop()
 
