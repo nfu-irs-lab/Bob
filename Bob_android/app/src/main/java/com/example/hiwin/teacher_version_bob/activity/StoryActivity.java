@@ -20,9 +20,7 @@ import java.util.UUID;
 public class StoryActivity extends BluetoothCommunicationActivity {
 
     @Override
-    protected void receive(byte[] data) {
-        String str = new String(data, StandardCharsets.UTF_8);
-        Log.d(getClass().getSimpleName(), str);
+    protected void receive(String str) {
         try {
             JSONObject obj = new JSONObject(str);
             String content = obj.getString("content");
@@ -68,6 +66,11 @@ public class StoryActivity extends BluetoothCommunicationActivity {
     @Override
     protected void onDisconnect() {
 
+    }
+
+    @Override
+    protected void onSerialError(Exception e) {
+        runOnUiThread(() -> Toast.makeText(StoryActivity.this,"Serial Error:"+e.getMessage(),Toast.LENGTH_SHORT).show());
     }
 
     private Fragment getSelectFragment(JSONArray array) {

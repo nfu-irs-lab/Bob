@@ -83,9 +83,8 @@ public class FaceDetectActivity extends DetectActivity {
     }
 
     @Override
-    protected void receive(byte[] data) {
+    protected void receive(String content) {
         try {
-            String content = new String(data, StandardCharsets.UTF_8);
             Log.d(THIS_LOG_TAG, "received string:");
             Log.d(THIS_LOG_TAG, content);
 
@@ -236,6 +235,11 @@ public class FaceDetectActivity extends DetectActivity {
     protected void onDisconnect() {
 //        sendMessage("PAUSE_DETECT");
         sendMessage("STOP_DETECT");
+    }
+
+    @Override
+    protected void onSerialError(Exception e) {
+        runOnUiThread(() -> Toast.makeText(FaceDetectActivity.this,"Serial Error:"+e.getMessage(),Toast.LENGTH_SHORT).show());
     }
 
 }

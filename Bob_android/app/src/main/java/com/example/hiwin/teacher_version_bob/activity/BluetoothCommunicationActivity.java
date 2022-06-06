@@ -18,19 +18,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 import com.example.hiwin.teacher_version_bob.R;
+import com.example.hiwin.teacher_version_bob.communication.PackageCodecFacade;
 import com.example.hiwin.teacher_version_bob.communication.bluetooth.concrete.ReadLineStrategy;
 import com.example.hiwin.teacher_version_bob.communication.bluetooth.concrete.SerialSocket;
 import com.example.hiwin.teacher_version_bob.communication.bluetooth.framework.SerialListener;
 import com.example.hiwin.teacher_version_bob.communication.service.SerialService;
-import com.example.hiwin.teacher_version_bob.pack.concrete.Base64Package;
-import com.example.hiwin.teacher_version_bob.pack.concrete.LinePackage;
-import com.example.hiwin.teacher_version_bob.pack.framework.Package;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 public abstract class BluetoothCommunicationActivity extends AppCompatActivity {
-    private static final String BT_LOG_TAG = "BluetoothInfo";
+    private static final String TAG_NAME = "BluetoothCommunicationActivity";
 
 
     private enum Connected {False, Pending, True}
@@ -41,7 +39,7 @@ public abstract class BluetoothCommunicationActivity extends AppCompatActivity {
     private SerialService serialService;
 
 
-    protected abstract void receive(byte[] data);
+    protected abstract void receive(String msg);
 
     protected final boolean isConnected() {
         return connected == Connected.True;
@@ -59,9 +57,7 @@ public abstract class BluetoothCommunicationActivity extends AppCompatActivity {
 
     protected abstract void onDisconnect();
 
-//    protected abstract void onIOError(Exception e);
-//
-//    protected abstract void onConnectError(Exception e);
+    protected abstract void onSerialError(Exception e);
 
 
     @Override
@@ -73,7 +69,6 @@ public abstract class BluetoothCommunicationActivity extends AppCompatActivity {
 
         boolean sus = bindService(new Intent(this, SerialService.class), serviceConnection, Context.BIND_AUTO_CREATE);
         Log.d("BindService", sus + "");
-        Intent it = getIntent();
         deviceAddress = getDeviceAddress(savedInstanceState);
     }
 
@@ -97,7 +92,7 @@ public abstract class BluetoothCommunicationActivity extends AppCompatActivity {
                     disconnect();
             } catch (Exception e) {
                 Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.d(BT_LOG_TAG, e.getMessage());
+                Log.d(TAG_NAME, e.getMessage());
             }
             return true;
         }
@@ -135,7 +130,7 @@ public abstract class BluetoothCommunicationActivity extends AppCompatActivity {
         try {
             BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
             BluetoothDevice device = bluetoothAdapter.getRemoteDevice(deviceAddress);
-            Log.d(BT_LOG_TAG, "connecting...");
+            Log.d(TAG_NAME, "connecting...");
             SerialSocket socket = new SerialSocket(this, device, new ReadLineStrategy());
             serialService.connect(socket);
             connected = Connected.Pending;
@@ -148,7 +143,7 @@ public abstract class BluetoothCommunicationActivity extends AppCompatActivity {
 
     private void disconnect() {
         onDisconnect();
-        Log.d(BT_LOG_TAG, "disconnect");
+        Log.d(TAG_NAME, "disconnect");
         connected = Connected.False;
         serialService.disconnect();
         setConnectionMenuItem(false);
@@ -164,10 +159,17 @@ public abstract class BluetoothCommunicationActivity extends AppCompatActivity {
         }
     }
 
-    protected void sendMessage(String msg) {
-        Package pack = new LinePackage(new Base64Package(msg.getBytes(StandardCharsets.UTF_8), Base64.DEFAULT));
+    protected void send(byte[] bytes) {
         try {
-            serialService.write(pack.getEncoded());
+            serialService.write(PackageCodecFacade.encode(bytes));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected void sendMessage(String msg) {
+        try {
+            serialService.write(PackageCodecFacade.encodeString(msg));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -191,7 +193,7 @@ public abstract class BluetoothCommunicationActivity extends AppCompatActivity {
         public void onSerialConnect() {
             onConnect();
             connected = Connected.True;
-            Log.d(BT_LOG_TAG, "Bluetooth device connected");
+            Log.d(TAG_NAME, "Bluetooth device connected");
             Toast.makeText(BluetoothCommunicationActivity.this, "Bluetooth device connected", Toast.LENGTH_SHORT).show();
             setConnectionMenuItem(true);
 
@@ -199,26 +201,21 @@ public abstract class BluetoothCommunicationActivity extends AppCompatActivity {
 
         @Override
         public void onSerialConnectError(Exception e) {
-            Log.e(BT_LOG_TAG, "Connection Error");
-            Log.e(BT_LOG_TAG, e.getMessage());
-            Toast.makeText(BluetoothCommunicationActivity.this, "Connection Error:" + e.getMessage(), Toast.LENGTH_SHORT).show();
+            Log.e(TAG_NAME, "Connection Error:"+e.getMessage());
+            onSerialError(e);
             disconnect();
-//            onConnectError(e);
         }
 
         @Override
         public void onSerialRead(byte[] data) {
-            receive(new Base64Package(data, Base64.DEFAULT).getDecoded());
+            receive(PackageCodecFacade.decodeString(data,true));
         }
 
         @Override
         public void onSerialIoError(Exception e) {
-            Log.e(BT_LOG_TAG, "IO Error");
-            Log.e(BT_LOG_TAG, e.getMessage());
-            Toast.makeText(BluetoothCommunicationActivity.this, "IO Error:" + e.getMessage(), Toast.LENGTH_SHORT).show();
+            Log.e(TAG_NAME, "IO Error:"+e.getMessage());
+            onSerialError(e);
             disconnect();
-//            onIOError(e);
         }
     };
-
 }
