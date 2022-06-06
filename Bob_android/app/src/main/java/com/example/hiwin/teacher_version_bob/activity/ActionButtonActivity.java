@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 import com.example.hiwin.teacher_version_bob.R;
 import pl.droidsonroids.gif.GifDrawable;
 
@@ -18,9 +19,8 @@ public class ActionButtonActivity extends BluetoothCommunicationActivity {
     private View action_button_frame;
     private ImageView face;
 
-    @Override
-    protected void receive(byte[] data) {
-        String str = new String(data, StandardCharsets.UTF_8);
+    protected void receive(String data) {
+
     }
 
     @Override
@@ -53,6 +53,11 @@ public class ActionButtonActivity extends BluetoothCommunicationActivity {
     @Override
     protected void onDisconnect() {
 
+    }
+
+    @Override
+    protected void onSerialError(Exception e) {
+        runOnUiThread(() -> Toast.makeText(ActionButtonActivity.this,"Serial Error:"+e.getMessage(),Toast.LENGTH_SHORT).show());
     }
 
     public void action(View view) {

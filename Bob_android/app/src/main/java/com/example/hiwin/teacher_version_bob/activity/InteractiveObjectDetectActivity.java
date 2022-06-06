@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import android.widget.Toast;
 import com.example.hiwin.teacher_version_bob.R;
 import com.example.hiwin.teacher_version_bob.fragment.*;
 
@@ -43,9 +44,8 @@ public class InteractiveObjectDetectActivity extends BluetoothCommunicationActiv
     }
 
     @Override
-    protected void receive(byte[] data) {
+    protected void receive(String str) {
         try {
-            String str = new String(data, StandardCharsets.UTF_8);
             Log.d(THIS_LOG_TAG, "received string:");
             Log.d(THIS_LOG_TAG, str);
             JSONObject json = new JSONObject(str);
@@ -158,6 +158,11 @@ public class InteractiveObjectDetectActivity extends BluetoothCommunicationActiv
     protected void onDisconnect() {
 //        sendMessage("PAUSE_DETECT");
         sendMessage("STOP_DETECT");
+    }
+
+    @Override
+    protected void onSerialError(Exception e) {
+        runOnUiThread(() -> Toast.makeText(InteractiveObjectDetectActivity.this,"Serial Error:"+e.getMessage(),Toast.LENGTH_SHORT).show());
     }
 
     @Override
