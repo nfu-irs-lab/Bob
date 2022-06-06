@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.widget.Toast;
 import com.example.hiwin.teacher_version_bob.R;
 import com.example.hiwin.teacher_version_bob.fragment.StaticFragment;
 import com.example.hiwin.teacher_version_bob.fragment.VocabularyFragment;
@@ -18,9 +19,7 @@ import java.util.UUID;
 public class VocabularyActivity extends BluetoothCommunicationActivity {
 
     @Override
-    protected void receive(byte[] data) {
-        String str = new String(data, StandardCharsets.UTF_8);
-
+    protected void receive(String str) {
         try {
             JSONObject obj = new JSONObject(str);
             String content = obj.getString("content");
@@ -62,6 +61,11 @@ public class VocabularyActivity extends BluetoothCommunicationActivity {
     @Override
     protected void onDisconnect() {
 
+    }
+
+    @Override
+    protected void onSerialError(Exception e) {
+        runOnUiThread(() -> Toast.makeText(VocabularyActivity.this,"Serial Error:"+e.getMessage(),Toast.LENGTH_SHORT).show());
     }
 
     private StaticFragment getVocabularyFragment(JSONArray vocabularies) {
