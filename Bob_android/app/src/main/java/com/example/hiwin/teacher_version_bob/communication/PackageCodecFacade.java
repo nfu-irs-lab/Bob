@@ -11,7 +11,7 @@ public class PackageCodecFacade {
     }
 
     public static byte[] encode(byte[] bytes) {
-        byte[] encoded = Base64.encode(bytes, Base64.DEFAULT);
+        byte[] encoded = Base64.encode(bytes, Base64.NO_WRAP);
         byte[] package_ = Arrays.copyOf(encoded, encoded.length + 1);
         package_[package_.length - 1] = '\n';
 
@@ -27,16 +27,12 @@ public class PackageCodecFacade {
         if (hasEOL) {
             return Base64.decode(Arrays.copyOfRange(bytes, 0, bytes.length), Base64.DEFAULT);
         } else {
-            return Base64.decode(bytes, Base64.DEFAULT);
+            return Base64.decode(bytes, Base64.NO_WRAP);
         }
     }
 
     public static String decodeString(byte[] bytes, boolean hasEOL) {
-        if (hasEOL) {
-            return new String(Base64.decode(Arrays.copyOfRange(bytes, 0, bytes.length), Base64.DEFAULT), StandardCharsets.UTF_8);
-        } else {
-            return new String(Base64.decode(bytes, Base64.DEFAULT), StandardCharsets.UTF_8);
-        }
+        return new String(decode(bytes, hasEOL), StandardCharsets.UTF_8);
     }
 
 }
