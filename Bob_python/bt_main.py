@@ -1,5 +1,4 @@
 from Bob.bluetooth_utils.utils import BluetoothServer, ClientConnectionListener
-from Bob.communication.concrete.crt_strategy import ReadLineStrategy
 from constants import detector, CommandControlListener
 from device_config import getSocketBluetooth
 
@@ -10,8 +9,8 @@ class ConnectListener(ClientConnectionListener):
         global monitor
         print("Monitor start")
         package_device = getSocketBluetooth(socket)
-        monitor = package_device.getMonitor(CommandControlListener(package_device), ReadLineStrategy())
-        monitor.start()
+        package_device.setListener(CommandControlListener(package_device))
+        package_device.start()
 
 
 try:

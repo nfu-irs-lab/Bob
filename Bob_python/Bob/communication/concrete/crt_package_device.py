@@ -1,31 +1,48 @@
-from Bob.communication.framework.fw_listener import PackageListener
-from Bob.communication.framework.fw_monitor import PackageMonitor
 from Bob.communication.framework.fw_package_device import PackageDevice
 from Bob.communication.framework.fw_strategy import SerialReadStrategy
+from Bob.communication.codec import PackageCodec
 from Bob.device.framework.fw_device import SerialDevice
-from Bob.communication.concrete.crt_monitor import SerialPackageMonitor
-from Bob.communication.framework.fw_package import Package
 
 
 class SerialPackageDevice(PackageDevice):
 
-    def __init__(self, ser: SerialDevice):
-        self.ser = ser
+    def __init__(self, ser: SerialDevice, strategy: SerialReadStrategy):
+        super().__init__()
+        self.__strategy = strategy
+        self.__ser = ser
+        self.__running = True
 
     def open(self):
-        if not self.ser.isOpen():
-            self.ser.open()
+        if not self.__ser.isOpen():
+            self.__ser.open()
 
     def close(self):
-        self.ser.close()
-        pass
+        self.__ser.close()
+        self.__running = False
 
     def isOpen(self):
-        return self.ser.isOpen()
+        return self.__ser.isOpen()
 
-    def writePackage(self, package: Package) -> int:
-        return self.ser.write(package.getBytes())
+    def writeString(self, string: str) -> int:
+        return self.__ser.write(PackageCodec.encodeString(string))
 
-    def getMonitor(self, listener: PackageListener,
-                   strategy: SerialReadStrategy) -> PackageMonitor:
-        return SerialPackageMonitor(self.ser, listener, strategy)
+    def write(self, b: bytes) -> int:
+        return self.__ser.write(PackageCodec.encode(b))
+
+    def run(self):
+        while self.__running:
+            try:
+                data = self.__ser.read(1024)
+
+                if len(data) == 0:
+                    continue
+
+                self.__strategy.warp(data)
+
+                while self.__strategy.hasNextPackage():
+                    self._onReceive(self.__strategy.nextPackage())
+            except KeyboardInterrupt:
+                self.stop()
+
+    def stop(self):
+        self.__running = False

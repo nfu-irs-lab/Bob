@@ -1,4 +1,5 @@
 from Bob.communication.concrete.crt_package_device import SerialPackageDevice
+from Bob.communication.concrete.crt_strategy import ReadLineStrategy
 from Bob.communication.framework.fw_package_device import PackageDevice
 from Bob.device.concrete.crt_serial_dev import BluetoothSocketSerialDevice, LocalSerialDevice
 from Bob.robot.concrete.crt_dynamixel import Dynamixel, serial
@@ -32,11 +33,11 @@ def getBluetooth() -> PackageDevice:
 
 
 def getSerialBluetooth() -> PackageDevice:
-    return SerialPackageDevice(getBTSerial(getSerialNameByDescription(bt_description)))
+    return SerialPackageDevice(getBTSerial(getSerialNameByDescription(bt_description)), ReadLineStrategy())
 
 
 def getSocketBluetooth(socket) -> PackageDevice:
-    return SerialPackageDevice(BluetoothSocketSerialDevice(socket, write_delay_ms=100))
+    return SerialPackageDevice(BluetoothSocketSerialDevice(socket, write_delay_ms=100), ReadLineStrategy())
 
 
 def getBTSerial(device):

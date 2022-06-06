@@ -10,14 +10,10 @@ from Bob.dbctrl.concrete.crt_database import JSONDatabase
 import base64
 import json
 from typing import List, Optional
-from Bob.communication.concrete.crt_package import StringPackage, Base64LinePackage
-from Bob.communication.framework.fw_listener import PackageListener
-from Bob.communication.framework.fw_package_device import PackageDevice
+from Bob.communication.framework.fw_package_device import PackageDevice, PackageListener
 from Bob.detector.framework.detector import DetectListener
-from Bob.robot.concrete.crt_command import DynamixelVelocityCommand
 from command_utils import getCommandsFromFileName
 from device_config import getRobot
-from keyboard_ctl import KeyboardController
 
 obj_db_location = f"db{os.path.sep}objects.json"
 face_db_location = f"db{os.path.sep}faces.json"
@@ -31,7 +27,6 @@ stories_db = JSONDatabase(open(stories_db_location, encoding=db_charset))
 vocabularies_db = JSONDatabase(open(vocabularies_db_location, encoding=db_charset))
 
 detector = None
-monitor = None
 
 robot = getRobot()
 robot.open()
@@ -106,7 +101,7 @@ class CommandControlListener(PackageListener):
             all_data: json = object_db.getAllData()
             jsonString = formatDataToJsonString(0, "json_object", "all_objects", all_data)
             print("Send:", jsonString)
-            self.package_device.writePackage(Base64LinePackage(StringPackage(jsonString, "UTF-8")))
+            self.package_device.writeString(jsonString)
 
         elif cmd.startswith("STORY_GET"):
             l1 = cmd[10:]
@@ -120,14 +115,14 @@ class CommandControlListener(PackageListener):
 
                 jsonString = formatDataToJsonString(0, "json_array", "all_stories_info", stories_list)
                 print("Send:", jsonString)
-                self.package_device.writePackage(Base64LinePackage(StringPackage(jsonString, "UTF-8")))
+                self.package_device.writeString(jsonString)
             elif l1.startswith("STORY"):
                 story_id = l1[6:]
                 print("get story", story_id)
                 story_content = stories_db.queryForId(story_id)
                 jsonString = formatDataToJsonString(0, "json_object", "story_content", story_content['data'])
                 print("Send:", jsonString)
-                self.package_device.writePackage(Base64LinePackage(StringPackage(jsonString, "UTF-8")))
+                self.package_device.writeString(jsonString)
         elif cmd.startswith("DO_ACTION"):
             action = cmd[10:]
             threading.Thread(target=doAction, args=(action,)).start()
@@ -140,7 +135,7 @@ class CommandControlListener(PackageListener):
             print(vocabularies_content)
             jsonString = formatDataToJsonString(0, "json_array", "all_vocabularies", vocabularies_content['data'])
             print("Send:", jsonString)
-            self.package_device.writePackage(Base64LinePackage(StringPackage(jsonString, "UTF-8")))
+            self.package_device.writeString(jsonString)
 
 
 class FaceDetectListener(DetectListener):
@@ -155,7 +150,7 @@ class FaceDetectListener(DetectListener):
             sendData = {"id": -1, "response_type": "json_object", "content": "single_object", "data": data}
             jsonString = json.dumps(sendData, ensure_ascii=False)
             print("Send:", jsonString)
-            self.device.writePackage(Base64LinePackage(StringPackage(jsonString, "UTF-8")))
+            self.device.writeString(jsonString)
 
 
 class ObjectDetectListener(DetectListener):
@@ -173,7 +168,7 @@ class ObjectDetectListener(DetectListener):
                 sendData = {"id": -1, "response_type": "json_object", "content": "single_object", "data": data}
                 jsonString = json.dumps(sendData, ensure_ascii=False)
                 print("Send:", jsonString)
-                self.device.writePackage(Base64LinePackage(StringPackage(jsonString, "UTF-8")))
+                self.device.writeString(jsonString)
 
 
 class InteractiveObjectDetectListener(DetectListener):
@@ -203,6 +198,6 @@ class InteractiveObjectDetectListener(DetectListener):
             sendData = {"id": -1, "response_type": "json_object", "content": "single_object", "data": data}
             jsonString = json.dumps(sendData, ensure_ascii=False)
             print("Send:", jsonString)
-            self.device.writePackage(Base64LinePackage(StringPackage(jsonString, "UTF-8")))
+            self.device.writeString(jsonString)
             self.timer = time.time() + 17
 
