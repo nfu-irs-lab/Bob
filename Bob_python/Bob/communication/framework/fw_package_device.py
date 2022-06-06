@@ -1,17 +1,34 @@
 import abc
 from abc import ABC
+from threading import Thread
+from typing import Optional
 
-from Bob.communication.framework.fw_listener import PackageListener
-from Bob.communication.framework.fw_package import Package
-from Bob.communication.framework.fw_strategy import SerialReadStrategy
 from Bob.device.framework.fw_device import Device
 
 
-class PackageDevice(Device, ABC):
+class PackageListener(metaclass=abc.ABCMeta):
     @abc.abstractmethod
-    def writePackage(self, package: Package):
+    def onReceive(self, data: bytes):
+        pass
+
+
+class PackageDevice(Device, ABC, Thread):
+
+    def __init__(self):
+        super().__init__()
+        self.__listener: Optional[PackageListener] = None
+
+    @abc.abstractmethod
+    def writeString(self, package: str):
         pass
 
     @abc.abstractmethod
-    def getMonitor(self, listener: PackageListener, strategy: SerialReadStrategy):
+    def write(self, package: bytes):
         pass
+
+    def setListener(self, listener: PackageListener):
+        self.__listener = listener
+
+    def _onReceive(self, data: bytes):
+        if self.__listener is not None:
+            self.__listener.onReceive(data)
