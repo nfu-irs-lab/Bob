@@ -8,23 +8,38 @@ from device_config import getSocketBluetooth
 
 class ConnectListener(ClientConnectionListener):
 
+    def __init__(self, camera_monitor: CameraMonitor):
+        self.__camera_monitor = camera_monitor
+
     def onConnected(self, socket):
         print("Monitor start")
         package_device = getSocketBluetooth(socket)
-        camera_monitor.setListener(MainCameraListener(package_device))
-        package_device.setListener(CommandControlListener(package_device,camera_monitor))
+        self.__camera_monitor.setListener(MainCameraListener(package_device))
+        package_device.setListener(CommandControlListener(package_device, self.__camera_monitor))
         package_device.start()
-        camera_monitor.start()
+        self.__camera_monitor.start()
 
 
-camera_monitor = CameraMonitor(0)
-camera_monitor.registerDetector(FaceDetector(1), False)
-camera_monitor.registerDetector(ObjectDetector(2, conf=0.4), False)
+class MainProgram:
+    @staticmethod
+    def main():
+        camera_monitor = None
+        server = None
+        try:
+            camera_monitor = CameraMonitor(0)
+            camera_monitor.registerDetector(FaceDetector(1), False)
+            camera_monitor.registerDetector(ObjectDetector(2, conf=0.4), False)
+            server = BluetoothServer(ConnectListener(camera_monitor))
+            server.start()
 
-try:
-    server = BluetoothServer(ConnectListener())
-    server.start()
-except (KeyboardInterrupt, SystemExit):
-    print("Interrupted!!")
+        except (KeyboardInterrupt, SystemExit):
+            print("Interrupted!!")
+        finally:
+            if server is not None:
+                server.close()
+            if camera_monitor is not None:
+                camera_monitor.stop()
 
-server.close()
+
+if __name__ == '__main__':
+    MainProgram.main()
