@@ -23,8 +23,6 @@ class ConnectListener(ClientConnectionListener):
 class MainProgram:
     @staticmethod
     def main():
-        camera_monitor = None
-        server = None
         try:
             camera_monitor = CameraMonitor(0)
             camera_monitor.registerDetector(FaceDetector(1), False)
@@ -34,11 +32,6 @@ class MainProgram:
 
         except (KeyboardInterrupt, SystemExit):
             print("Interrupted!!")
-        finally:
-            if server is not None:
-                server.close()
-            if camera_monitor is not None:
-                camera_monitor.stop()
 
 
 if __name__ == '__main__':
