@@ -16,7 +16,6 @@ from Bob.visual.monitor.framework.fw_monitor import CameraListener
 from Bob.visual.utils import visual_utils
 from command_utils import getCommandsFromFileName
 from device_config import getRobot
-from keyboard_ctl import KeyboardController
 
 obj_db_location = f"db{os.path.sep}objects.json"
 face_db_location = f"db{os.path.sep}faces.json"
@@ -123,14 +122,21 @@ class CommandControlListener(PackageListener):
         self.mode: str = ""
 
     def onReceive(self, cmd:str):
+        """
+        當接收到互動介面所傳輸之指令時會被呼叫
+        @param cmd:接收到之指令
+        """
+
         print("receive:", cmd)
 
         if cmd == "DETECT_OBJECT" or cmd == "DETECT_INTER_OBJECT":
+            # 開啟物品辨識Detector,關閉臉部辨識Detector
             self._camera_monitor.setDetectorEnable(1, False)
             self._camera_monitor.setDetectorEnable(2, True)
             self.mode = cmd
 
         elif cmd == "DETECT_FACE":
+            # 開啟臉部辨識Detector,關閉物品辨識Detector
             self._camera_monitor.setDetectorEnable(1, True)
             self._camera_monitor.setDetectorEnable(2, False)
         elif cmd == "START_DETECT":
@@ -140,6 +146,7 @@ class CommandControlListener(PackageListener):
         elif cmd == "STOP_DETECT":
             pass
         elif cmd == "DB_GET_ALL":
+            # 送出所有物品之資料
             all_data: json = object_db.getAllData()
             jsonString = formatDataToJsonString(0, "json_object", "all_objects", all_data)
             print("Send:", jsonString)
@@ -148,6 +155,7 @@ class CommandControlListener(PackageListener):
         elif cmd.startswith("STORY_GET"):
             l1 = cmd[10:]
             if l1 == "LIST":
+                # 送出所有故事標題以及資訊
                 print("list all")
                 stories_list = []
                 all_data: json = stories_db.getAllData()
@@ -159,6 +167,7 @@ class CommandControlListener(PackageListener):
                 print("Send:", jsonString)
                 self.package_device.writeString(jsonString)
             elif l1.startswith("STORY"):
+                # 送出指定故事之所有內容
                 story_id = l1[6:]
                 print("get story", story_id)
                 story_content = stories_db.queryForId(story_id)
@@ -166,12 +175,15 @@ class CommandControlListener(PackageListener):
                 print("Send:", jsonString)
                 self.package_device.writeString(jsonString)
         elif cmd.startswith("DO_ACTION"):
+            # 機器人做出動作 DO_ACTION [動作名稱].csv
             action = cmd[10:]
             threading.Thread(target=doAction, args=(action,)).start()
             # doAction(action)
         elif cmd == "STOP_ALL_ACTION":
+            # 停止機器人所有動作
             robot.stopAllAction()
         elif cmd == "ALL_VOCABULARIES":
+            # 送出所有單字資訊
             print("get all vocabulary")
             vocabularies_content = vocabularies_db.queryForId("vocabulary")
             print(vocabularies_content)
