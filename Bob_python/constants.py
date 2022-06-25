@@ -7,9 +7,8 @@ import keyboard
 
 from Bob.communication.framework.fw_package_device import PackageDevice, PackageListener
 from Bob.dbctrl.concrete.crt_database import JSONDatabase
-import base64
 import json
-from typing import List, Optional
+from typing import Optional
 
 from Bob.visual.monitor.concrete.crt_camera import CameraMonitor
 from Bob.visual.monitor.framework.fw_monitor import CameraListener
@@ -17,18 +16,24 @@ from Bob.visual.utils import visual_utils
 from command_utils import getCommandsFromFileName
 from device_config import getRobot
 
-obj_db_location = f"db{os.path.sep}objects.json"
-face_db_location = f"db{os.path.sep}faces.json"
-stories_db_location = f"db{os.path.sep}stories.json"
-vocabularies_db_location = f"db{os.path.sep}vocabularies.json"
 db_charset = 'UTF-8'
 
-object_db = JSONDatabase(open(obj_db_location, encoding=db_charset))
-face_db = JSONDatabase(open(face_db_location, encoding=db_charset))
-stories_db = JSONDatabase(open(stories_db_location, encoding=db_charset))
-vocabularies_db = JSONDatabase(open(vocabularies_db_location, encoding=db_charset))
+# 初始化教學資料庫,載入所有資料
+object_db = JSONDatabase(open(f"db{os.path.sep}objects.json", encoding=db_charset))
+face_db = JSONDatabase(open(f"db{os.path.sep}faces.json", encoding=db_charset))
+stories_db = JSONDatabase(open(f"db{os.path.sep}stories.json", encoding=db_charset))
+vocabularies_db = JSONDatabase(open(f"db{os.path.sep}vocabularies.json", encoding=db_charset))
 
+# 初始化機器人
 robot = getRobot()
+robot.open()
+# 將機器人馬達扭力開啟
+robot.enableAllServos(True)
+
+
+# 機器人腳部控制程式,必須打sudo python main.py 使用管理員權限執行
+# keyboard_ctl = KeyboardController(robot)
+# keyboard_ctl.init()
 
 
 class MainCameraListener(CameraListener):
@@ -37,11 +42,20 @@ class MainCameraListener(CameraListener):
         self.object_timer = 0
         self.face_timer = 0
 
+    # 當從攝影機擷取到照片時,此方法被觸發
     def onImageRead(self, image):
+        # 顯示預覽視窗
         cv2.imshow("face", image)
         cv2.imshow("object", image)
 
     def onDetect(self, detector_id, image, data):
+        """
+        當影像辨識到物品或是臉部時,此方法會被執行
+        @param detector_id: Detector id,用來識別為何種辨識結果
+        @param image: 攝影機擷取到的照片
+        @param data: 包含辨識結果,x,y軸
+        """
+        # id=1 當辨識到臉部表情時
         if detector_id == 1:
             labeledImage = image
             for result in data:
@@ -50,9 +64,12 @@ class MainCameraListener(CameraListener):
                                                           (result['x']['max'], result['y']['max']), label,
                                                           overwrite=False)
 
+            # 顯示辨識結果視窗
             cv2.imshow("face", labeledImage)
+
             if time.time() <= self.face_timer:
                 return
+
             obj: Optional[json] = face_db.queryForId(data[0]['emotion'])
 
             if obj is not None:
@@ -60,9 +77,12 @@ class MainCameraListener(CameraListener):
                 sendData = {"id": -1, "response_type": "json_object", "content": "single_object", "data": data}
                 jsonString = json.dumps(sendData, ensure_ascii=False)
                 print("Send:", jsonString)
+                # 透過藍芽送出資料至互動介面
                 self.device.writeString(jsonString)
+                # 至少等待17秒才繼續進行影像辨識
                 self.face_timer = time.time() + 17
 
+        # id=2 當辨識到物品時
         elif detector_id == 2:
             labeledImage = image
             max_index = -1
@@ -73,11 +93,13 @@ class MainCameraListener(CameraListener):
                 labeledImage = visual_utils.annotateLabel(image, (result['x']['min'], result['y']['min']),
                                                           (result['x']['max'], result['y']['max']), label,
                                                           overwrite=False)
+                # 取得最大機率之物品
                 if result['conf'] > max_conf:
                     max_conf = result['conf']
                     max_index = i
 
                 i = i + 1
+            # 顯示辨識結果視窗
             cv2.imshow("object", labeledImage)
 
             if time.time() <= self.object_timer:
@@ -90,17 +112,10 @@ class MainCameraListener(CameraListener):
                 sendData = {"id": -1, "response_type": "json_object", "content": "single_object", "data": data}
                 jsonString = json.dumps(sendData, ensure_ascii=False)
                 print("Send:", jsonString)
+                # 透過藍芽送出資料至互動介面
                 self.device.writeString(jsonString)
+                # 至少等待17秒才繼續進行影像辨識
                 self.object_timer = time.time() + 17
-
-
-robot.open()
-
-robot.enableAllServos(True)
-
-
-# keyboard_ctl = KeyboardController(robot)
-# keyboard_ctl.init()
 
 
 def formatDataToJsonString(id: int, type: str, content: str, data):
@@ -121,7 +136,7 @@ class CommandControlListener(PackageListener):
         self.package_device = device
         self.mode: str = ""
 
-    def onReceive(self, cmd:str):
+    def onReceive(self, cmd: str):
         """
         當接收到互動介面所傳輸之指令時會被呼叫
         @param cmd:接收到之指令
