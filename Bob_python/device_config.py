@@ -8,11 +8,18 @@ from Bob.robot.concrete.servo_agent import CSVServoAgent
 from Bob.robot.framework.fw_robot import Robot
 from serial_utils import getSerialNameByDescription
 
+# 藍芽HC-05模組 UART/USB轉接器晶片名稱(使用正規表達式)
 bt_description = ".*CP2102.*"
+
+# 機器人 UART/USB轉接器晶片名稱(使用正規表達式)
 bot_description = ".*FT232R.*"
 
 
 def getDynamixelRobot():
+    """
+    取得實體機器人裝置
+    @return: 實體機器人
+    """
     agent = CSVServoAgent("servos.csv")
     dynamixel = Dynamixel(getSerialNameByDescription(bot_description), 115200)
     for servo in agent.getDefinedServos():
@@ -21,6 +28,10 @@ def getDynamixelRobot():
 
 
 def getVirtualDynamixelRobot():
+    """
+    取得虛擬機器人裝置
+    @return:虛擬機器人
+    """
     return VirtualDynamixelRobotAdaptor()
 
 
