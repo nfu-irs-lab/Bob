@@ -1,5 +1,6 @@
 package com.example.hiwin.teacher_version_bob.activity;
 
+import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
@@ -14,6 +15,7 @@ import com.example.hiwin.teacher_version_bob.DeviceAdapter;
 import com.example.hiwin.teacher_version_bob.R;
 import com.example.hiwin.teacher_version_bob.fragment.ModeDialogFragment;
 
+import java.security.Permission;
 import java.util.ArrayList;
 import java.util.Set;
 
@@ -33,6 +35,8 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
         setSupportActionBar(myToolbar);
 
         ListView deviceList = (ListView) findViewById(R.id.devicesList);
+
+        requestPermissions(new String[]{Manifest.permission.BLUETOOTH},1);
 
         Intent turnOn = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
         startActivityForResult(turnOn, 0);
