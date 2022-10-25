@@ -5,6 +5,6 @@ robot = getRobot()
 robot.open()
 
 robot.enableAllServos(True)
-robot.doCommands(getCommandsFromFileName("storyaction_start.csv"))
+robot.doCommands(getCommandsFromFileName("car.csv"))
 
 robot.close()

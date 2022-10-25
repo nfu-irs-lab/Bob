@@ -15,7 +15,7 @@ class MainProgram:
     def main():
         try:
             camera_monitor = CameraMonitor(0)
-            #camera_monitor.registerDetector(FaceDetector(1), False)
+            camera_monitor.registerDetector(FaceDetector(1), False)
             camera_monitor.registerDetector(ObjectDetector(2, conf=0.4), False)
             package_device = getSerialBluetooth()
             package_device.setListener(CommandControlListener(package_device, camera_monitor))

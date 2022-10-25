@@ -223,5 +223,579 @@
       "tr_name": "刀",
       "tr_sentence": "不要用刀子指著我。"
     }
+  },
+  {
+    "id": "knife",
+    "data": {
+      "name": "knife",
+      "group": "tool",
+      "sentence": "Don't point the knife at me.",
+      "face": "face_gif_sad",
+      "definition": "",
+      "definition_audio": "",
+      "image": "object_knife",
+      "action": "knife.csv",
+      "tr_name": "刀",
+      "tr_sentence": "不要用刀子指著我。"
+    }
+  },
+  {
+    "id": "dog",
+    "data": {
+      "name": "dog",
+      "group": "creature",
+      "sentence": "This is a dog.",
+      "face": "face_gif_sad",
+      "definition": "The human best friend. ",
+      "definition_audio": "",
+      "image": "object_dog",
+      "action": "dog.csv",
+      "tr_name": "狗",
+      "tr_sentence": "人類最好的朋友。"
+    }
+  },
+  {
+    "id": "bicycle",
+    "data": {
+      "name": "bicycle",
+      "group": "Transportation",
+      "sentence": "Lets go riding bicycle this weekend!",
+      "face": "happy",
+      "action": "gift.csv",
+      "languages": [
+        {
+          "code": "zh_TW",
+          "tr_name": "自行車",
+          "tr_sentence": "這周末我們一起去騎腳踏車吧!"
+        }
+      ]
+    }
+  },
+  {
+    "id": "motorcycle",
+    "data": {
+      "name": "motorcycle",
+      "group": "Transportation",
+      "sentence": "My dad rides me to school on a motorcycle.",
+      "face": "happy",
+      "action": "gift.csv",
+      "languages": [
+        {
+          "code": "zh_TW",
+          "tr_name": "摩托車",
+          "tr_sentence": "我的爸爸騎摩托車載我去上學。"
+        }
+      ]
+    }
+  },
+  {
+    "id": "airplane",
+    "data": {
+      "name": "airplane",
+      "group": "Transportation",
+      "sentence": "I will take a airplane to Japan this summer",
+      "face": "happy",
+      "action": "gift.csv",
+      "languages": [
+        {
+          "code": "zh_TW",
+          "tr_name": "飛機",
+          "tr_sentence": "在這個暑假我將要搭飛機去日本。"
+        }
+      ]
+    }
+  },
+  {
+    "id": "airplane",
+    "data": {
+      "name": "airplane",
+      "group": "Transportation",
+      "sentence": "I will take a airplane to Japan this summer",
+      "face": "happy",
+      "action": "gift.csv",
+      "languages": [
+        {
+          "code": "zh_TW",
+          "tr_name": "飛機",
+          "tr_sentence": "在這個暑假我將要搭飛機去日本。"
+        }
+      ]
+    }
+  },
+  {
+    "id": "bus",
+    "data": {
+      "name": "bus",
+      "group": "Transportation",
+      "sentence": "I alwaays take a bus to school.",
+      "face": "happy",
+      "action": "gift.csv",
+      "languages": [
+        {
+          "code": "zh_TW",
+          "tr_name": "公車",
+          "tr_sentence": "我總是搭公車去上學。"
+        }
+      ]
+    }
+  },
+  {
+    "id": "train",
+    "data": {
+      "name": "train",
+      "group": "Transportation",
+      "sentence": "The train was not free of the station yet ",
+      "face": "happy",
+      "action": "gift.csv",
+      "languages": [
+        {
+          "code": "zh_TW",
+          "tr_name": "火車",
+          "tr_sentence": "火車還沒有離開車站。"
+        }
+      ]
+    }
+  },
+  {
+    "id": "truck",
+    "data": {
+      "name": "truck",
+      "group": "Transportation",
+      "sentence": "This truck is full of toys.",
+      "face": "happy",
+      "action": "gift.csv",
+      "languages": [
+        {
+          "code": "zh_TW",
+          "tr_name": "卡車",
+          "tr_sentence": "這輛卡車載滿了玩具。"
+        }
+      ]
+    }
+  },
+  {
+    "id": "boat",
+    "data": {
+      "name": "boat",
+      "group": "Transportation",
+      "sentence": "My father to go fishing on the sea tomorrow.",
+      "face": "happy",
+      "action": "gift.csv",
+      "languages": [
+        {
+          "code": "zh_TW",
+          "tr_name": "船",
+          "tr_sentence": "我爸爸明天將出海捕魚。"
+        }
+      ]
+    }
+  },
+  {
+    "id": "traffic light",
+    "data": {
+      "name": "traffic light",
+      "group": "Transportation",
+      "sentence": "Turn left at the traffic lights.",
+      "face": "happy",
+      "action": "gift.csv",
+      "languages": [
+        {
+          "code": "zh_TW",
+          "tr_name": "紅綠燈",
+          "tr_sentence": "在紅綠燈那裡向左轉。"
+        }
+      ]
+    }
+  },
+  {
+    "id": "fire hydrant",
+    "data": {
+      "name": "fire hydrant",
+      "group": "Transportation",
+      "sentence": "On every floor there is a fire hydrant.",
+      "face": "happy",
+      "action": "gift.csv",
+      "languages": [
+        {
+          "code": "zh_TW",
+          "tr_name": "消防栓",
+          "tr_sentence": "每個樓層都有消防栓。"
+        }
+      ]
+    }
+  },
+  {
+    "id": "stop sign",
+    "data": {
+      "name": "stop sign",
+      "group": "Transportation",
+      "sentence": "You always have to stop at a stop sign.",
+      "face": "happy",
+      "action": "gift.csv",
+      "languages": [
+        {
+          "code": "zh_TW",
+          "tr_name": "停車標誌",
+          "tr_sentence": "當遇到停車標誌時你一定要停下來。"
+        }
+      ]
+    }
+  },
+  {
+    "id": "parking meter",
+    "data": {
+      "name": "parking meter",
+      "group": "Transportation",
+      "sentence": "He is putting money in the parking meter.",
+      "face": "happy",
+      "action": "gift.csv",
+      "languages": [
+        {
+          "code": "zh_TW",
+          "tr_name": "停車收費機",
+          "tr_sentence": "他正把錢投入停車收費機中。"
+        }
+      ]
+    }
+  },
+  {
+    "id": "bench",
+    "data": {
+      "name": "bench",
+      "group": "Transportation",
+      "sentence": "They're sitting on a bench in the park.",
+      "face": "happy",
+      "action": "gift.csv",
+      "languages": [
+        {
+          "code": "zh_TW",
+          "tr_name": "長凳",
+          "tr_sentence": "他們正坐在公園裡的一張長凳上。"
+        }
+      ]
+    }
+  },
+  {
+    "id": "horse",
+    "data": {
+      "name": "horse",
+      "group": "creature",
+      "sentence": "I'm learning how to ride a horse.",
+      "face": "happy",
+      "action": "gift.csv",
+      "languages": [
+        {
+          "code": "zh_TW",
+          "tr_name": "馬",
+          "tr_sentence": "我正在學習如何騎馬。"
+        }
+      ]
+    }
+  },
+  {
+    "id": "skis",
+    "data": {
+      "name": "skis",
+      "group": "creature",
+      "sentence": "The girl asked her father to buy a pair of skis for her.",
+      "face": "happy",
+      "action": "gift.csv",
+      "languages": [
+        {
+          "code": "zh_TW",
+          "tr_name": "滑雪板(雙板)",
+          "tr_sentence": "那個女孩拜託她的爸爸幫他買一個滑雪板。"
+        }
+      ]
+    }
+  },
+  {
+    "id": "snowboard",
+    "data": {
+      "name": "snowboard",
+      "group": "creature",
+      "sentence": "Snowboard parks are becoming more popular. ",
+      "face": "happy",
+      "action": "gift.csv",
+      "languages": [
+        {
+          "code": "zh_TW",
+          "tr_name": "滑雪板(單板)",
+          "tr_sentence": "單板滑雪公園越來越受歡迎。"
+        }
+      ]
+    }
+  },
+  {
+    "id": "skateboard",
+    "data": {
+      "name": "skateboard",
+      "group": "creature",
+      "sentence": "With a skateboard, you can skate on the street.",
+      "face": "happy",
+      "action": "gift.csv",
+      "languages": [
+        {
+          "code": "zh_TW",
+          "tr_name": "滑板",
+          "tr_sentence": "有了滑板，你就可以在大街上滑行。"
+        }
+      ]
+    }
+  },
+  {
+    "id": "cow",
+    "data": {
+      "name": "cow",
+      "group": "creature",
+      "sentence": "Cows supply us milk .",
+      "face": "happy",
+      "action": "gift.csv",
+      "languages": [
+        {
+          "code": "zh_TW",
+          "tr_name": "母牛",
+          "tr_sentence": "母牛供給我們牛奶。"
+        }
+      ]
+    }
+  },
+  {
+    "id": "backpack",
+    "data": {
+      "name": "backpack",
+      "group": "creature",
+      "sentence": "Is there a pencil in your backpack?",
+      "face": "happy",
+      "action": "gift.csv",
+      "languages": [
+        {
+          "code": "zh_TW",
+          "tr_name": "背包",
+          "tr_sentence": "你的背包裡有鉛筆嗎？"
+        }
+      ]
+    }
+  },
+  {
+    "id": "umbrella",
+    "data": {
+      "name": "umbrella",
+      "group": "creature",
+      "sentence": "May i borrow your umbrella ?",
+      "face": "happy",
+      "action": "gift.csv",
+      "languages": [
+        {
+          "code": "zh_TW",
+          "tr_name": "雨傘",
+          "tr_sentence": "我可以借用你的雨傘嗎？"
+        }
+      ]
+    }
+  },
+  {
+    "id": "handbag",
+    "data": {
+      "name": "handbag",
+      "group": "creature",
+      "sentence": "This handbag is very beautiful.",
+      "face": "happy",
+      "action": "gift.csv",
+      "languages": [
+        {
+          "code": "zh_TW",
+          "tr_name": "手提包",
+          "tr_sentence": "這個手提包很漂亮。"
+        }
+      ]
+    }
+  },
+  {
+    "id": "tie",
+    "data": {
+      "name": "tie",
+      "group": "creature",
+      "sentence": "She bought her husband a tie.",
+      "face": "happy",
+      "action": "gift.csv",
+      "languages": [
+        {
+          "code": "zh_TW",
+          "tr_name": "領帶",
+          "tr_sentence": "她買給她先生一條領帶。"
+        }
+      ]
+    }
+  },
+  {
+    "id": "frisbee",
+    "data": {
+      "name": "frisbee",
+      "group": "creature",
+      "sentence": "I like to play frisbee with my dog.",
+      "face": "happy",
+      "action": "gift.csv",
+      "languages": [
+        {
+          "code": "zh_TW",
+          "tr_name": "飛盤",
+          "tr_sentence": "我喜歡跟我的狗一起玩飛盤。"
+        }
+      ]
+    }
+  },
+  {
+    "id": "suitcase",
+    "data": {
+      "name": "suitcase",
+      "group": "creature",
+      "sentence": "I crowded everything into my suitcase.",
+      "face": "happy",
+      "action": "gift.csv",
+      "languages": [
+        {
+          "code": "zh_TW",
+          "tr_name": "行李箱",
+          "tr_sentence": "我把所有的東西都塞進了行李箱。"
+        }
+      ]
+    }
+  },
+  {
+    "id": "fork",
+    "data": {
+      "name": "fork",
+      "group": "creature",
+      "sentence": "He picked up his fork and knife.",
+      "face": "happy",
+      "action": "gift.csv",
+      "languages": [
+        {
+          "code": "zh_TW",
+          "tr_name": "叉",
+          "tr_sentence": "他拿起他的刀叉。"
+        }
+      ]
+    }
+  },
+  {
+    "id": "spoon",
+    "data": {
+      "name": "spoon",
+      "group": "creature",
+      "sentence": "She stirred her coffee with a spoon.",
+      "face": "happy",
+      "action": "gift.csv",
+      "languages": [
+        {
+          "code": "zh_TW",
+          "tr_name": "湯匙",
+          "tr_sentence": "她用湯匙攪拌她的咖啡."
+        }
+      ]
+    }
+  },
+  {
+    "id": "kite",
+    "data": {
+      "name": "kite",
+      "group": "creature",
+      "sentence": "Your kite looks like bird.",
+      "face": "happy",
+      "action": "gift.csv",
+      "languages": [
+        {
+          "code": "zh_TW",
+          "tr_name": "風箏",
+          "tr_sentence": "你的風箏看起來像一隻鳥。"
+        }
+      ]
+    }
+  },
+  {
+    "id": "baseball glove",
+    "data": {
+      "name": "baseball glove",
+      "group": "creature",
+      "sentence": "My mother buy a baseball glove for my birthday.",
+      "face": "happy",
+      "action": "gift.csv",
+      "languages": [
+        {
+          "code": "zh_TW",
+          "tr_name": "棒球手套",
+          "tr_sentence": "我媽媽給我買了一個棒球手套作為生日禮物。"
+        }
+      ]
+    }
+  },
+  {
+    "id": "baseball bat",
+    "data": {
+      "name": "baseball bat",
+      "group": "creature",
+      "sentence": "She has a baseball bat.",
+      "face": "happy",
+      "action": "gift.csv",
+      "languages": [
+        {
+          "code": "zh_TW",
+          "tr_name": "棒球拍",
+          "tr_sentence": "她有一個棒球拍。"
+        }
+      ]
+    }
+  },
+ {
+    "id": "sheep",
+    "data": {
+      "name": "sheep",
+      "group": "creature",
+      "sentence": "Sheep looks like cloud.",
+      "face": "happy",
+      "action": "sheep.csv",
+      "languages": [
+        {
+          "code": "zh_TW",
+          "tr_name": "綿羊",
+          "tr_sentence": "綿羊看起來像一朵雲。"
+        }
+      ]
+    }
+  },
+  {
+    "id": "bear",
+    "data": {
+      "name": "bear",
+      "group": "creature",
+      "sentence": "Bear likes to eat fish and honey .",
+      "face": "sad",
+      "action": "bear.csv",
+      "languages": [
+        {
+          "code": "zh_TW",
+          "tr_name": "熊",
+          "tr_sentence": "熊喜歡吃魚和蜂蜜。"
+        }
+      ]
+    }
+  },
+   {
+    "id": "giraffe",
+    "data": {
+      "name": "giraffe",
+      "group": "creature",
+      "sentence": "Giraffe is vert tall.",
+      "face": "happy",
+      "action": "giraffe.csv",
+      "languages": [
+        {
+          "code": "zh_TW",
+          "tr_name": "長頸鹿",
+          "tr_sentence": "長頸鹿非常地高。"
+        }
+      ]
+    }
   }
 ]
