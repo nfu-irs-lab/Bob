@@ -23,6 +23,9 @@ import java.util.LinkedList;
 
 import static com.example.hiwin.teacher_version_bob.Constants.getResourceIDByString;
 
+/**
+ * 物品動辨識遊戲主畫面
+ */
 public class InteractiveObjectDetectActivity extends BluetoothCommunicationActivity {
 
 
@@ -48,31 +51,59 @@ public class InteractiveObjectDetectActivity extends BluetoothCommunicationActiv
         try {
             Log.d(THIS_LOG_TAG, "received string:");
             Log.d(THIS_LOG_TAG, str);
+//            將str字串轉成JSONObject
             JSONObject json = new JSONObject(str);
+
+//            內容類型
             String content = json.getString("content");
+
             if (content.equals("all_objects")) {
+//                如果接收到所有物件資訊
+
                 JSONArray raw = json.getJSONArray("data");
+
+//                全部物品陣列
                 objects = new JSONArray();
+
                 for (int i = 0; i < 9; i++) {
                     objects.put(raw.getJSONObject(i));
                 }
-
+//
+//                重置資料
                 reset();
+
+//               通知主控制器開始物品辨識
                 sendMessage("DETECT_INTER_OBJECT");
                 sendMessage("START_DETECT");
+
             } else if (content.equals("single_object")) {
+//                如果接收到實際辨識到的物件
+
                 String detected_object = json.getJSONObject("data").getString("name");
 
+//                如果接收到實際辨識到的物件
                 AnswerFragment fragment = new AnswerFragment();
+
+//                判斷辨識到的物品是否與畫面上顯示一樣
                 boolean correct = detected_object.equals(answer);
+
+
+//                顯示答案畫面
                 postFragment(fragment, "A");
+
                 new Thread(() -> {
 
                     if (correct) {
+//                        顯示正確畫面
                         fragment.correct();
+
+//                        做出打圈動作
                         sendMessage("DO_ACTION correct.csv");
                     } else {
+//                        顯示錯誤畫面
                         fragment.incorrect();
+
+//                        做出打叉動作
                         sendMessage("DO_ACTION incorrect.csv");
                     }
                     try {
@@ -121,6 +152,10 @@ public class InteractiveObjectDetectActivity extends BluetoothCommunicationActiv
         }
     }
 
+    /**
+     * 選擇新題目
+     * @throws JSONException json錯誤
+     */
     private void selectNewAnswer() throws JSONException {
         if(objects==null || objects.length()==0)
             return;
@@ -151,12 +186,12 @@ public class InteractiveObjectDetectActivity extends BluetoothCommunicationActiv
 
     @Override
     protected void onConnect() {
+//        抓取所有物件資料
         sendMessage("DB_GET_ALL");
     }
 
     @Override
     protected void onDisconnect() {
-//        sendMessage("PAUSE_DETECT");
         sendMessage("STOP_DETECT");
     }
 
@@ -167,7 +202,6 @@ public class InteractiveObjectDetectActivity extends BluetoothCommunicationActiv
 
     @Override
     public void onStop() {
-//        sendMessage("PAUSE_DETECT");
         if (isConnected())
             sendMessage("STOP_DETECT");
         super.onStop();
@@ -183,6 +217,10 @@ public class InteractiveObjectDetectActivity extends BluetoothCommunicationActiv
         return R.layout.activity_inter_obj_detect;
     }
 
+    /**
+     * @param fragment 要顯示之Fragment
+     * @param id ID
+     */
     private void postFragment(Fragment fragment, String id) {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.setReorderingAllowed(true);

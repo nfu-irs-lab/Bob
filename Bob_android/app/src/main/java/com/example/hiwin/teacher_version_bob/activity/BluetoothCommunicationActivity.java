@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,8 +24,11 @@ import com.example.hiwin.teacher_version_bob.communication.bluetooth.framework.S
 import com.example.hiwin.teacher_version_bob.communication.service.SerialService;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
+
+/**
+ * 藍芽連接之主畫面，繼承此Activity。
+ */
 public abstract class BluetoothCommunicationActivity extends AppCompatActivity {
     private static final String TAG_NAME = "BluetoothCommunicationActivity";
 
@@ -39,6 +41,10 @@ public abstract class BluetoothCommunicationActivity extends AppCompatActivity {
     private SerialService serialService;
 
 
+    /**
+     * 當接收到藍芽封包時，此函式會被執行。
+     * @param msg 接收到的藍芽字串
+     */
     protected abstract void receive(String msg);
 
     protected final boolean isConnected() {
@@ -53,10 +59,20 @@ public abstract class BluetoothCommunicationActivity extends AppCompatActivity {
 
     protected abstract String getDeviceAddress(Bundle savedInstanceState);
 
+    /**
+     * 當藍芽連線時，此方法會被呼叫
+     */
     protected abstract void onConnect();
 
+    /**
+     * 當藍芽斷線時，此方法會被呼叫
+     */
     protected abstract void onDisconnect();
 
+    /**
+     * 當藍芽發生錯誤時，此方法會被呼叫
+     * @param e 錯誤資訊
+     */
     protected abstract void onSerialError(Exception e);
 
 
@@ -115,7 +131,8 @@ public abstract class BluetoothCommunicationActivity extends AppCompatActivity {
         if (serialService != null)
             serialService.attach(serialDataListener);
         else
-            startService(new Intent(this, SerialService.class)); // prevents service destroy on unbind from recreated activity caused by orientation change
+            // prevents service destroy on unbind from recreated activity caused by orientation change
+            startService(new Intent(this, SerialService.class));
     }
 
     @Override
@@ -159,16 +176,27 @@ public abstract class BluetoothCommunicationActivity extends AppCompatActivity {
         }
     }
 
+
+    /**
+     * 送出位元組陣列
+     * @param bytes 位元組陣列內容
+     */
     protected void send(byte[] bytes) {
         try {
+//            使用PackageCodecFacade.encode(bytes)，編碼封包
             serialService.write(PackageCodecFacade.encode(bytes));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * 送出字串
+     * @param msg 封包內容
+     */
     protected void sendMessage(String msg) {
         try {
+//            使用PackageCodecFacade.encodeString(msg)，編碼封包
             serialService.write(PackageCodecFacade.encodeString(msg));
         } catch (IOException e) {
             e.printStackTrace();
@@ -208,6 +236,7 @@ public abstract class BluetoothCommunicationActivity extends AppCompatActivity {
 
         @Override
         public void onSerialRead(byte[] data) {
+//            使用PackageCodecFacade.decodeString(data,true)，解碼封包
             receive(PackageCodecFacade.decodeString(data,true));
         }
 
