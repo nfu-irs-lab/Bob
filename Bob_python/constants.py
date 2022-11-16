@@ -1,3 +1,4 @@
+import csv
 import os
 import threading
 import time
@@ -13,8 +14,7 @@ from typing import Optional
 from Bob.visual.monitor.concrete.crt_camera import CameraMonitor
 from Bob.visual.monitor.framework.fw_monitor import CameraListener
 from Bob.visual.utils import visual_utils
-from command_utils import getCommandsFromFileName
-from device_config import getRobot
+from device_config import getDynamixel
 
 db_charset = 'UTF-8'
 
@@ -25,10 +25,12 @@ stories_db = JSONDatabase(open(f"db{os.path.sep}stories.json", encoding=db_chars
 vocabularies_db = JSONDatabase(open(f"db{os.path.sep}vocabularies.json", encoding=db_charset))
 
 # 初始化機器人
-robot = getRobot()
+robot = getDynamixel()
 robot.open()
+
 # 將機器人馬達扭力開啟
-robot.enableAllServos(True)
+for _id in robot.getAllServosId():
+    robot.enableTorque(_id, True)
 
 
 # 機器人腳部控制程式,必須打sudo python main.py 使用管理員權限執行
@@ -124,11 +126,6 @@ def formatDataToJsonString(id: int, type: str, content: str, data):
     return json.dumps(sendData, ensure_ascii=False)
 
 
-def doAction(action):
-    print("do action:", action)
-    robot.doCommands(getCommandsFromFileName(action))
-
-
 class CommandControlListener(PackageListener):
     def __init__(self, device: PackageDevice, camera_monitor: CameraMonitor):
         self.__id_counter = 0
@@ -192,11 +189,12 @@ class CommandControlListener(PackageListener):
         elif cmd.startswith("DO_ACTION"):
             # 機器人做出動作 DO_ACTION [動作名稱].csv
             action = cmd[10:]
-            threading.Thread(target=doAction, args=(action,)).start()
-            # doAction(action)
+            # threading.Thread(target=doRobotAction, args=(action,)).start()
+            self.doRobotAction(action)
+
         elif cmd == "STOP_ALL_ACTION":
             # 停止機器人所有動作
-            robot.stopAllAction()
+            pass
         elif cmd == "ALL_VOCABULARIES":
             # 送出所有單字資訊
             print("get all vocabulary")
@@ -205,3 +203,32 @@ class CommandControlListener(PackageListener):
             jsonString = formatDataToJsonString(0, "json_array", "all_vocabularies", vocabularies_content['data'])
             print("Send:", jsonString)
             self.package_device.writeString(jsonString)
+
+    def doRobotAction(self, csv_file):
+        with open(csv_file, newline='') as file:
+            rows = csv.reader(file, delimiter=",")
+            line = 0
+            for row in rows:
+                if line == 0:
+                    pass
+                else:
+                    if len(row) == 0:
+                        continue
+
+                    servoId = row[0]
+                    position = row[1]
+                    speed = row[2]
+                    delay = row[3]
+
+                    if not delay == '':
+                        time.sleep(float(delay))
+
+                    if servoId == '':
+                        continue
+
+                    if not speed == '':
+                        robot.setVelocity(int(servoId), int(speed))
+
+                    if not position == '':
+                        robot.setGoalPosition(int(servoId), int(position))
+                line = line + 1

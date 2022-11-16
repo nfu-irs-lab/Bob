@@ -2,7 +2,8 @@ import csv
 from typing import List
 
 from Bob.robot.concrete.crt_dynamixel import PROTOCOL_1, PROTOCOL_2
-from Bob.robot.concrete.crt_dynamixel_servo import *
+from Bob.robot.framework.fw_servo import DynamixelServo
+from Bob.robot.concrete.crt_servos import RX_64, MX_106, MX_64, RX_24F, H42_20_S300_R
 
 
 class CSVServoAgent:

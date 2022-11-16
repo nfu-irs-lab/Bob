@@ -1,6 +1,6 @@
+import csv
 from typing import List
 
-from Bob.device.framework.fw_device import Device
 import os
 
 from Bob.robot.framework.fw_servo import DynamixelServo
@@ -37,8 +37,7 @@ packetHandler1 = PacketHandler(1.0)
 packetHandler2 = PacketHandler(2.0)
 
 
-class Dynamixel(Device):
-
+class Dynamixel:
     def __init__(self, device_name: str, baudrate: int):
         self._baudrate = baudrate
         self._portHandler = PortHandler(device_name)

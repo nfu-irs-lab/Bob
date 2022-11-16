@@ -32,7 +32,3 @@ class DynamixelServo(abc.ABC):
     @abc.abstractmethod
     def getMovingAddressLength(self):
         pass
-
-    # @abc.abstractmethod
-    # def getToqueLimitAddress(self):
-    #     pass
