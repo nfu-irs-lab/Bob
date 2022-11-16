@@ -1,3 +1,7 @@
+import re
+
+from serial.tools.list_ports_linux import comports
+
 from Bob.communication.concrete.crt_package_device import SerialPackageDevice
 from Bob.communication.concrete.crt_strategy import ReadLineStrategy
 from Bob.communication.framework.fw_package_device import PackageDevice
@@ -5,7 +9,13 @@ from Bob.device.concrete.crt_serial_dev import BluetoothSocketSerialDevice, Loca
 from Bob.robot.concrete.crt_dynamixel import Dynamixel, serial
 from Bob.robot.concrete.servo_utils import CSVServoAgent
 
-from serial_utils import getSerialNameByDescription
+
+def getSerialNameByDescription(description: str):
+    for port in comports():
+        if re.search(description, port.description):
+            return port.device
+    raise Exception(description + " not found.")
+
 
 # 藍芽HC-05模組 UART/USB轉接器晶片名稱(使用正規表達式)
 bt_description = ".*CP2102.*"
