@@ -15,7 +15,7 @@ def empty(content: str):
 def getSerialNameByDescription(description: str):
     for port in comports():
         if re.search(description, port.description):
-            return port.device
+            return port.commDevice
     raise Exception(description + " not found.")
 
 

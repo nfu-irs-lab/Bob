@@ -6,18 +6,20 @@ Usage:
 import csv
 import json
 import os
+import socket
 import time
 from typing import Optional
 
 import cv2
 
-from Bob.communication.framework.fw_package_device import PackageDevice, PackageListener
 from Bob.dbctrl.concrete.crt_database import JSONDatabase
 from Bob.visual.detector.concrete.object_detect_yolov5 import ObjectDetector
 from Bob.visual.detector.concrete.face_detect_deepface import FaceDetector
 from Bob.visual.monitor.concrete.crt_camera import CameraMonitor
 from Bob.visual.monitor.framework.fw_monitor import CameraListener
 from Bob.visual.utils import visual_utils
+from communication.concrete.crt_comm import TCPCommDevice, EOLPackageHandler
+from communication.framework.fw_comm import CommDevice
 from device_config import getSerialBluetooth, getDynamixel
 
 db_charset = 'UTF-8'
@@ -28,18 +30,10 @@ face_db = JSONDatabase(open(f"db{os.path.sep}faces.json", encoding=db_charset))
 stories_db = JSONDatabase(open(f"db{os.path.sep}stories.json", encoding=db_charset))
 vocabularies_db = JSONDatabase(open(f"db{os.path.sep}vocabularies.json", encoding=db_charset))
 
-# 初始化機器人
-robot = getDynamixel()
-robot.open()
-
-# 將機器人馬達扭力開啟
-for _id in robot.getAllServosId():
-    robot.enableTorque(_id, True)
-
 
 class MainCameraListener(CameraListener):
-    def __init__(self, device: PackageDevice):
-        self.device = device
+    def __init__(self, commDevice: CommDevice):
+        self.commDevice = commDevice
         self.object_timer = 0
         self.face_timer = 0
 
@@ -79,7 +73,7 @@ class MainCameraListener(CameraListener):
                 jsonString = json.dumps(sendData, ensure_ascii=False)
                 print("Send:", jsonString)
                 # 透過藍芽送出資料至互動介面
-                self.device.writeString(jsonString)
+                self.commDevice.write(jsonString.encode(encoding='utf-8'))
                 # 至少等待17秒才繼續進行影像辨識
                 self.face_timer = time.time() + 17
 
@@ -114,7 +108,7 @@ class MainCameraListener(CameraListener):
                 jsonString = json.dumps(sendData, ensure_ascii=False)
                 print("Send:", jsonString)
                 # 透過藍芽送出資料至互動介面
-                self.device.writeString(jsonString)
+                self.commDevice.write(jsonString.encode(encoding='utf-8'))
                 # 至少等待17秒才繼續進行影像辨識
                 self.object_timer = time.time() + 17
 
@@ -125,14 +119,50 @@ def formatDataToJsonString(id: int, type: str, content: str, data):
     return json.dumps(sendData, ensure_ascii=False)
 
 
-class CommandControlListener(PackageListener):
-    def __init__(self, device: PackageDevice, camera_monitor: CameraMonitor):
+class MainProgram:
+    def __init__(self):
         self.__id_counter = 0
-        self._camera_monitor = camera_monitor
-        self.package_device = device
-        self.mode: str = ""
+        self._camera_monitor = CameraMonitor(0)
 
-    def onReceive(self, cmd: str):
+        # 初始化機器人
+        robot = getDynamixel()
+        robot.open()
+
+        # 將機器人馬達扭力開啟
+        for _id in robot.getAllServosId():
+            robot.enableTorque(_id, True)
+        self.robot = robot
+
+    def initialize_server(self):
+        server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        server.bind(("0.0.0.0", 4444))
+        server.listen(5)
+        return server
+
+    def main(self):
+        server = self.initialize_server()
+        self._camera_monitor.registerDetector(FaceDetector(1), False)
+        self._camera_monitor.registerDetector(ObjectDetector(2, conf=0.4), False)
+        self._camera_monitor.start()
+
+        while True:
+            client, address = server.accept()
+            print("Connected:", address)
+            try:
+                commDevice = TCPCommDevice(client, EOLPackageHandler())
+                self._camera_monitor.setListener(MainCameraListener(commDevice))
+                while True:
+                    data = commDevice.read()
+                    if data is None:
+                        time.sleep(0.001)
+                        continue
+                    else:
+                        command = data.decode(encoding='utf-8')
+                        self.handleCommand(command, commDevice)
+            except Exception as e:
+                print(e.__str__())
+
+    def handleCommand(self, cmd: str, commDevice: CommDevice):
         """
         當接收到互動介面所傳輸之指令時會被呼叫
         @param cmd:接收到之指令
@@ -144,7 +174,6 @@ class CommandControlListener(PackageListener):
             # 開啟物品辨識Detector,關閉臉部辨識Detector
             self._camera_monitor.setDetectorEnable(1, False)
             self._camera_monitor.setDetectorEnable(2, True)
-            self.mode = cmd
 
         elif cmd == "DETECT_FACE":
             # 開啟臉部辨識Detector,關閉物品辨識Detector
@@ -161,7 +190,7 @@ class CommandControlListener(PackageListener):
             all_data: json = object_db.getAllData()
             jsonString = formatDataToJsonString(0, "json_object", "all_objects", all_data)
             print("Send:", jsonString)
-            self.package_device.writeString(jsonString)
+            commDevice.write(jsonString.encode(encoding='utf-8'))
 
         elif cmd.startswith("STORY_GET"):
             l1 = cmd[10:]
@@ -176,7 +205,7 @@ class CommandControlListener(PackageListener):
 
                 jsonString = formatDataToJsonString(0, "json_array", "all_stories_info", stories_list)
                 print("Send:", jsonString)
-                self.package_device.writeString(jsonString)
+                commDevice.write(jsonString.encode(encoding='utf-8'))
             elif l1.startswith("STORY"):
                 # 送出指定故事之所有內容
                 story_id = l1[6:]
@@ -184,7 +213,7 @@ class CommandControlListener(PackageListener):
                 story_content = stories_db.queryForId(story_id)
                 jsonString = formatDataToJsonString(0, "json_object", "story_content", story_content['data'])
                 print("Send:", jsonString)
-                self.package_device.writeString(jsonString)
+                commDevice.write(jsonString.encode(encoding='utf-8'))
         elif cmd.startswith("DO_ACTION"):
             # 機器人做出動作 DO_ACTION [動作名稱].csv
             action = cmd[10:]
@@ -201,7 +230,7 @@ class CommandControlListener(PackageListener):
             print(vocabularies_content)
             jsonString = formatDataToJsonString(0, "json_array", "all_vocabularies", vocabularies_content['data'])
             print("Send:", jsonString)
-            self.package_device.writeString(jsonString)
+            commDevice.write(jsonString.encode(encoding='utf-8'))
 
     def doRobotAction(self, csv_file):
         with open(csv_file, newline='') as file:
@@ -226,28 +255,13 @@ class CommandControlListener(PackageListener):
                         continue
 
                     if not speed == '':
-                        robot.setVelocity(int(servoId), int(speed))
+                        self.robot.setVelocity(int(servoId), int(speed))
 
                     if not position == '':
-                        robot.setGoalPosition(int(servoId), int(position))
+                        self.robot.setGoalPosition(int(servoId), int(position))
                 line = line + 1
 
 
-class MainProgram:
-    @staticmethod
-    def main():
-        try:
-            camera_monitor = CameraMonitor(0)
-            camera_monitor.registerDetector(FaceDetector(1), False)
-            camera_monitor.registerDetector(ObjectDetector(2, conf=0.4), False)
-            package_device = getSerialBluetooth()
-            package_device.setListener(CommandControlListener(package_device, camera_monitor))
-            camera_monitor.setListener(MainCameraListener(package_device))
-            package_device.start()
-            camera_monitor.start()
-        except (KeyboardInterrupt, SystemExit):
-            print("Interrupted!!")
-
-
 if __name__ == '__main__':
-    MainProgram.main()
+    main = MainProgram()
+    main.main()

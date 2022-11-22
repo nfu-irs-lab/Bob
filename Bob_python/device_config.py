@@ -2,18 +2,16 @@ import re
 
 from serial.tools.list_ports_linux import comports
 
-from Bob.communication.concrete.crt_package_device import SerialPackageDevice
-from Bob.communication.concrete.crt_strategy import ReadLineStrategy
-from Bob.communication.framework.fw_package_device import PackageDevice
-from Bob.device.concrete.crt_serial_dev import BluetoothSocketSerialDevice, LocalSerialDevice
 from Bob.robot.concrete.crt_dynamixel import Dynamixel, serial
 from Bob.robot.concrete.servo_utils import CSVServoAgent
+from communication.concrete.crt_comm import SerialCommDevice, EOLPackageHandler
+from communication.framework.fw_comm import CommDevice
 
 
 def getSerialNameByDescription(description: str):
     for port in comports():
         if re.search(description, port.description):
-            return port.device
+            return port.commDevice
     raise Exception(description + " not found.")
 
 
@@ -36,19 +34,9 @@ def getDynamixel() -> Dynamixel:
     return dynamixel
 
 
-def getBluetooth() -> PackageDevice:
-    return getSerialBluetooth()
+def getSerialBluetooth() -> CommDevice:
+    return SerialCommDevice(getSerialNameByDescription(bt_description), 38400, EOLPackageHandler())
 
 
-def getSerialBluetooth() -> PackageDevice:
-    return SerialPackageDevice(getBTSerial(getSerialNameByDescription(bt_description)), ReadLineStrategy())
-
-
-def getSocketBluetooth(socket) -> PackageDevice:
-    return SerialPackageDevice(BluetoothSocketSerialDevice(socket, write_delay_ms=100), ReadLineStrategy())
-
-
-def getBTSerial(device):
-    return LocalSerialDevice(
-        serial.Serial(device, baudrate=38400, parity=serial.PARITY_NONE, timeout=0.5, write_timeout=10000),
-        write_delay_ms=0)
+# def getSocketBluetooth(socket) -> PackageDevice:
+#     return SerialPackageDevice(BluetoothSocketSerialDevice(socket, write_delay_ms=100), ReadLineStrategy())
