@@ -18,11 +18,16 @@ from Bob.visual.detector.concrete.face_detect_deepface import FaceDetector
 from Bob.visual.monitor.concrete.crt_camera import CameraMonitor
 from Bob.visual.monitor.framework.fw_monitor import CameraListener
 from Bob.visual.utils import visual_utils
-from Bob.communication.concrete.crt_comm import TCPCommDevice, EOLPackageHandler
+from Bob.communication.concrete.crt_comm import TCPCommDevice, EOLPackageHandler, SerialCommDevice
 from Bob.communication.framework.fw_comm import CommDevice
 from device_config import getSerialBluetooth, getDynamixel
 
 db_charset = 'UTF-8'
+CMD_OBJECT_DETECTOR = "OBJECT_DETECTOR "
+CMD_FACE_DETECTOR = "FACE_DETECTOR "
+
+ID_OBJECT = 1
+ID_FACE = 2
 
 # 初始化教學資料庫,載入所有資料
 object_db = JSONDatabase(open(f"db{os.path.sep}objects.json", encoding=db_charset))
@@ -40,8 +45,10 @@ class MainCameraListener(CameraListener):
     # 當從攝影機擷取到照片時,此方法被觸發
     def onImageRead(self, image):
         # 顯示預覽視窗
-        cv2.imshow("face", image)
-        cv2.imshow("object", image)
+        cv2.imshow("show", image)
+
+    def onNothingDetected(self, _id, image):
+        cv2.imshow("show", image)
 
     def onDetect(self, detector_id, image, data):
         """
@@ -51,21 +58,18 @@ class MainCameraListener(CameraListener):
         @param data: 包含辨識結果,x,y軸
         """
         # id=1 當辨識到臉部表情時
-        if detector_id == 1:
-            labeledImage = image
+        if detector_id == ID_FACE:
             for result in data:
-                label = result['emotion']
-                labeledImage = visual_utils.annotateLabel(labeledImage, (result['x']['min'], result['y']['min']),
-                                                          (result['x']['max'], result['y']['max']), label,
-                                                          overwrite=False)
+                label = result.result['emotion']
+                visual_utils.annotateLabel(image, result.x, result.y, result.width, result.height, label)
 
             # 顯示辨識結果視窗
-            cv2.imshow("face", labeledImage)
+            cv2.imshow("show", image)
 
             if time.time() <= self.face_timer:
                 return
 
-            obj: Optional[json] = face_db.queryForId(data[0]['emotion'])
+            obj: Optional[json] = face_db.queryForId(data[0].result['emotion'])
 
             if obj is not None:
                 data: json = obj['data']
@@ -78,29 +82,29 @@ class MainCameraListener(CameraListener):
                 self.face_timer = time.time() + 17
 
         # id=2 當辨識到物品時
-        elif detector_id == 2:
+        elif detector_id == ID_OBJECT:
             labeledImage = image
             max_index = -1
             max_conf = -1
             i = 0
             for result in data:
-                label = result['name'] + " " + str(round(result['conf'], 2))
-                labeledImage = visual_utils.annotateLabel(image, (result['x']['min'], result['y']['min']),
-                                                          (result['x']['max'], result['y']['max']), label,
-                                                          overwrite=False)
+                label = result.result['name'] + " " + str(round(result.result['conf'], 2))
+
+                visual_utils.annotateLabel(image, result.x, result.y, result.width, result.height, label)
+
                 # 取得最大機率之物品
-                if result['conf'] > max_conf:
-                    max_conf = result['conf']
+                if result.result['conf'] > max_conf:
+                    max_conf = result.result['conf']
                     max_index = i
 
                 i = i + 1
             # 顯示辨識結果視窗
-            cv2.imshow("object", labeledImage)
+            cv2.imshow("show", labeledImage)
 
             if time.time() <= self.object_timer:
                 return
 
-            selected_object = data[max_index]
+            selected_object = data[max_index].result
             obj: Optional[json] = object_db.queryForId(selected_object['name'])
             if obj is not None:
                 data: json = obj['data']
@@ -140,16 +144,17 @@ class MainProgram:
         return server
 
     def main(self):
-        server = self.initialize_server()
-        self._camera_monitor.registerDetector(FaceDetector(1), False)
-        self._camera_monitor.registerDetector(ObjectDetector(2, conf=0.4), False)
+        # server = self.initialize_server()
+        self._camera_monitor.registerDetector(FaceDetector(ID_FACE), False)
+        self._camera_monitor.registerDetector(ObjectDetector(ID_OBJECT, conf=0.4), False)
         self._camera_monitor.start()
 
         while True:
-            client, address = server.accept()
-            print("Connected:", address)
+            # client, address = server.accept()
+            # print("Connected:", address)
             try:
-                commDevice = TCPCommDevice(client, EOLPackageHandler())
+                # commDevice = TCPCommDevice(client, EOLPackageHandler())
+                commDevice = getSerialBluetooth()
                 self._camera_monitor.setListener(MainCameraListener(commDevice))
                 while True:
                     data = commDevice.read()
@@ -162,38 +167,35 @@ class MainProgram:
             except Exception as e:
                 print(e.__str__())
 
-    def handleCommand(self, cmd: str, commDevice: CommDevice):
+    def handleCommand(self, command: str, commDevice: CommDevice):
         """
         當接收到互動介面所傳輸之指令時會被呼叫
-        @param cmd:接收到之指令
+        @param command:接收到之指令
         """
 
-        print("receive:", cmd)
+        print("receive:", command)
 
-        if cmd == "DETECT_OBJECT" or cmd == "DETECT_INTER_OBJECT":
-            # 開啟物品辨識Detector,關閉臉部辨識Detector
-            self._camera_monitor.setDetectorEnable(1, False)
-            self._camera_monitor.setDetectorEnable(2, True)
+        if command.startswith(CMD_OBJECT_DETECTOR):
+            if command[len(CMD_OBJECT_DETECTOR):] == "ENABLE":
+                self._camera_monitor.setDetectorEnable(ID_OBJECT, True)
+            elif command[len(CMD_OBJECT_DETECTOR):] == "DISABLE":
+                self._camera_monitor.setDetectorEnable(ID_OBJECT, False)
 
-        elif cmd == "DETECT_FACE":
-            # 開啟臉部辨識Detector,關閉物品辨識Detector
-            self._camera_monitor.setDetectorEnable(1, True)
-            self._camera_monitor.setDetectorEnable(2, False)
-        elif cmd == "START_DETECT":
-            pass
-        elif cmd == "PAUSE_DETECT":
-            pass
-        elif cmd == "STOP_DETECT":
-            pass
-        elif cmd == "DB_GET_ALL":
+        elif command.startswith(CMD_FACE_DETECTOR):
+            if command[len(CMD_FACE_DETECTOR):] == "ENABLE":
+                self._camera_monitor.setDetectorEnable(ID_FACE, True)
+            elif command[len(CMD_FACE_DETECTOR):] == "DISABLE":
+                self._camera_monitor.setDetectorEnable(ID_FACE, False)
+
+        elif command == "DB_GET_ALL":
             # 送出所有物品之資料
             all_data: json = object_db.getAllData()
             jsonString = formatDataToJsonString(0, "json_object", "all_objects", all_data)
             print("Send:", jsonString)
             commDevice.write(jsonString.encode(encoding='utf-8'))
 
-        elif cmd.startswith("STORY_GET"):
-            l1 = cmd[10:]
+        elif command.startswith("STORY_GET"):
+            l1 = command[10:]
             if l1 == "LIST":
                 # 送出所有故事標題以及資訊
                 print("list all")
@@ -214,16 +216,16 @@ class MainProgram:
                 jsonString = formatDataToJsonString(0, "json_object", "story_content", story_content['data'])
                 print("Send:", jsonString)
                 commDevice.write(jsonString.encode(encoding='utf-8'))
-        elif cmd.startswith("DO_ACTION"):
+        elif command.startswith("DO_ACTION"):
             # 機器人做出動作 DO_ACTION [動作名稱].csv
-            action = cmd[10:]
+            action = command[10:]
             # threading.Thread(target=doRobotAction, args=(action,)).start()
             self.doRobotAction(action)
 
-        elif cmd == "STOP_ALL_ACTION":
+        elif command == "STOP_ALL_ACTION":
             # 停止機器人所有動作
             pass
-        elif cmd == "ALL_VOCABULARIES":
+        elif command == "ALL_VOCABULARIES":
             # 送出所有單字資訊
             print("get all vocabulary")
             vocabularies_content = vocabularies_db.queryForId("vocabulary")

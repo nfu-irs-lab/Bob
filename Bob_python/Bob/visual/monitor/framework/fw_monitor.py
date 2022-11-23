@@ -3,7 +3,7 @@ import threading
 from abc import ABC
 from typing import List
 
-from Bob.visual.detector.framework.detector import Detector
+from Bob.visual.detector.framework.detector import Detector, DetectorData
 
 
 class CameraListener(ABC):
@@ -12,7 +12,11 @@ class CameraListener(ABC):
         pass
 
     @abc.abstractmethod
-    def onDetect(self, _id, image, data):
+    def onDetect(self, _id, image, data: List[DetectorData]):
+        pass
+
+    @abc.abstractmethod
+    def onNothingDetected(self, _id, image):
         pass
 
 
@@ -41,6 +45,7 @@ class VideoMonitor(threading.Thread):
     def setListener(self, listener: CameraListener):
         self._listener = listener
 
+    # 當辨識到結果時回傳True
     def _detect(self, image):
         for detector in self.__detectors:
             if not self._isEnable(detector.getId()):
@@ -48,8 +53,15 @@ class VideoMonitor(threading.Thread):
 
             result = detector.detect(image)
             if len(result) != 0:
-                if not self._listener is None:
+                if self._listener is not None:
                     self._listener.onDetect(detector.getId(), image, result)
+                    return True
+            else:
+                if self._listener is not None:
+                    self._listener.onNothingDetected(detector.getId(), image)
+                    return True
+
+            return False
 
     def _isEnable(self, detectorId):
         for enable_id in self.__detector_enablers:
