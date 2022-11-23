@@ -181,12 +181,7 @@ class MainProgram:
             # 開啟臉部辨識Detector,關閉物品辨識Detector
             self._camera_monitor.setDetectorEnable(1, True)
             self._camera_monitor.setDetectorEnable(2, False)
-        elif cmd == "START_DETECT":
-            pass
-        elif cmd == "PAUSE_DETECT":
-            pass
-        elif cmd == "STOP_DETECT":
-            pass
+
         elif cmd == "DB_GET_ALL":
             # 送出所有物品之資料
             all_data: json = object_db.getAllData()
