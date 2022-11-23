@@ -18,8 +18,8 @@ from Bob.visual.detector.concrete.face_detect_deepface import FaceDetector
 from Bob.visual.monitor.concrete.crt_camera import CameraMonitor
 from Bob.visual.monitor.framework.fw_monitor import CameraListener
 from Bob.visual.utils import visual_utils
-from communication.concrete.crt_comm import TCPCommDevice, EOLPackageHandler
-from communication.framework.fw_comm import CommDevice
+from Bob.communication.concrete.crt_comm import TCPCommDevice, EOLPackageHandler
+from Bob.communication.framework.fw_comm import CommDevice
 from device_config import getSerialBluetooth, getDynamixel
 
 db_charset = 'UTF-8'
