@@ -1,8 +1,8 @@
 import socket
 from threading import Thread
 
-from communication.concrete.crt_comm import TCPCommDevice, EOLPackageHandler
-from communication.framework.fw_comm import CommDevice
+from Bob.communication.concrete.crt_comm import TCPCommDevice, EOLPackageHandler
+from Bob.communication.framework.fw_comm import CommDevice
 
 HOST = '127.0.0.1'
 PORT = 4444
