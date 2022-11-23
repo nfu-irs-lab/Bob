@@ -18,7 +18,7 @@ from Bob.visual.detector.concrete.face_detect_deepface import FaceDetector
 from Bob.visual.monitor.concrete.crt_camera import CameraMonitor
 from Bob.visual.monitor.framework.fw_monitor import CameraListener
 from Bob.visual.utils import visual_utils
-from Bob.communication.concrete.crt_comm import TCPCommDevice, EOLPackageHandler
+from Bob.communication.concrete.crt_comm import TCPCommDevice, EOLPackageHandler, SerialCommDevice
 from Bob.communication.framework.fw_comm import CommDevice
 from device_config import getSerialBluetooth, getDynamixel
 
@@ -139,17 +139,19 @@ class MainProgram:
         server.listen(5)
         return server
 
+
     def main(self):
-        server = self.initialize_server()
+        # server = self.initialize_server()
         self._camera_monitor.registerDetector(FaceDetector(1), False)
         self._camera_monitor.registerDetector(ObjectDetector(2, conf=0.4), False)
         self._camera_monitor.start()
 
         while True:
-            client, address = server.accept()
-            print("Connected:", address)
+            # client, address = server.accept()
+            # print("Connected:", address)
             try:
-                commDevice = TCPCommDevice(client, EOLPackageHandler())
+                # commDevice = TCPCommDevice(client, EOLPackageHandler())
+                commDevice=getSerialBluetooth()
                 self._camera_monitor.setListener(MainCameraListener(commDevice))
                 while True:
                     data = commDevice.read()
