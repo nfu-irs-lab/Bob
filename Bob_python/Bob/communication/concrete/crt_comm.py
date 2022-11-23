@@ -3,7 +3,7 @@ from typing import Optional, List
 
 import serial
 
-from communication.framework.fw_comm import CommDevice, PackageHandler
+from Bob.communication.framework.fw_comm import CommDevice, PackageHandler
 
 
 class SerialCommDevice(CommDevice):
@@ -57,12 +57,14 @@ class TCPCommDevice(CommDevice):
 
 
 # 預設的結尾符號
-EOP = bytes([0xe2, 0x80, 0xA9])
-
+# https://stackoverflow.com/questions/13836352/what-is-the-utf-8-representation-of-end-of-line-in-text-file
+PS = bytes([0xe2, 0x80, 0xA9])
+# https://zh.wikipedia.org/zh-tw/%E4%BC%A0%E8%BE%93%E7%BB%93%E6%9D%9F%E5%AD%97%E7%AC%A6
+EOT = bytes([0x04])
 
 # 傳輸資料時所需要之通訊協定
 class EOLPackageHandler(PackageHandler):
-    def __init__(self, EndOfLine: bytes = EOP):
+    def __init__(self, EndOfLine: bytes = PS):
         self.__EOL = EndOfLine
         self.buffer = bytearray()
         self.delay_timer = 0
