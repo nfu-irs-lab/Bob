@@ -1,19 +1,23 @@
 package com.example.hiwin.teacher_version_bob.communication.bluetooth.concrete;
 
-import com.example.hiwin.teacher_version_bob.communication.bluetooth.framework.SerialReadStrategy;
+import com.example.hiwin.teacher_version_bob.communication.bluetooth.framework.PackageHandler;
 
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 
-public class ReadLineStrategy implements SerialReadStrategy {
+public class SymbolPackageHandler implements PackageHandler {
 
     private final List<Byte> buffer = new LinkedList<>();
-    private List<byte[]> packages = new LinkedList<>();
+    private final byte[] symbol;
+    private final List<byte[]> packages = new LinkedList<>();
+
+    public SymbolPackageHandler(byte[] symbol) {
+        this.symbol = symbol;
+    }
 
     @Override
-    public void warp(byte[] data) {
+    public void handle(byte[] data) {
 
         for (byte b : data) {
             buffer.add(b);
@@ -37,14 +41,20 @@ public class ReadLineStrategy implements SerialReadStrategy {
     }
 
     private int getIndexOfFirstEOL(List<Byte> data) {
-        int indexOfEOL = -1;
         for (int i = 0; i < data.size(); i++) {
-            if (data.get(i) == '\n') {
-                indexOfEOL = i;
-                break;
+            int found = 0;
+            for (int j = 0; j < symbol.length; j++) {
+                if (i + j < data.size()) {
+                    byte d1 = symbol[j];
+                    byte d2 = data.get(i + j);
+                    if (d1 == d2)
+                        found++;
+                }
             }
+            if (found == symbol.length)
+                return i;
         }
-        return indexOfEOL;
+        return -1;
     }
 
     private byte[] subArray(List<Byte> data, int start, int len) {
@@ -56,7 +66,7 @@ public class ReadLineStrategy implements SerialReadStrategy {
     }
 
     @Override
-    public byte[] nextPackage() {
+    public byte[] getPackageAndNext() {
         if (hasNextPackage()) {
             byte[] data = packages.get(0);
             byte[] buf = Arrays.copyOf(data, data.length);
@@ -65,5 +75,13 @@ public class ReadLineStrategy implements SerialReadStrategy {
         } else {
             throw new RuntimeException("No package");
         }
+    }
+
+    @Override
+    public byte[] convertToPackage(byte[] data) {
+        byte[] newArray=new byte[data.length+symbol.length];
+        System.arraycopy(data,0,newArray,0,data.length);
+        System.arraycopy(symbol,0,newArray,data.length,symbol.length);
+        return newArray;
     }
 }

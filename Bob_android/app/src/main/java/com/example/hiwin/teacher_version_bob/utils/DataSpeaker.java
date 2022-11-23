@@ -19,7 +19,7 @@ public class DataSpeaker {
     public DataSpeaker(TextToSpeech textToSpeech) {
         tts = textToSpeech;
         tts.setLanguage(Locale.US);
-        tts.setSpeechRate(0.3f);
+//        tts.setSpeechRate(0.3f);
         tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
             @Override
             public void onStart(String utteranceId) {

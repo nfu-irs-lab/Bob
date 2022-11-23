@@ -17,13 +17,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 import com.example.hiwin.teacher_version_bob.R;
-import com.example.hiwin.teacher_version_bob.communication.PackageCodecFacade;
-import com.example.hiwin.teacher_version_bob.communication.bluetooth.concrete.ReadLineStrategy;
+import com.example.hiwin.teacher_version_bob.communication.bluetooth.concrete.SymbolPackageHandler;
 import com.example.hiwin.teacher_version_bob.communication.bluetooth.concrete.SerialSocket;
 import com.example.hiwin.teacher_version_bob.communication.bluetooth.framework.SerialListener;
 import com.example.hiwin.teacher_version_bob.communication.service.SerialService;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 
 /**
@@ -148,7 +148,7 @@ public abstract class BluetoothCommunicationActivity extends AppCompatActivity {
             BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
             BluetoothDevice device = bluetoothAdapter.getRemoteDevice(deviceAddress);
             Log.d(TAG_NAME, "connecting...");
-            SerialSocket socket = new SerialSocket(this, device, new ReadLineStrategy());
+            SerialSocket socket = new SerialSocket(this, device, new SymbolPackageHandler(new byte[]{0x04}));
             serialService.connect(socket);
             connected = Connected.Pending;
 
@@ -184,7 +184,7 @@ public abstract class BluetoothCommunicationActivity extends AppCompatActivity {
     protected void send(byte[] bytes) {
         try {
 //            使用PackageCodecFacade.encode(bytes)，編碼封包
-            serialService.write(PackageCodecFacade.encode(bytes));
+            serialService.write(bytes);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -197,7 +197,7 @@ public abstract class BluetoothCommunicationActivity extends AppCompatActivity {
     protected void sendMessage(String msg) {
         try {
 //            使用PackageCodecFacade.encodeString(msg)，編碼封包
-            serialService.write(PackageCodecFacade.encodeString(msg));
+            serialService.write(msg.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -237,7 +237,7 @@ public abstract class BluetoothCommunicationActivity extends AppCompatActivity {
         @Override
         public void onSerialRead(byte[] data) {
 //            使用PackageCodecFacade.decodeString(data,true)，解碼封包
-            receive(PackageCodecFacade.decodeString(data,true));
+            receive(new String(data,StandardCharsets.UTF_8));
         }
 
         @Override

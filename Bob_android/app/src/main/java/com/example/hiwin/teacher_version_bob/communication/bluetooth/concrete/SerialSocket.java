@@ -8,7 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import com.example.hiwin.teacher_version_bob.Constants;
 import com.example.hiwin.teacher_version_bob.communication.bluetooth.framework.SerialListener;
-import com.example.hiwin.teacher_version_bob.communication.bluetooth.framework.SerialReadStrategy;
+import com.example.hiwin.teacher_version_bob.communication.bluetooth.framework.PackageHandler;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -19,20 +19,20 @@ public class SerialSocket implements Runnable {
 
     private static final UUID BLUETOOTH_SPP = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     private final BroadcastReceiver disconnectBroadcastReceiver;
-    private final SerialReadStrategy strategy;
+    private final PackageHandler handler;
     private final Context context;
     private SerialListener listener;
     private final BluetoothDevice device;
     private BluetoothSocket socket;
     private boolean connected;
 
-    public SerialSocket(Context context, BluetoothDevice device, SerialReadStrategy strategy) {
+    public SerialSocket(Context context, BluetoothDevice device, PackageHandler handler) {
 //        if(context instanceof Activity)
 //            throw new InvalidParameterException("expected non UI context");
 
         this.context = context;
         this.device = device;
-        this.strategy = strategy;
+        this.handler = handler;
         disconnectBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -75,7 +75,7 @@ public class SerialSocket implements Runnable {
     public void write(byte[] data) throws IOException {
         if (!connected)
             throw new IOException("not connected");
-        socket.getOutputStream().write(data);
+        socket.getOutputStream().write(handler.convertToPackage(data));
     }
 
     @Override
@@ -104,11 +104,11 @@ public class SerialSocket implements Runnable {
                 len = socket.getInputStream().read(buffer);
                 byte[] data = Arrays.copyOf(buffer, len);
 
-                strategy.warp(data);
+                handler.handle(data);
 
-                if(strategy.hasNextPackage()){
+                if(handler.hasNextPackage()){
                     if(listener != null)
-                        listener.onSerialRead(strategy.nextPackage());
+                        listener.onSerialRead(handler.getPackageAndNext());
                 }
             }
         } catch (Exception e) {
