@@ -64,7 +64,7 @@ EOT = bytes([0x04])
 
 # 傳輸資料時所需要之通訊協定
 class EOLPackageHandler(PackageHandler):
-    def __init__(self, EndOfLine: bytes = PS):
+    def __init__(self, EndOfLine: bytes = EOT):
         self.__EOL = EndOfLine
         self.buffer = bytearray()
         self.delay_timer = 0
