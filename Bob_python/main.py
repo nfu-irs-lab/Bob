@@ -18,8 +18,9 @@ from Bob.visual.detector.concrete.face_detect_deepface import FaceDetector
 from Bob.visual.monitor.concrete.crt_camera import CameraMonitor
 from Bob.visual.monitor.framework.fw_monitor import CameraListener
 from Bob.visual.utils import visual_utils
-from Bob.communication.concrete.crt_comm import TCPCommDevice, EOLPackageHandler, SerialCommDevice
-from Bob.communication.framework.fw_comm import CommDevice
+from Bob.communication.framework.fw_comm import CommDevice, ReConnectableDevice
+from communication.concrete.crt_comm import EOLPackageHandler, \
+    BluetoothServerDevice, TCPServerDevice
 from device_config import getSerialBluetooth, getDynamixel
 
 db_charset = 'UTF-8'
@@ -77,7 +78,7 @@ class MainCameraListener(CameraListener):
                 jsonString = json.dumps(sendData, ensure_ascii=False)
                 print("Send:", jsonString)
                 # 透過藍芽送出資料至互動介面
-                self.commDevice.write(jsonString.encode(encoding='utf-8'))
+                self.sendString(jsonString)
                 # 至少等待17秒才繼續進行影像辨識
                 self.face_timer = time.time() + 17
 
@@ -112,9 +113,15 @@ class MainCameraListener(CameraListener):
                 jsonString = json.dumps(sendData, ensure_ascii=False)
                 print("Send:", jsonString)
                 # 透過藍芽送出資料至互動介面
-                self.commDevice.write(jsonString.encode(encoding='utf-8'))
+                self.sendString(jsonString)
                 # 至少等待17秒才繼續進行影像辨識
                 self.object_timer = time.time() + 17
+
+    def sendString(self, string: str):
+        try:
+            self.commDevice.write(string.encode(encoding='utf-8'))
+        except Exception as e:
+            print(e.__str__())
 
 
 def formatDataToJsonString(id: int, type: str, content: str, data):
@@ -129,32 +136,31 @@ class MainProgram:
         self._camera_monitor = CameraMonitor(0)
 
         # 初始化機器人
-        robot = getDynamixel()
-        robot.open()
+        # robot = getDynamixel()
+        # robot.open()
 
         # 將機器人馬達扭力開啟
-        for _id in robot.getAllServosId():
-            robot.enableTorque(_id, True)
-        self.robot = robot
+        # for _id in robot.getAllServosId():
+        #     robot.enableTorque(_id, True)
+        # self.robot = robot
 
-    def initialize_server(self):
-        server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server.bind(("0.0.0.0", 4444))
-        server.listen(5)
-        return server
+    def initialize_device(self) -> ReConnectableDevice:
+        # 使用TCP傳輸
+        return TCPServerDevice("0.0.0.0", 4444, EOLPackageHandler())
+
+        # 使用藍芽傳輸
+        # return BluetoothServerDevice(EOLPackageHandler())
 
     def main(self):
-        # server = self.initialize_server()
+        device = self.initialize_device()
         self._camera_monitor.registerDetector(FaceDetector(ID_FACE), False)
         self._camera_monitor.registerDetector(ObjectDetector(ID_OBJECT, conf=0.4), False)
         self._camera_monitor.start()
 
         while True:
-            # client, address = server.accept()
-            # print("Connected:", address)
+            commDevice = device.accept()
+            print("Connected")
             try:
-                # commDevice = TCPCommDevice(client, EOLPackageHandler())
-                commDevice = getSerialBluetooth()
                 self._camera_monitor.setListener(MainCameraListener(commDevice))
                 while True:
                     data = commDevice.read()

@@ -42,3 +42,13 @@ class PackageHandler(abc.ABC):
     @abc.abstractmethod
     def convertToPackage(self, data: bytes) -> bytes:
         pass
+
+
+class ReConnectableDevice(abc.ABC):
+    @abc.abstractmethod
+    def accept(self) -> CommDevice:
+        pass
+
+    @abc.abstractmethod
+    def close(self):
+        pass
