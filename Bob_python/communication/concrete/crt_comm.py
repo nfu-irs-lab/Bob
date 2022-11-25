@@ -3,7 +3,7 @@ from typing import Optional, List
 
 import serial
 
-from Bob.communication.framework.fw_comm import CommDevice, PackageHandler, ReConnectableDevice
+from communication.framework.fw_comm import CommDevice, PackageHandler, ReConnectableDevice
 
 
 class TCPServerDevice(ReConnectableDevice):

@@ -3,7 +3,7 @@ from typing import List
 
 import os
 
-from Bob.robot.framework.fw_servo import DynamixelServo
+from robot.framework.fw_servo import DynamixelServo
 
 if os.name == 'nt':
     import msvcrt

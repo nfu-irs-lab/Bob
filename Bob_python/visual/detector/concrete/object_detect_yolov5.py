@@ -4,7 +4,7 @@ import cv2
 import torch
 from PIL import Image
 
-from Bob.visual.detector.framework.detector import Detector, DetectorData
+from visual.detector.framework.detector import Detector, DetectorData
 
 
 class ObjectDetector(Detector):

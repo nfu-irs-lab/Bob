@@ -1,7 +1,7 @@
 import json
 from typing import Optional, TextIO
 
-from Bob.dbctrl.framework.fw_database import Database
+from dbctrl.framework.fw_database import Database
 
 
 class JSONDatabase(Database):

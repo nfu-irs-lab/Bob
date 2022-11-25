@@ -3,7 +3,7 @@ from typing import List
 import cv2
 from deepface import DeepFace
 
-from Bob.visual.detector.framework.detector import Detector, DetectorData
+from visual.detector.framework.detector import Detector, DetectorData
 
 
 class FaceDetector(Detector):

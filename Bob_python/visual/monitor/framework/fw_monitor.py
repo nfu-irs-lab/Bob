@@ -3,7 +3,7 @@ import threading
 from abc import ABC
 from typing import List
 
-from Bob.visual.detector.framework.detector import Detector, DetectorData
+from visual.detector.framework.detector import Detector, DetectorData
 
 
 class CameraListener(ABC):

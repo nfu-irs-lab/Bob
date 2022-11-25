@@ -1,7 +1,7 @@
 import socket
 import time
 
-from Bob.communication.concrete.crt_comm import TCPCommDevice, EOLPackageHandler
+from communication.concrete.crt_comm import TCPCommDevice, EOLPackageHandler
 
 
 class MainProgram:

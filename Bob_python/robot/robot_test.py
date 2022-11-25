@@ -4,8 +4,8 @@ import time
 
 from serial.tools.list_ports_linux import comports
 
-from Bob.robot.concrete.crt_dynamixel import Dynamixel
-from Bob.robot.concrete.servo_utils import CSVServoAgent
+from robot.concrete.crt_dynamixel import Dynamixel
+from robot.concrete.servo_utils import CSVServoAgent
 
 
 def empty(content: str):

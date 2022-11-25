@@ -2,12 +2,12 @@ from typing import List
 
 import cv2
 
-from Bob.visual.detector.concrete.face_detect_deepface import FaceDetector
-from Bob.visual.detector.concrete.object_detect_yolov5 import ObjectDetector
-from Bob.visual.detector.framework.detector import DetectorData
-from Bob.visual.monitor.concrete.crt_camera import CameraMonitor
-from Bob.visual.monitor.framework.fw_monitor import CameraListener
-from Bob.visual.utils import visual_utils
+from visual.detector.concrete.face_detect_deepface import FaceDetector
+from visual.detector.concrete.object_detect_yolov5 import ObjectDetector
+from visual.detector.framework.detector import DetectorData
+from visual.monitor.concrete.crt_camera import CameraMonitor
+from visual.monitor.framework.fw_monitor import CameraListener
+from visual.utils import visual_utils
 
 FACE_DETECTOR_ID = 1
 OBJECT_DETECTOR_ID = 2

@@ -1,6 +1,6 @@
 import cv2
 
-from Bob.visual.monitor.framework.fw_monitor import VideoMonitor
+from visual.monitor.framework.fw_monitor import VideoMonitor
 
 
 class CameraMonitor(VideoMonitor):

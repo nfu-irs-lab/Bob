@@ -12,13 +12,13 @@ from typing import Optional
 
 import cv2
 
-from Bob.dbctrl.concrete.crt_database import JSONDatabase
-from Bob.visual.detector.concrete.object_detect_yolov5 import ObjectDetector
-from Bob.visual.detector.concrete.face_detect_deepface import FaceDetector
-from Bob.visual.monitor.concrete.crt_camera import CameraMonitor
-from Bob.visual.monitor.framework.fw_monitor import CameraListener
-from Bob.visual.utils import visual_utils
-from Bob.communication.framework.fw_comm import CommDevice, ReConnectableDevice
+from dbctrl.concrete.crt_database import JSONDatabase
+from visual.detector.concrete.object_detect_yolov5 import ObjectDetector
+from visual.detector.concrete.face_detect_deepface import FaceDetector
+from visual.monitor.concrete.crt_camera import CameraMonitor
+from visual.monitor.framework.fw_monitor import CameraListener
+from visual.utils import visual_utils
+from communication.framework.fw_comm import CommDevice, ReConnectableDevice
 from communication.concrete.crt_comm import EOLPackageHandler, \
     BluetoothServerDevice, TCPServerDevice
 from device_config import getSerialBluetooth, getDynamixel

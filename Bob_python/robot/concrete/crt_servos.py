@@ -1,4 +1,4 @@
-from Bob.robot.framework.fw_servo import DynamixelServo
+from robot.framework.fw_servo import DynamixelServo
 
 
 class H42_20_S300_R(DynamixelServo):

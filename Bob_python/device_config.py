@@ -2,10 +2,10 @@ import re
 
 from serial.tools.list_ports_linux import comports
 
-from Bob.robot.concrete.crt_dynamixel import Dynamixel, serial
-from Bob.robot.concrete.servo_utils import CSVServoAgent
-from Bob.communication.concrete.crt_comm import SerialCommDevice, EOLPackageHandler
-from Bob.communication.framework.fw_comm import CommDevice
+from robot.concrete.crt_dynamixel import Dynamixel, serial
+from robot.concrete.servo_utils import CSVServoAgent
+from communication.concrete.crt_comm import SerialCommDevice, EOLPackageHandler
+from communication.framework.fw_comm import CommDevice
 
 
 def getSerialNameByDescription(description: str):
