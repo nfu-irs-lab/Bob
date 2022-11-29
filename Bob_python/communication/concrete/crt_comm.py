@@ -1,142 +1,154 @@
-import socket
 from typing import Optional, List
-
-import serial
 
 from communication.framework.fw_comm import CommDevice, PackageHandler, ReConnectableDevice
 
+# NVIDIA Jetson AGX Xavier -----
+bluetooth_import = False
+tcp_import = True
+serial_import = True
 
-class TCPServerDevice(ReConnectableDevice):
+# PC -----
+# bluetooth_import = False
+# tcp_import = True
+# serial_import = False
 
-    def __init__(self, ip: str, port: int, handler: PackageHandler):
-        server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server.bind((ip, port))
-        server.listen(5)
-        self.server = server
-        self.handler = handler
-
-    def accept(self) -> CommDevice:
-        client, address = self.server.accept()
-        return TCPCommDevice(client, self.handler)
-
-    def close(self):
-        self.server.close()
+if tcp_import:
+    import socket
 
 
-import bluetooth
+    class TCPServerDevice(ReConnectableDevice):
+        def __init__(self, ip: str, port: int, handler: PackageHandler):
+            server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            server.bind((ip, port))
+            server.listen(5)
+            self.server = server
+            self.handler = handler
 
-class BluetoothServerDevice(ReConnectableDevice):
-    def __init__(self, handler: PackageHandler):
-        server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-        server_sock.bind(("", bluetooth.PORT_ANY))
-        server_sock.listen(1)
+        def accept(self) -> CommDevice:
+            client, address = self.server.accept()
+            return TCPCommDevice(client, self.handler)
 
-        port = server_sock.getsockname()[1]
-
-        uuid = "94f39d29-7d6d-437d-973b-fba39e49d4ee"
-
-        bluetooth.advertise_service(server_sock, "SampleServer", service_id=uuid,
-                                    service_classes=[uuid, bluetooth.SERIAL_PORT_CLASS],
-                                    profiles=[bluetooth.SERIAL_PORT_PROFILE],
-                                    # protocols=[bluetooth.OBEX_UUID]
-                                    )
-        print("Waiting for connection on RFCOMM channel", port)
-        self.server_sock = server_sock
-        self.handler = handler
-
-    def accept(self) -> CommDevice:
-        client_socket, client_info = self.server_sock.accept()
-        print("Accepted connection from", client_info)
-        return BluetoothCommDevice(client_socket, self.handler)
-
-    def close(self):
-        self.server_sock.close()
+        def close(self):
+            self.server.close()
 
 
-class BluetoothCommDevice(CommDevice):
-    def __init__(self, socket: bluetooth.BluetoothSocket, handler: PackageHandler):
-        self.socket = socket
-        self.handler = handler
+    class TCPCommDevice(CommDevice):
 
-    def open(self):
-        pass
+        def __init__(self, socket: socket.socket, handler: PackageHandler):
+            self.socket = socket
+            self.handler = handler
 
-    def write(self, data: bytes):
-        self.socket.send(self.handler.convertToPackage(data))
+        def read(self) -> Optional[bytes]:
+            self.handler.handle(self.socket.recv(4096))
+            if not self.handler.hasPackage():
+                return None
+            else:
+                return self.handler.getPackageAndNext()
 
-    def read(self) -> Optional[bytes]:
-        self.handler.handle(self.socket.recv(4096))
-        if not self.handler.hasPackage():
-            return None
-        else:
-            return self.handler.getPackageAndNext()
+        def write(self, data: bytes) -> int:
+            return self.socket.send(self.handler.convertToPackage(data))
 
-    def close(self):
-        self.socket.close()
+        def open(self):
+            pass
 
+        def close(self):
+            self.socket.close()
 
-class SerialServerDevice(ReConnectableDevice):
-
-    def __init__(self, port_name: str, baudrate: int, handler: PackageHandler):
-        self.serial = serial.Serial(port_name, baudrate)
-        self.handler = handler
-
-    def accept(self) -> CommDevice:
-        return SerialCommDevice(self.serial, self.handler)
-
-    def close(self):
-        self.serial.close()
+if bluetooth_import:
+    import bluetooth
 
 
-class SerialCommDevice(CommDevice):
+    class BluetoothServerDevice(ReConnectableDevice):
+        def __init__(self, handler: PackageHandler):
+            server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
+            server_sock.bind(("", bluetooth.PORT_ANY))
+            server_sock.listen(1)
 
-    def __init__(self, ser: serial.Serial, handler: PackageHandler):
-        self.serial = ser
-        self.handler = handler
+            port = server_sock.getsockname()[1]
 
-    def read(self) -> Optional[bytes]:
-        self.handler.handle(self.serial.read())
-        if not self.handler.hasPackage():
-            return None
-        else:
-            return self.handler.getPackageAndNext()
+            uuid = "94f39d29-7d6d-437d-973b-fba39e49d4ee"
 
-    def write(self, data: bytes) -> int:
-        return self.serial.write(self.handler.convertToPackage(data))
+            bluetooth.advertise_service(server_sock, "SampleServer", service_id=uuid,
+                                        service_classes=[uuid, bluetooth.SERIAL_PORT_CLASS],
+                                        profiles=[bluetooth.SERIAL_PORT_PROFILE],
+                                        # protocols=[bluetooth.OBEX_UUID]
+                                        )
+            print("Waiting for connection on RFCOMM channel", port)
+            self.server_sock = server_sock
+            self.handler = handler
 
-    def open(self):
-        if self.isOpen():
-            self.serial.open()
+        def accept(self) -> CommDevice:
+            client_socket, client_info = self.server_sock.accept()
+            print("Accepted connection from", client_info)
+            return BluetoothCommDevice(client_socket, self.handler)
 
-    def close(self):
-        self.serial.close()
-
-    def isOpen(self) -> bool:
-        return self.serial.isOpen()
+        def close(self):
+            self.server_sock.close()
 
 
-class TCPCommDevice(CommDevice):
+    class BluetoothCommDevice(CommDevice):
+        def __init__(self, socket: bluetooth.BluetoothSocket, handler: PackageHandler):
+            self.socket = socket
+            self.handler = handler
 
-    def __init__(self, socket: socket.socket, handler: PackageHandler):
-        self.socket = socket
-        self.handler = handler
+        def open(self):
+            pass
 
-    def read(self) -> Optional[bytes]:
-        self.handler.handle(self.socket.recv(4096))
-        if not self.handler.hasPackage():
-            return None
-        else:
-            return self.handler.getPackageAndNext()
+        def write(self, data: bytes):
+            self.socket.send(self.handler.convertToPackage(data))
 
-    def write(self, data: bytes) -> int:
-        return self.socket.send(self.handler.convertToPackage(data))
+        def read(self) -> Optional[bytes]:
+            self.handler.handle(self.socket.recv(4096))
+            if not self.handler.hasPackage():
+                return None
+            else:
+                return self.handler.getPackageAndNext()
 
-    def open(self):
-        pass
+        def close(self):
+            self.socket.close()
 
-    def close(self):
-        self.socket.close()
+if serial_import:
+    import serial
 
+
+    class SerialServerDevice(ReConnectableDevice):
+
+        def __init__(self, port_name: str, baudrate: int, handler: PackageHandler):
+            self.serial = serial.Serial(port_name, baudrate)
+            self.handler = handler
+
+        def accept(self) -> CommDevice:
+            return SerialCommDevice(self.serial, self.handler)
+
+        def close(self):
+            self.serial.close()
+
+
+    class SerialCommDevice(CommDevice):
+
+        def __init__(self, ser: serial.Serial, handler: PackageHandler):
+            self.serial = ser
+            self.handler = handler
+
+        def read(self) -> Optional[bytes]:
+            self.handler.handle(self.serial.read())
+            if not self.handler.hasPackage():
+                return None
+            else:
+                return self.handler.getPackageAndNext()
+
+        def write(self, data: bytes) -> int:
+            return self.serial.write(self.handler.convertToPackage(data))
+
+        def open(self):
+            if self.isOpen():
+                self.serial.open()
+
+        def close(self):
+            self.serial.close()
+
+        def isOpen(self) -> bool:
+            return self.serial.isOpen()
 
 # 預設的結尾符號
 # https://stackoverflow.com/questions/13836352/what-is-the-utf-8-representation-of-end-of-line-in-text-file

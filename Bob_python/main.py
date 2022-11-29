@@ -19,13 +19,18 @@ from visual.monitor.concrete.crt_camera import CameraMonitor
 from visual.monitor.framework.fw_monitor import CameraListener
 from visual.utils import visual_utils
 from communication.framework.fw_comm import CommDevice, ReConnectableDevice
-from communication.concrete.crt_comm import EOLPackageHandler, \
-    BluetoothServerDevice, TCPServerDevice
-from device_config import getSerialBluetooth, getDynamixel
+from communication.concrete.crt_comm import EOLPackageHandler, SerialServerDevice, TCPServerDevice
+from device_config import getSerialNameByDescription
 
 db_charset = 'UTF-8'
 CMD_OBJECT_DETECTOR = "OBJECT_DETECTOR "
 CMD_FACE_DETECTOR = "FACE_DETECTOR "
+
+# 藍芽HC-05模組 UART/USB轉接器晶片名稱(使用正規表達式)
+bt_description = ".*CP2102.*"
+
+# 機器人 UART/USB轉接器晶片名稱(使用正規表達式)
+bot_description = ".*FT232R.*"
 
 ID_OBJECT = 1
 ID_FACE = 2
@@ -146,10 +151,13 @@ class MainProgram:
 
     def initialize_device(self) -> ReConnectableDevice:
         # 使用TCP傳輸
-        return TCPServerDevice("0.0.0.0", 4444, EOLPackageHandler())
+        # return TCPServerDevice("0.0.0.0", 4444, EOLPackageHandler())
 
         # 使用藍芽傳輸
         # return BluetoothServerDevice(EOLPackageHandler())
+
+        # Using HC-05
+        return SerialServerDevice(getSerialNameByDescription(bt_description), 38400, EOLPackageHandler())
 
     def main(self):
         device = self.initialize_device()
@@ -241,7 +249,7 @@ class MainProgram:
             commDevice.write(jsonString.encode(encoding='utf-8'))
 
     def doRobotAction(self, csv_file):
-        with open(csv_file, newline='') as file:
+        with open("actions/"+csv_file, newline='') as file:
             rows = csv.reader(file, delimiter=",")
             line = 0
             for row in rows:
