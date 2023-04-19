@@ -13,14 +13,16 @@ from typing import Optional
 import cv2
 
 from dbctrl.concrete.crt_database import JSONDatabase
+from robot.concrete.crt_dynamixel import Dynamixel
+from robot.concrete.servo_utils import CSVServoAgent
 from visual.detector.concrete.object_detect_yolov5 import ObjectDetector
 from visual.detector.concrete.face_detect_deepface import FaceDetector
 from visual.monitor.concrete.crt_camera import CameraMonitor
 from visual.monitor.framework.fw_monitor import CameraListener
 from visual.utils import visual_utils
 from communication.framework.fw_comm import CommDevice, ReConnectableDevice
-from communication.concrete.crt_comm import EOLPackageHandler, SerialServerDevice, TCPServerDevice
-from device_config import getSerialNameByDescription
+from communication.concrete.crt_comm import EOLPackageHandler, SerialServerDevice
+from serial_utils import getSerialNameByDescription
 
 db_charset = 'UTF-8'
 CMD_OBJECT_DETECTOR = "OBJECT_DETECTOR "
@@ -31,6 +33,9 @@ bt_description = ".*CP2102.*"
 
 # 機器人 UART/USB轉接器晶片名稱(使用正規表達式)
 bot_description = ".*FT232R.*"
+
+
+NO_ROBOT=False
 
 ID_OBJECT = 1
 ID_FACE = 2
@@ -140,14 +145,15 @@ class MainProgram:
         self.__id_counter = 0
         self._camera_monitor = CameraMonitor(0)
 
-        # 初始化機器人
-        # robot = getDynamixel()
-        # robot.open()
+        if not NO_ROBOT:
+            # 初始化機器人
+            robot = self.getDynamixel()
+            robot.open()
 
-        # 將機器人馬達扭力開啟
-        # for _id in robot.getAllServosId():
-        #     robot.enableTorque(_id, True)
-        # self.robot = robot
+            # 將機器人馬達扭力開啟
+            for _id in robot.getAllServosId():
+                robot.enableTorque(_id, True)
+            self.robot = robot
 
     def initialize_device(self) -> ReConnectableDevice:
         # 使用TCP傳輸
@@ -276,6 +282,17 @@ class MainProgram:
                     if not position == '':
                         self.robot.setGoalPosition(int(servoId), int(position))
                 line = line + 1
+
+    def getDynamixel(self) -> Dynamixel:
+        """
+        取得實體機器人裝置
+        @return: 實體機器人
+        """
+        agent = CSVServoAgent("servos.csv")
+        dynamixel = Dynamixel(getSerialNameByDescription(bot_description), 115200)
+        for servo in agent.getDefinedServos():
+            dynamixel.appendServo(servo)
+        return dynamixel
 
 
 if __name__ == '__main__':
