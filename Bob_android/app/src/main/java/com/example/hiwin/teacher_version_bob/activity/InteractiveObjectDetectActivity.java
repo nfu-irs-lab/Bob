@@ -3,6 +3,7 @@ package com.example.hiwin.teacher_version_bob.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.speech.tts.TextToSpeech;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
@@ -11,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import android.widget.Toast;
+
 import com.example.hiwin.teacher_version_bob.R;
 import com.example.hiwin.teacher_version_bob.fragment.*;
 
@@ -18,7 +20,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 
 import static com.example.hiwin.teacher_version_bob.Constants.getResourceIDByString;
@@ -32,12 +33,14 @@ public class InteractiveObjectDetectActivity extends BluetoothCommunicationActiv
     private static final String THIS_LOG_TAG = "InteractiveObjectDetectActivity";
     private final LinkedList<JSONObject> available_vocabulary = new LinkedList<>();
     private JSONArray objects;
-    private String answer;
+    private String answer=null;
     private final Handler handler = new Handler();
     private Fragment currentQuestion;
+    private TextToSpeech tts;
 
     @Override
     protected void initialize(Bundle savedInstanceState) {
+        tts = new TextToSpeech(this, null);
     }
 
     @Override
@@ -65,7 +68,7 @@ public class InteractiveObjectDetectActivity extends BluetoothCommunicationActiv
 //                全部物品陣列
                 objects = new JSONArray();
 
-                for (int i = 0; i < 9; i++) {
+                for (int i = 0; i < raw.length(); i++) {
                     objects.put(raw.getJSONObject(i));
                 }
 //
@@ -73,11 +76,13 @@ public class InteractiveObjectDetectActivity extends BluetoothCommunicationActiv
                 reset();
 
 //               通知主控制器開始物品辨識
-                sendMessage("DETECT_INTER_OBJECT");
-                sendMessage("START_DETECT");
+                sendMessage("OBJECT_DETECTOR ENABLE");
 
             } else if (content.equals("single_object")) {
+                if(answer==null)
+                    return;
 //                如果接收到實際辨識到的物件
+//                sendMessage("OBJECT_DETECTOR DISABLE");
 
                 String detected_object = json.getJSONObject("data").getString("name");
 
@@ -111,6 +116,7 @@ public class InteractiveObjectDetectActivity extends BluetoothCommunicationActiv
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+                    sendMessage("OBJECT_DETECTOR ENABLE");
                     handler.post(() -> postFragment(currentQuestion, "UU"));
                 }).start();
             } else {
@@ -154,20 +160,22 @@ public class InteractiveObjectDetectActivity extends BluetoothCommunicationActiv
 
     /**
      * 選擇新題目
+     *
      * @throws JSONException json錯誤
      */
     private void selectNewAnswer() throws JSONException {
-        if(objects==null || objects.length()==0)
+        if (objects == null || objects.length() == 0)
             return;
         if (available_vocabulary.size() == 0)
             reset();
+
 
         int i = (int) (Math.random() * available_vocabulary.size());
         JSONObject selected = available_vocabulary.get(i).getJSONObject("data");
 
         answer = selected.getString("name");
         String definition = selected.getString("definition");
-        currentQuestion = getEntryDetectFragment(definition, getResourceIDByString(this, selected.getString("definition_audio"), "raw"));
+        currentQuestion = getEntryDetectFragment(definition);
         postFragment(currentQuestion, "AA");
         available_vocabulary.remove(i);
     }
@@ -177,9 +185,9 @@ public class InteractiveObjectDetectActivity extends BluetoothCommunicationActiv
 //        void onDetected(String obj);
 //    }
 
-    private Fragment getEntryDetectFragment(String definition, int audio_id) {
+    private Fragment getEntryDetectFragment(String definition) {
         EntryObjectDetectFragment objectDetectFragment = new EntryObjectDetectFragment();
-        objectDetectFragment.setDefinition(definition, audio_id);
+        objectDetectFragment.initialize(definition, tts);
         return objectDetectFragment;
     }
 
@@ -197,7 +205,7 @@ public class InteractiveObjectDetectActivity extends BluetoothCommunicationActiv
 
     @Override
     protected void onSerialError(Exception e) {
-        runOnUiThread(() -> Toast.makeText(InteractiveObjectDetectActivity.this,"Serial Error:"+e.getMessage(),Toast.LENGTH_SHORT).show());
+        runOnUiThread(() -> Toast.makeText(InteractiveObjectDetectActivity.this, "Serial Error:" + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
     @Override
@@ -219,7 +227,7 @@ public class InteractiveObjectDetectActivity extends BluetoothCommunicationActiv
 
     /**
      * @param fragment 要顯示之Fragment
-     * @param id ID
+     * @param id       ID
      */
     private void postFragment(Fragment fragment, String id) {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();

@@ -1,7 +1,7 @@
 import keyboard  # using module keyboard
 
-from Bob.robot.concrete.crt_command import *
-from Bob.robot.framework.fw_robot import Robot
+from robot.concrete.crt_command import *
+from robot.framework.fw_robot import Robot
 from command_utils import getCommandsFromFileName
 from device_config import getRobot
 
