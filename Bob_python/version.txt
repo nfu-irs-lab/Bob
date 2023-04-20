@@ -1,1 +1,0 @@
-Bob python  : v1.3.1

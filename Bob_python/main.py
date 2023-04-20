@@ -6,9 +6,8 @@ Usage:
 import csv
 import json
 import os
-import socket
 import time
-from typing import Optional
+from typing import Optional, List
 
 import cv2
 
@@ -17,11 +16,12 @@ from robot.concrete.crt_dynamixel import Dynamixel
 from robot.concrete.servo_utils import CSVServoAgent
 from visual.detector.concrete.object_detect_yolov5 import ObjectDetector
 from visual.detector.concrete.face_detect_deepface import FaceDetector
+from visual.detector.framework.detector import DetectorData
 from visual.monitor.concrete.crt_camera import CameraMonitor
 from visual.monitor.framework.fw_monitor import CameraListener
 from visual.utils import visual_utils
 from communication.framework.fw_comm import CommDevice, ReConnectableDevice
-from communication.concrete.crt_comm import EOLPackageHandler, SerialServerDevice
+from communication.concrete.crt_comm import EOLPackageHandler, SerialServerDevice, BluetoothServerDevice
 from serial_utils import getSerialNameByDescription
 
 db_charset = 'UTF-8'
@@ -34,8 +34,7 @@ bt_description = ".*CP2102.*"
 # 機器人 UART/USB轉接器晶片名稱(使用正規表達式)
 bot_description = ".*FT232R.*"
 
-
-NO_ROBOT=False
+NO_ROBOT = True
 
 ID_OBJECT = 1
 ID_FACE = 2
@@ -61,7 +60,7 @@ class MainCameraListener(CameraListener):
     def onNothingDetected(self, _id, image):
         cv2.imshow("show", image)
 
-    def onDetect(self, detector_id, image, data):
+    def onDetect(self, detector_id, image, data: List[DetectorData]):
         """
         當影像辨識到物品或是臉部時,此方法會被執行
         @param detector_id: Detector id,用來識別為何種辨識結果
@@ -160,10 +159,10 @@ class MainProgram:
         # return TCPServerDevice("0.0.0.0", 4444, EOLPackageHandler())
 
         # 使用藍芽傳輸
-        # return BluetoothServerDevice(EOLPackageHandler())
+        return BluetoothServerDevice(EOLPackageHandler())
 
         # Using HC-05
-        return SerialServerDevice(getSerialNameByDescription(bt_description), 38400, EOLPackageHandler())
+        # return SerialServerDevice(getSerialNameByDescription(bt_description), 38400, EOLPackageHandler())
 
     def main(self):
         device = self.initialize_device()
@@ -255,7 +254,7 @@ class MainProgram:
             commDevice.write(jsonString.encode(encoding='utf-8'))
 
     def doRobotAction(self, csv_file):
-        with open("actions/"+csv_file, newline='') as file:
+        with open("actions/" + csv_file, newline='') as file:
             rows = csv.reader(file, delimiter=",")
             line = 0
             for row in rows:

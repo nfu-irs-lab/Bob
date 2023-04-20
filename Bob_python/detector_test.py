@@ -1,5 +1,8 @@
+from typing import List
+
 import cv2
 
+from visual.detector.framework.detector import DetectorData
 from visual.monitor.concrete.crt_camera import CameraMonitor
 #Must Import before deepface
 from visual.detector.concrete.object_detect_yolov5 import ObjectDetector
@@ -11,27 +14,23 @@ from visual.utils import visual_utils
 
 class TestListener(CameraListener):
 
-    def onImageRead(self, image):
-        cv2.imshow("face", image)
-        cv2.imshow("object", image)
+    def onNothingDetected(self, _id, image):
+        cv2.imshow("result", image)
 
-    def onDetect(self, detector_id, image, data):
+    def onImageRead(self, image):
+        pass
+
+    def onDetect(self, detector_id, image, data:List[DetectorData]):
         if detector_id == 1:
-            labeledImage = image
             for result in data:
-                label = result['emotion']
-                labeledImage = visual_utils.annotateLabel(labeledImage, (result['x']['min'], result['y']['min']),
-                                                          (result['x']['max'], result['y']['max']), label,
-                                                          overwrite=False)
-            cv2.imshow("face", labeledImage)
+                label = result.result['emotion']
+                visual_utils.annotateLabel(image, result.x, result.y, result.width, result.height, label)
+                cv2.imshow("result", image)
         elif detector_id == 2:
-            labeledImage = image
             for result in data:
-                label = result['name'] + " " + str(round(result['conf'], 2))
-                labeledImage = visual_utils.annotateLabel(image, (result['x']['min'], result['y']['min']),
-                                                          (result['x']['max'], result['y']['max']), label,
-                                                          overwrite=False)
-            cv2.imshow("object", labeledImage)
+                label = result.result['name'] + " " + str(round(result.result['conf'], 2))
+                visual_utils.annotateLabel(image, result.x, result.y, result.width, result.height, label)
+            cv2.imshow("result", image)
 
 
 monitor = CameraMonitor(0)

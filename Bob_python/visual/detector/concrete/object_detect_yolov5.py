@@ -11,7 +11,9 @@ class ObjectDetector(Detector):
 
     def __init__(self, _id, conf: float = 0.25):
         super().__init__(_id)
-        model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True, _verbose=False)
+        # model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True, _verbose=False)
+        model = torch.hub.load('./yolov5/', 'custom', './yolov5s.pt', source='local')  # local repo
+
         model.conf = conf  # NMS confidence threshold
         model.iou = 0.45  # NMS IoU threshold
         self._module = model
