@@ -1,3 +1,8 @@
-/Bob_python/venv/
-/Bob_python/__pycache__/
-/Bob_python/.idea/
+*.iml
+.gradle
+/local.properties
+/.idea/
+.DS_Store
+/build
+/captures
+.externalNativeBuild
