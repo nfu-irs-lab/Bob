@@ -226,7 +226,7 @@ public class ObjectDetectActivity extends DetectActivity {
 
     @Override
     protected void onConnect() {
-        sendMessage("DETECT_OBJECT");
+        sendMessage("OBJECT_DETECTOR ENABLE");
     }
 
     @Override
