@@ -228,7 +228,7 @@ public class FaceDetectActivity extends DetectActivity {
 
     @Override
     protected void onConnect() {
-        sendMessage("DETECT_FACE");
+        sendMessage("FACE_DETECTOR ENABLE");
     }
 
     @Override
