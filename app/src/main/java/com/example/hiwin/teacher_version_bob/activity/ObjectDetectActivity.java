@@ -10,8 +10,12 @@ import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.hiwin.teacher_version_bob.R;
 import com.example.hiwin.teacher_version_bob.utils.DataSpeaker;
 import com.example.hiwin.teacher_version_bob.fragment.*;
+
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -74,18 +78,22 @@ public class ObjectDetectActivity extends DetectActivity {
                 JSONObject object = new JSONObject(content);
 
                 JSONObject jdata = object.getJSONObject("data");
+                JSONObject jlanguages = jdata.getJSONArray("languages").getJSONObject(0);
 
                 int face_gif_id = getResourceIDByString(context, jdata.getString("face"), "drawable");
                 int img_id = getResourceIDByString(context, jdata.getString("image"), "drawable");
                 String action= jdata.getString("action");
                 String name = jdata.getString("name");
                 String sentence = jdata.getString("sentence");
-                String tr_name = jdata.getString("tr_name");
-                String tr_sentence = jdata.getString("tr_sentence");
 
-                showFace(face_gif_id, img_id, name, tr_name, sentence, tr_sentence, action);
+                String languages_code = jlanguages.getString("code");
+                String languages_tr_name = jlanguages.getString("tr_name");
+                String languages_tr_sentence = jlanguages.getString("tr_sentence");
+
+                showFace(face_gif_id, img_id, name, languages_tr_name, sentence, languages_tr_sentence, action);
             } catch (Exception e) {
                 Log.e(THIS_LOG_TAG, e.getMessage());
+                e.printStackTrace();
             }
         } catch (IllegalArgumentException e) {
             Log.d(THIS_LOG_TAG, e.getMessage());
